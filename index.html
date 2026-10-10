@@ -110,11 +110,11 @@
                     <!-- Botones de Acceso Rápido con Redes Sociales -->
                     <div class="space-y-3 mb-6">
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acceso instantáneo con un clic</p>
-                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-sm text-slate-700 transition shadow-sm">
+                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-700 transition">
                             <i class="fa-brands fa-google text-red-500 text-base"></i>
                             <span>Continuar con Google</span>
                         </button>
-                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold text-sm transition shadow-sm">
+                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold transition">
                             <i class="fa-brands fa-apple text-white text-lg"></i>
                             <span>Continuar con Apple</span>
                         </button>
@@ -168,7 +168,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monto Depósito</label>
-                                    <input type="number" id="reg-monto" required placeholder="Mín. 2,000 / Máx. 50,000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                    <input type="number" id="reg-monto" required placeholder="Mín. 2,000 / Máx. 50,000" min="0" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Moneda</label>
@@ -192,7 +192,7 @@
                                 <label class="flex items-start space-x-2.5 cursor-pointer">
                                     <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
                                     <span class="text-[11px] text-slate-600 leading-tight">
-                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Prevención de Lavado de Activos</strong>.
+                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley 3-12</strong> y normas antifraude vigentes.
                                     </span>
                                 </label>
                             </div>
@@ -221,8 +221,8 @@
 
             <!-- Visor PDF Adaptativo -->
             <div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl h-[70vh] sm:h-[80vh] lg:h-[85vh]">
-                <iframe src="historia.pdf" width="100%" height="100%" class="border-0">
-                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF. Asegúrate de tener el archivo <code>historia.pdf</code> cargado en tu repositorio de GitHub.</p>
+                <iframe src="historia.pdf" width="100%" height="100%" class="border-0" title="Historia de Inversiones F y E">
+                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF. Asegúrate de tener el archivo <code>historia.pdf</code> cargado en tu repo o usa un navegador moderno.</p>
                 </iframe>
             </div>
         </div>
@@ -241,61 +241,111 @@
     <script>
         const SUPABASE_URL = 'https://inversionesfye-db.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const appUrl = (() => {
+            const pathname = window.location.pathname.replace(/index\.html$/, '').replace(/\/+$/, '');
+            return `${window.location.origin}${pathname}/`;
+        })();
 
-        async function signInWithSocial(provider) {
-            const { data, error } = await supabase.auth.signInWithOAuth({
-                provider: provider,
-                options: { redirectTo: window.location.origin }
-            });
-            if (error) alert("Error al conectar con " + provider + ": " + error.message);
+        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        function safeAlert(message) {
+            if (window.alert) {
+                window.alert(message);
+            } else {
+                console.warn(message);
+            }
         }
 
-        // Generador de sonido sutil de fajo de billetes en cada rebote
+        function ensureSupabase() {
+            if (!window.supabase || !supabase) {
+                safeAlert('Supabase no está disponible en este momento. Verifica tu conexión o recarga la página.');
+                return false;
+            }
+            return true;
+        }
+
+        async function signInWithSocial(provider) {
+            if (!ensureSupabase()) return;
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: appUrl
+                }
+            });
+
+            if (error) {
+                safeAlert('Error al conectar con ' + provider + ': ' + error.message);
+            }
+        }
+
+        let audioContext = null;
+
+        function getAudioContext() {
+            const AudioCtor = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtor) return null;
+
+            if (!audioContext) {
+                audioContext = new AudioCtor();
+            }
+
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            return audioContext;
+        }
+
         function playBillSound() {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-                const bufferSize = audioCtx.sampleRate * 0.04; 
+                const audioCtx = getAudioContext();
+                if (!audioCtx) return;
+
+                const bufferSize = audioCtx.sampleRate * 0.04;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
+
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25)) * 0.12;
                 }
+
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buffer;
+
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'highpass';
                 filter.frequency.value = 1200;
+
                 noise.connect(filter);
                 filter.connect(audioCtx.destination);
                 noise.start();
-            } catch (e) {}
+            } catch (error) {
+                console.warn('No se pudo reproducir el audio del rebote:', error);
+            }
         }
 
-        // Cargar imagen probando con logo.png.JPG
         const logoImg = new Image();
         logoImg.src = 'logo.png.JPG';
-        logoImg.onerror = function() {
-            // Si no lo encuentra como logo.png.JPG, busca como logo.png
+        logoImg.onerror = function () {
             logoImg.src = 'logo.png';
         };
 
         const canvas = document.getElementById('fyeCanvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas ? canvas.getContext('2d') : null;
 
         function resizeCanvas() {
-            if (!canvas) return;
+            if (!canvas || !canvas.parentElement) return;
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
         }
+
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
         let ball = { x: 120, y: 100, dx: 3.2, dy: 2.6, radius: 45 };
 
         function animateBall() {
-            if (!canvas || canvas.width === 0) return;
+            if (!canvas || !ctx || canvas.width === 0) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             ball.x += ball.dx;
@@ -311,7 +361,7 @@
                 playBillSound();
                 ball.dx += (Math.random() - 0.5) * 0.5;
                 ball.dy += (Math.random() - 0.5) * 0.5;
-                let speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+                const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
                 if (speed < 2.8) { ball.dx *= 1.2; ball.dy *= 1.2; }
                 if (speed > 6.5) { ball.dx *= 0.8; ball.dy *= 0.8; }
             }
@@ -344,107 +394,168 @@
 
             requestAnimationFrame(animateBall);
         }
-        animateBall();
+
+        if (canvas && ctx) {
+            requestAnimationFrame(animateBall);
+        }
 
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             const icon = document.getElementById('menu-icon');
+            if (!menu || !icon) return;
+
             menu.classList.toggle('hidden');
             icon.className = menu.classList.contains('hidden') ? 'fa-solid fa-bars text-xl' : 'fa-solid fa-xmark text-xl';
         }
 
         function switchTab(tab) {
-            document.getElementById('tab-login').classList.add('hidden');
-            document.getElementById('tab-registro').classList.add('hidden');
-            document.getElementById('tab-' + tab).classList.remove('hidden');
+            const tabs = ['login', 'registro'];
+            tabs.forEach((name) => {
+                const tabElement = document.getElementById('tab-' + name);
+                if (tabElement) tabElement.classList.add('hidden');
+            });
+
+            const target = document.getElementById('tab-' + tab);
+            if (target) target.classList.remove('hidden');
         }
 
         function showSection(section) {
-            document.getElementById('section-inicio').classList.add('hidden');
-            document.getElementById('section-quienes-somos').classList.add('hidden');
-            document.getElementById('section-' + section).classList.remove('hidden');
+            const sections = ['inicio', 'quienes-somos'];
+            sections.forEach((name) => {
+                const element = document.getElementById('section-' + name);
+                if (element) element.classList.add('hidden');
+            });
+
+            const target = document.getElementById('section-' + section);
+            if (target) target.classList.remove('hidden');
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-correo').value;
+        async function handleLogin(event) {
+            event.preventDefault();
+            if (!ensureSupabase()) return;
+
+            const email = document.getElementById('login-correo').value.trim();
             const password = document.getElementById('login-password').value;
 
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (!email || !password) {
+                safeAlert('Completa tu correo y contraseña antes de continuar.');
+                return;
+            }
+
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+
             if (error) {
-                alert("Error al iniciar sesión: " + error.message);
+                safeAlert('Error al iniciar sesión: ' + error.message);
             } else {
-                alert("¡Inicio de sesión exitoso! Bienvenido a Inversiones F y E.");
+                safeAlert('¡Inicio de sesión exitoso! Bienvenido a Inversiones F y E.');
             }
         }
 
         function validarCedulaDominicana(cedula) {
-            let limpiarCedula = cedula.replace(/-/g, '');
-            if (limpiarCedula.length !== 11 || isNaN(limpiarCedula)) return false;
+            const limpia = String(cedula || '').replace(/-/g, '').trim();
+            if (limpia.length !== 11 || isNaN(limpia)) return false;
+
             let suma = 0;
-            let peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+            const peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+
             for (let i = 0; i < 10; i++) {
-                let mult = parseInt(limpiarCedula.charAt(i)) * peso[i];
+                const mult = parseInt(limpia.charAt(i), 10) * peso[i];
                 suma += (mult >= 10) ? Math.floor(mult / 10) + (mult % 10) : mult;
             }
-            let digitoVerificador = (10 - (suma % 10)) % 10;
-            return digitoVerificador === parseInt(limpiarCedula.charAt(10));
+
+            const digitoVerificador = (10 - (suma % 10)) % 10;
+            return digitoVerificador === parseInt(limpia.charAt(10), 10);
         }
 
-        async function handleRegister(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('reg-nombre').value;
-            const cedula = document.getElementById('reg-cedula').value;
-            const telefono = document.getElementById('reg-telefono').value;
-            const monto = parseFloat(document.getElementById('reg-monto').value);
+        async function handleRegister(event) {
+            event.preventDefault();
+            if (!ensureSupabase()) return;
+
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const cedula = document.getElementById('reg-cedula').value.trim();
+            const telefono = document.getElementById('reg-telefono').value.trim();
+            const montoValue = document.getElementById('reg-monto').value;
             const moneda = document.getElementById('reg-moneda').value;
-            const correo = document.getElementById('reg-correo').value;
+            const correo = document.getElementById('reg-correo').value.trim();
             const password = document.getElementById('reg-password').value;
             const contratoAceptado = document.getElementById('reg-contrato').checked;
 
+            if (!nombre) {
+                safeAlert('Ingresa tu nombre completo.');
+                return;
+            }
             if (!validarCedulaDominicana(cedula)) {
-                alert("⚠️ Error: La cédula introducida no es válida.");
+                safeAlert('⚠️ Error: La cédula introducida no es válida.');
+                return;
+            }
+            if (!telefono) {
+                safeAlert('Ingresa un teléfono de contacto válido.');
+                return;
+            }
+            if (!/^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(correo)) {
+                safeAlert('Ingresa un correo electrónico válido.');
+                return;
+            }
+            if (!password || password.length < 6) {
+                safeAlert('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+            if (!contratoAceptado) {
+                safeAlert('⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos.');
+                return;
+            }
+
+            const monto = Number(montoValue);
+            if (!Number.isFinite(monto) || monto <= 0) {
+                safeAlert('Ingresa un monto válido para abrir la cuenta.');
                 return;
             }
 
             if (moneda === 'DOP') {
                 if (monto < 2000) {
-                    alert("⚠️ Error: El monto mínimo de apertura para certificados es de RD$2,000.");
+                    safeAlert('⚠️ Error: El monto mínimo de apertura para certificados es de RD$2,000.');
                     return;
                 }
                 if (monto > 50000) {
-                    alert("⚠️ Error: El monto máximo de depósito en línea es de RD$50,000.");
+                    safeAlert('⚠️ Error: El monto máximo de depósito en línea es de RD$50,000.');
                     return;
                 }
             } else if (moneda === 'USD') {
                 if (monto > 1000) {
-                    alert("⚠️ Error: El depósito máximo en dólares es de $1,000 USD.");
+                    safeAlert('⚠️ Error: El depósito máximo en dólares es de $1,000 USD.');
                     return;
                 }
             }
 
-            if (!contratoAceptado) {
-                alert("⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos.");
+            const { data, error } = await supabase.auth.signUp({
+                email: correo,
+                password,
+                options: {
+                    data: {
+                        nombre,
+                        cedula,
+                        telefono,
+                        monto,
+                        moneda
+                    }
+                }
+            });
+
+            if (error) {
+                safeAlert('Error en el registro: ' + error.message);
                 return;
             }
 
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: correo,
-                    password: password,
-                    options: {
-                        data: { nombre: nombre, cedula: cedula, telefono: telefono }
-                    }
-                });
-
-                if (error) {
-                    alert("Error en el registro: " + error.message);
-                    return;
-                }
-
-                alert("¡Cuenta creada exitosamente y registrada en Supabase conforme a las regulaciones!");
+            if (data?.user) {
+                safeAlert('¡Cuenta creada exitosamente! Revisa tu correo para confirmar la cuenta y completar el proceso.');
                 switchTab('login');
                 document.getElementById('login-correo').value = correo;
-            } catch (err) {
-                alert("Ocurrió un error al procesar el registro con el servidor.");
+            } else {
+                safeAlert('Se ha enviado la solicitud de registro. Revisa tu correo para continuar.');
+            }
+        }
+    </script>
+</body>
+</html>
