@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inversiones F y E | Plataforma Financiera</title>
+    <title>INVERSIONES F Y E SRL | Plataforma Financiera</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Toastify CSS & JS (Notificaciones Modernas) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --fye-verde: #1E5F2D; /* Verde corporativo oficial */
+            --fye-verde: #1E5F2D;
             --fye-verde-oscuro: #154420;
-            --fye-amarillo: #FFB823; /* Amarillo corporativo */
+            --fye-amarillo: #FFB823;
         }
         .bg-fye-verde { background-color: var(--fye-verde); }
         .text-fye-verde { color: var(--fye-verde); }
@@ -36,7 +39,6 @@
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             
-            <!-- Logo y Marca -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('inicio')">
                 <img src="logo.png.JPG" alt="Logo F&E" class="h-10 w-10 object-contain rounded-xl shadow bg-white p-1" onerror="this.onerror=null; this.src='logo.png';">
                 <div class="flex flex-col">
@@ -45,7 +47,6 @@
                 </div>
             </div>
 
-            <!-- Navegación -->
             <nav class="hidden md:flex space-x-6 lg:space-x-8 items-center text-sm font-semibold">
                 <a href="#inicio" onclick="showSection('inicio')" class="text-slate-700 hover:text-fye-verde transition">Inicio</a>
                 <a href="#quienes-somos" onclick="showSection('quienes-somos')" class="text-slate-700 hover:text-fye-verde transition">Quiénes Somos</a>
@@ -53,7 +54,6 @@
                 <button onclick="showSection('inicio'); switchTab('registro');" class="btn-verde px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md">Acceso / Registro</button>
             </nav>
 
-            <!-- Menú Móvil Hamburguesa -->
             <div class="md:hidden flex items-center">
                 <button onclick="toggleMobileMenu()" class="text-slate-700 hover:text-fye-verde p-2 focus:outline-none" aria-label="Menú">
                     <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
@@ -61,7 +61,6 @@
             </div>
         </div>
 
-        <!-- Desplegable Móvil -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3 shadow-lg">
             <a href="#inicio" onclick="showSection('inicio'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Inicio</a>
             <a href="#quienes-somos" onclick="showSection('quienes-somos'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Quiénes Somos</a>
@@ -70,20 +69,15 @@
         </div>
     </header>
 
-    <!-- Barra de Estado de Conexión -->
     <div id="status-bar" class="bg-slate-100 border-b border-slate-200 py-2 px-4 text-center text-xs text-slate-600 font-medium">
         <span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema Conectado con Supabase</span>
     </div>
 
-    <!-- Contenido Principal -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow w-full">
 
-        <!-- SECCIÓN INICIO -->
         <div id="section-inicio" class="space-y-10">
-            
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                 
-                <!-- Presentación y Animación de la Pelota con el Logo -->
                 <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
                     <div class="inline-block bg-green-100 text-fye-verde px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
                         Soluciones Financieras Seguras
@@ -95,7 +89,6 @@
                         Gestionamos préstamos, bienes raíces, rent car y cambio de divisas con la solidez y transparencia que tu crecimiento merece.
                     </p>
 
-                    <!-- Widget Interactivo con el Logo Oficial Rebotando -->
                     <div class="relative w-full h-56 sm:h-64 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg mt-4">
                         <canvas id="fyeCanvas" class="w-full h-full block"></canvas>
                         <div class="absolute bottom-3 left-4 text-xs font-semibold text-slate-400 pointer-events-none flex items-center bg-white/80 px-2 py-1 rounded-lg backdrop-blur-sm">
@@ -104,10 +97,8 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta de Autenticación / Registro Regulado -->
                 <div class="lg:col-span-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
                     
-                    <!-- Botones de Acceso Rápido con Redes Sociales -->
                     <div class="space-y-3 mb-6">
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acceso instantáneo con un clic</p>
                         <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-700 transition">
@@ -140,7 +131,7 @@
                                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
                                 <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                             </div>
-                            <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
+                            <button type="submit" id="btn-login-submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
                         </form>
                         <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate aquí</a></p>
                     </div>
@@ -158,7 +149,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula (Válida R.D.)</label>
-                                    <input type="text" id="reg-cedula" required placeholder="001-0000000-0" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                    <input type="text" id="reg-cedula" required placeholder="001-0000000-0" maxlength="13" oninput="formatCedulaInput(this)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono</label>
@@ -187,7 +178,6 @@
                                 <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                             </div>
 
-                            <!-- Contrato y Ley de Lavado de Activos -->
                             <div class="pt-1">
                                 <label class="flex items-start space-x-2.5 cursor-pointer">
                                     <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
@@ -197,7 +187,7 @@
                                 </label>
                             </div>
 
-                            <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md mt-2">Validar y Registrar Cuenta</button>
+                            <button type="submit" id="btn-reg-submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md mt-2">Validar y Registrar Cuenta</button>
                         </form>
                         <p class="text-xs text-center text-slate-500 mt-4">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login')" class="text-fye-verde font-bold hover:underline">Inicia Sesión</a></p>
                     </div>
@@ -207,7 +197,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN QUIÉNES SOMOS (PDF EMBEBIDO RESPONSIVO) -->
         <div id="section-quienes-somos" class="hidden space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm gap-4">
                 <div>
@@ -219,17 +208,15 @@
                 </button>
             </div>
 
-            <!-- Visor PDF Adaptativo -->
             <div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl h-[70vh] sm:h-[80vh] lg:h-[85vh]">
                 <iframe src="historia.pdf" width="100%" height="100%" class="border-0" title="Historia de INVERSIONES F Y E">
-                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF. Asegúrate de tener el archivo <code>historia.pdf</code> cargado en tu repo o usa un navegador moderno.</p>
+                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF.</p>
                 </iframe>
             </div>
         </div>
 
     </main>
 
-    <!-- Pie de Página -->
     <footer class="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs sm:text-sm border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 space-y-2">
             <p class="font-semibold text-slate-300">© 2026 INVERSIONES F Y E SRL. Todos los derechos reservados.</p>
@@ -237,7 +224,6 @@
         </div>
     </footer>
 
-    <!-- Lógica JavaScript -->
     <script>
         const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzYWxkeHFibHp6bHpycHJpdWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1OTM1OTEsImV4cCI6MjEwNzE2OTU5MX0.PbFqKH0DRw8dhKv3KHU86WBcdazM8TL_xDMxDFXuuj4';
@@ -249,17 +235,33 @@
 
         const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-        function safeAlert(message) {
-            if (window.alert) {
-                window.alert(message);
-            } else {
-                console.warn(message);
+        function notify(message, type = 'info') {
+            let bg = '#1E5F2D';
+            if (type === 'error') bg = '#DC2626';
+            if (type === 'warning') bg = '#D97706';
+
+            Toastify({
+                text: message,
+                duration: 4000,
+                gravity: "top",
+                position: "right",
+                style: { background: bg, borderRadius: "12px", fontSize: "14px", fontWeight: "600" }
+            }).showToast();
+        }
+
+        function formatCedulaInput(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length > 3 && val.length <= 10) {
+                val = val.substring(0, 3) + '-' + val.substring(3);
+            } else if (val.length > 10) {
+                val = val.substring(0, 3) + '-' + val.substring(3, 10) + '-' + val.substring(10, 11);
             }
+            input.value = val;
         }
 
         function ensureSupabase() {
             if (!window.supabase || !supabase) {
-                safeAlert('Supabase no está disponible en este momento. Verifica tu conexión o recarga la página.');
+                notify('Supabase no está disponible. Verifica tu conexión.', 'error');
                 return false;
             }
             return true;
@@ -267,69 +269,13 @@
 
         async function signInWithSocial(provider) {
             if (!ensureSupabase()) return;
-
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo: appUrl
-                }
-            });
-
-            if (error) {
-                safeAlert('Error al conectar con ' + provider + ': ' + error.message);
-            }
-        }
-
-        let audioContext = null;
-
-        function getAudioContext() {
-            const AudioCtor = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtor) return null;
-
-            if (!audioContext) {
-                audioContext = new AudioCtor();
-            }
-
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
-            return audioContext;
-        }
-
-        function playBillSound() {
-            try {
-                const audioCtx = getAudioContext();
-                if (!audioCtx) return;
-
-                const bufferSize = audioCtx.sampleRate * 0.04;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25)) * 0.12;
-                }
-
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.value = 1200;
-
-                noise.connect(filter);
-                filter.connect(audioCtx.destination);
-                noise.start();
-            } catch (error) {
-                console.warn('No se pudo reproducir el audio del rebote:', error);
-            }
+            const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: appUrl } });
+            if (error) notify('Error con ' + provider + ': ' + error.message, 'error');
         }
 
         const logoImg = new Image();
         logoImg.src = 'logo.png.JPG';
-        logoImg.onerror = function () {
-            logoImg.src = 'logo.png';
-        };
+        logoImg.onerror = () => { logoImg.src = 'logo.png'; };
 
         const canvas = document.getElementById('fyeCanvas');
         const ctx = canvas ? canvas.getContext('2d') : null;
@@ -339,7 +285,6 @@
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
         }
-
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
@@ -357,15 +302,6 @@
             else if (ball.x + ball.radius >= canvas.width) { ball.x = canvas.width - ball.radius; ball.dx = -ball.dx; bounced = true; }
             if (ball.y - ball.radius <= 0) { ball.y = ball.radius; ball.dy = -ball.dy; bounced = true; }
             else if (ball.y + ball.radius >= canvas.height) { ball.y = canvas.height - ball.radius; ball.dy = -ball.dy; bounced = true; }
-
-            if (bounced) {
-                playBillSound();
-                ball.dx += (Math.random() - 0.5) * 0.5;
-                ball.dy += (Math.random() - 0.5) * 0.5;
-                const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-                if (speed < 2.8) { ball.dx *= 1.2; ball.dy *= 1.2; }
-                if (speed > 6.5) { ball.dx *= 0.8; ball.dy *= 0.8; }
-            }
 
             ctx.save();
             ctx.beginPath();
@@ -395,41 +331,32 @@
 
             requestAnimationFrame(animateBall);
         }
-
-        if (canvas && ctx) {
-            requestAnimationFrame(animateBall);
-        }
+        if (canvas && ctx) requestAnimationFrame(animateBall);
 
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             const icon = document.getElementById('menu-icon');
             if (!menu || !icon) return;
-
             menu.classList.toggle('hidden');
             icon.className = menu.classList.contains('hidden') ? 'fa-solid fa-bars text-xl' : 'fa-solid fa-xmark text-xl';
         }
 
         function switchTab(tab) {
-            const tabs = ['login', 'registro'];
-            tabs.forEach((name) => {
-                const tabElement = document.getElementById('tab-' + name);
-                if (tabElement) tabElement.classList.add('hidden');
+            ['login', 'registro'].forEach(name => {
+                const el = document.getElementById('tab-' + name);
+                if (el) el.classList.add('hidden');
             });
-
             const target = document.getElementById('tab-' + tab);
             if (target) target.classList.remove('hidden');
         }
 
         function showSection(section) {
-            const sections = ['inicio', 'quienes-somos'];
-            sections.forEach((name) => {
-                const element = document.getElementById('section-' + name);
-                if (element) element.classList.add('hidden');
+            ['inicio', 'quienes-somos'].forEach(name => {
+                const el = document.getElementById('section-' + name);
+                if (el) el.classList.add('hidden');
             });
-
             const target = document.getElementById('section-' + section);
             if (target) target.classList.remove('hidden');
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -440,34 +367,24 @@
             const email = document.getElementById('login-correo').value.trim();
             const password = document.getElementById('login-password').value;
 
-            if (!email || !password) {
-                safeAlert('Completa tu correo y contraseña antes de continuar.');
-                return;
-            }
-
             const { error } = await supabase.auth.signInWithPassword({ email, password });
-
             if (error) {
-                safeAlert('Error al iniciar sesión: ' + error.message);
+                notify('Error al iniciar sesión: ' + error.message, 'error');
             } else {
-                safeAlert('¡Inicio de sesión exitoso! Bienvenido a INVERSIONES F Y E.');
+                notify('¡Bienvenido a INVERSIONES F Y E!');
             }
         }
 
         function validarCedulaDominicana(cedula) {
             const limpia = String(cedula || '').replace(/-/g, '').trim();
             if (limpia.length !== 11 || isNaN(limpia)) return false;
-
             let suma = 0;
             const peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
-
             for (let i = 0; i < 10; i++) {
                 const mult = parseInt(limpia.charAt(i), 10) * peso[i];
                 suma += (mult >= 10) ? Math.floor(mult / 10) + (mult % 10) : mult;
             }
-
-            const digitoVerificador = (10 - (suma % 10)) % 10;
-            return digitoVerificador === parseInt(limpia.charAt(10), 10);
+            return ((10 - (suma % 10)) % 10) === parseInt(limpia.charAt(10), 10);
         }
 
         async function handleRegister(event) {
@@ -477,85 +394,35 @@
             const nombre = document.getElementById('reg-nombre').value.trim();
             const cedula = document.getElementById('reg-cedula').value.trim();
             const telefono = document.getElementById('reg-telefono').value.trim();
-            const montoValue = document.getElementById('reg-monto').value;
+            const monto = Number(document.getElementById('reg-monto').value);
             const moneda = document.getElementById('reg-moneda').value;
             const correo = document.getElementById('reg-correo').value.trim();
             const password = document.getElementById('reg-password').value;
             const contratoAceptado = document.getElementById('reg-contrato').checked;
 
-            if (!nombre) {
-                safeAlert('Ingresa tu nombre completo.');
-                return;
-            }
             if (!validarCedulaDominicana(cedula)) {
-                safeAlert('⚠️ Error: La cédula introducida no es válida.');
-                return;
-            }
-            if (!telefono) {
-                safeAlert('Ingresa un teléfono de contacto válido.');
-                return;
-            }
-            if (!/^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(correo)) {
-                safeAlert('Ingresa un correo electrónico válido.');
-                return;
-            }
-            if (!password || password.length < 6) {
-                safeAlert('La contraseña debe tener al menos 6 caracteres.');
+                notify('⚠️ La cédula introducida no es válida.', 'error');
                 return;
             }
             if (!contratoAceptado) {
-                safeAlert('⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos.');
+                notify('⚠️ Debe aceptar el contrato de cumplimiento Ley 3-12.', 'warning');
                 return;
-            }
-
-            const monto = Number(montoValue);
-            if (!Number.isFinite(monto) || monto <= 0) {
-                safeAlert('Ingresa un monto válido para abrir la cuenta.');
-                return;
-            }
-
-            if (moneda === 'DOP') {
-                if (monto < 2000) {
-                    safeAlert('⚠️ Error: El monto mínimo de apertura para certificados es de RD$2,000.');
-                    return;
-                }
-                if (monto > 50000) {
-                    safeAlert('⚠️ Error: El monto máximo de depósito en línea es de RD$50,000.');
-                    return;
-                }
-            } else if (moneda === 'USD') {
-                if (monto > 1000) {
-                    safeAlert('⚠️ Error: El depósito máximo en dólares es de $1,000 USD.');
-                    return;
-                }
             }
 
             const { data, error } = await supabase.auth.signUp({
                 email: correo,
                 password,
-                options: {
-                    data: {
-                        nombre,
-                        cedula,
-                        telefono,
-                        monto,
-                        moneda
-                    }
-                }
+                options: { data: { nombre, cedula, telefono, monto, moneda } }
             });
 
             if (error) {
-                safeAlert('Error en el registro: ' + error.message);
+                notify('Error en el registro: ' + error.message, 'error');
                 return;
             }
 
-            if (data?.user) {
-                safeAlert('¡Cuenta creada exitosamente! Revisa tu correo para confirmar la cuenta y completar el proceso.');
-                switchTab('login');
-                document.getElementById('login-correo').value = correo;
-            } else {
-                safeAlert('Se ha enviado la solicitud de registro. Revisa tu correo para continuar.');
-            }
+            notify('¡Solicitud enviada! Revisa tu correo para confirmar la cuenta.');
+            switchTab('login');
+            document.getElementById('login-correo').value = correo;
         }
     </script>
 </body>
