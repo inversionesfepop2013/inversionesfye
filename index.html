@@ -38,7 +38,7 @@
             
             <!-- Logo y Marca -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('inicio')">
-                <div class="bg-fye-verde text-white p-2 sm:p-2.5 rounded-xl font-bold text-base sm:text-lg tracking-wider shadow">F&E</div>
+                <img src="logo.png" alt="Logo F&E" class="h-10 w-10 object-contain rounded-xl shadow bg-white p-1" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/inversionesfepop2013/inversionesfepop2013.github.io/main/logo.png';">
                 <div class="flex flex-col">
                     <span class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">INVERSIONES F Y E</span>
                     <span class="text-[10px] sm:text-xs font-semibold text-fye-verde tracking-widest uppercase">Puerto Plata, R.D.</span>
@@ -72,7 +72,7 @@
 
     <!-- Barra de Estado de Conexión -->
     <div id="status-bar" class="bg-slate-100 border-b border-slate-200 py-2 px-4 text-center text-xs text-slate-600 font-medium">
-        <i class="fa-solid fa-circle-notch animate-spin mr-1.5 text-fye-verde"></i> Conectando con Supabase...
+        <span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema Conectado con Supabase</span>
     </div>
 
     <!-- Contenido Principal -->
@@ -83,7 +83,7 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                 
-                <!-- Presentación y Animación de la Pelota -->
+                <!-- Presentación y Animación de la Pelota con el Logo -->
                 <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
                     <div class="inline-block bg-green-100 text-fye-verde px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
                         Soluciones Financieras Seguras
@@ -95,43 +95,60 @@
                         Gestionamos préstamos, bienes raíces, rent car y cambio de divisas con la solidez y transparencia que tu crecimiento merece.
                     </p>
 
-                    <!-- Widget Interactivo con la Pelota Rebotando (Logo F&E + Sonido de Billetes) -->
+                    <!-- Widget Interactivo con el Logo Oficial Rebotando -->
                     <div class="relative w-full h-56 sm:h-64 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg mt-4">
                         <canvas id="fyeCanvas" class="w-full h-full block"></canvas>
-                        <div class="absolute bottom-3 left-4 text-xs font-semibold text-slate-400 pointer-events-none flex items-center">
+                        <div class="absolute bottom-3 left-4 text-xs font-semibold text-slate-400 pointer-events-none flex items-center bg-white/80 px-2 py-1 rounded-lg backdrop-blur-sm">
                             <i class="fa-solid fa-coins text-fye-verde mr-1.5"></i> Inversiones F y E — Dinámica Activa
                         </div>
                     </div>
                 </div>
 
-                <!-- Tarjeta de Autenticación / Registro (Regulado y con Validación de Cédula) -->
+                <!-- Tarjeta de Autenticación / Registro Regulado -->
                 <div class="lg:col-span-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
                     
-                    <!-- Login -->
-                    <div id="tab-login">
-                        <div class="mb-6 text-center lg:text-left">
-                            <h2 class="text-2xl font-bold text-slate-900">Iniciar Sesión</h2>
-                            <p class="text-xs sm:text-sm text-slate-500 mt-1">Accede al portal de clientes de Inversiones F y E.</p>
-                        </div>
-                        <form onsubmit="handleLogin(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Correo Electrónico</label>
-                                <input type="email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Contraseña</label>
-                                <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                            </div>
-                            <button type="submit" class="w-full py-3.5 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
-                        </form>
-                        <p class="text-xs sm:text-sm text-center text-slate-500 mt-6">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate aquí</a></p>
+                    <!-- Botones de Acceso Rápido con Redes Sociales -->
+                    <div class="space-y-3 mb-6">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acceso instantáneo con un clic</p>
+                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-sm text-slate-700 transition shadow-sm">
+                            <i class="fa-brands fa-google text-red-500 text-base"></i>
+                            <span>Continuar con Google</span>
+                        </button>
+                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold text-sm transition shadow-sm">
+                            <i class="fa-brands fa-apple text-white text-lg"></i>
+                            <span>Continuar con Apple</span>
+                        </button>
                     </div>
 
-                    <!-- Formulario de Registro con Regulaciones y Validación -->
-                    <div id="tab-registro" class="hidden">
-                        <div class="mb-6 text-center lg:text-left">
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-4 text-xs text-slate-400 uppercase font-semibold">o con correo electrónico</span>
+                        <div class="flex-grow border-t border-slate-200"></div>
+                    </div>
+
+                    <!-- Login -->
+                    <div id="tab-login" class="mt-4">
+                        <div class="mb-4 text-center lg:text-left">
+                            <h2 class="text-xl font-bold text-slate-900">Iniciar Sesión</h2>
+                        </div>
+                        <form onsubmit="handleLogin(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                                <input type="email" id="login-correo" required placeholder="correo@ejemplo.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
+                        </form>
+                        <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate aquí</a></p>
+                    </div>
+
+                    <!-- Registro Regulado -->
+                    <div id="tab-registro" class="hidden mt-4">
+                        <div class="mb-4 text-center lg:text-left">
                             <h2 class="text-xl font-bold text-slate-900">Apertura de Cuenta Regulada</h2>
-                            <p class="text-xs text-slate-500 mt-1">Cumplimiento con Ley de Prevención de Lavado de Activos.</p>
                         </div>
                         <form onsubmit="handleRegister(event)" class="space-y-3">
                             <div>
@@ -150,14 +167,14 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monto Depósito / Apertura</label>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monto Depósito</label>
                                     <input type="number" id="reg-monto" required placeholder="Mín. 2,000 / Máx. 50,000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Moneda</label>
                                     <select id="reg-moneda" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                                        <option value="DOP">Pesos Dominicanos (DOP)</option>
-                                        <option value="USD">Dólares (USD - Máx 1,000)</option>
+                                        <option value="DOP">Pesos (DOP)</option>
+                                        <option value="USD">Dólares (USD)</option>
                                     </select>
                                 </div>
                             </div>
@@ -175,7 +192,7 @@
                                 <label class="flex items-start space-x-2.5 cursor-pointer">
                                     <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
                                     <span class="text-[11px] text-slate-600 leading-tight">
-                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, eximiendo a Inversiones F y E de conformidad con la <strong>Ley de Prevención de Lavado de Activos</strong>.
+                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Prevención de Lavado de Activos</strong>.
                                     </span>
                                 </label>
                             </div>
@@ -220,36 +237,18 @@
         </div>
     </footer>
 
-    <!-- Lógica JavaScript (Validaciones de Cédula, Límites y Supabase) -->
+    <!-- Lógica JavaScript (Supabase + Animación + Validaciones y Transición) -->
     <script>
         const SUPABASE_URL = 'https://inversionesfye-db.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function checkConnection() {
-            const statusBar = document.getElementById('status-bar');
-            try {
-                if (supabase) {
-                    statusBar.innerHTML = '<span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema conectado exitosamente con Supabase</span>';
-                }
-            } catch (e) {
-                statusBar.innerHTML = '<span class="text-rose-600 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Error de conexión</span>';
-            }
-        }
-
-        // Algoritmo de validación de Cédula Dominicana
-        function validarCedulaDominicana(cedula) {
-            let limpiarCedula = cedula.replace(/-/g, '');
-            if (limpiarCedula.length !== 11 || isNaN(limpiarCedula)) return false;
-            
-            let suma = 0;
-            let peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
-            for (let i = 0; i < 10; i++) {
-                let mult = parseInt(limpiarCedula.charAt(i)) * peso[i];
-                suma += (mult >= 10) ? Math.floor(mult / 10) + (mult % 10) : mult;
-            }
-            let digitoVerificador = (10 - (suma % 10)) % 10;
-            return digitoVerificador === parseInt(limpiarCedula.charAt(10));
+        async function signInWithSocial(provider) {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: provider,
+                options: { redirectTo: window.location.origin }
+            });
+            if (error) alert("Error al conectar con " + provider + ": " + error.message);
         }
 
         // Generador de sonido sutil de fajo de billetes en cada rebote
@@ -274,7 +273,10 @@
             } catch (e) {}
         }
 
-        // Animación Canvas Pelota F&E
+        // Cargar la imagen del logo oficial para la pelota rebotante
+        const logoImg = new Image();
+        logoImg.src = 'logo.png';
+
         const canvas = document.getElementById('fyeCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -286,11 +288,12 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        let ball = { x: 100, y: 100, dx: 3.5, dy: 2.8, radius: 38 };
+        let ball = { x: 120, y: 100, dx: 3.2, dy: 2.6, radius: 45 };
 
         function animateBall() {
             if (!canvas || canvas.width === 0) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
             ball.x += ball.dx;
             ball.y += ball.dy;
 
@@ -302,27 +305,38 @@
 
             if (bounced) {
                 playBillSound();
-                ball.dx += (Math.random() - 0.5) * 0.6;
-                ball.dy += (Math.random() - 0.5) * 0.6;
+                ball.dx += (Math.random() - 0.5) * 0.5;
+                ball.dy += (Math.random() - 0.5) * 0.5;
                 let speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-                if (speed < 3.0) { ball.dx *= 1.2; ball.dy *= 1.2; }
-                if (speed > 7.5) { ball.dx *= 0.8; ball.dy *= 0.8; }
+                if (speed < 2.8) { ball.dx *= 1.2; ball.dy *= 1.2; }
+                if (speed > 6.5) { ball.dx *= 0.8; ball.dy *= 0.8; }
             }
 
+            ctx.save();
             ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#1E5F2D';
-            ctx.fill();
-            ctx.lineWidth = 3;
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+
+            if (logoImg.complete && logoImg.naturalWidth !== 0) {
+                ctx.drawImage(logoImg, ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2);
+            } else {
+                ctx.fillStyle = '#1E5F2D';
+                ctx.fill();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('F&E', ball.x, ball.y);
+            }
+            ctx.restore();
+
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
+            ctx.lineWidth = 3.5;
             ctx.strokeStyle = '#FFB823';
             ctx.stroke();
             ctx.closePath();
-
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 18px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('F&E', ball.x, ball.y);
 
             requestAnimationFrame(animateBall);
         }
@@ -348,53 +362,98 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
-            alert("Iniciando sesión en Supabase...");
+            const email = document.getElementById('login-correo').value;
+            const password = document.getElementById('login-password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert("Error al iniciar sesión: " + error.message);
+            } else {
+                alert("¡Inicio de sesión exitoso! Bienvenido a Inversiones F y E.");
+            }
         }
 
-        // Validación estricta al enviar el formulario de registro
-        function handleRegister(e) {
+        // Validación estricta con cédula dominicana, montos y ley de lavado de activos
+        function validarCedulaDominicana(cedula) {
+            let limpiarCedula = cedula.replace(/-/g, '');
+            if (limpiarCedula.length !== 11 || isNaN(limpiarCedula)) return false;
+            let suma = 0;
+            let peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+            for (let i = 0; i < 10; i++) {
+                let mult = parseInt(limpiarCedula.charAt(i)) * peso[i];
+                suma += (mult >= 10) ? Math.floor(mult / 10) + (mult % 10) : mult;
+            }
+            let digitoVerificador = (10 - (suma % 10)) % 10;
+            return digitoVerificador === parseInt(limpiarCedula.charAt(10));
+        }
+
+        async function handleRegister(e) {
             e.preventDefault();
-            
+            const nombre = document.getElementById('reg-nombre').value;
             const cedula = document.getElementById('reg-cedula').value;
+            const telefono = document.getElementById('reg-telefono').value;
             const monto = parseFloat(document.getElementById('reg-monto').value);
             const moneda = document.getElementById('reg-moneda').value;
+            const correo = document.getElementById('reg-correo').value;
+            const password = document.getElementById('reg-password').value;
             const contratoAceptado = document.getElementById('reg-contrato').checked;
 
-            // 1. Validar que la cédula sea real
+            // 1. Validar Cédula
             if (!validarCedulaDominicana(cedula)) {
-                alert("⚠️ Error: La cédula introducida no es válida. Por favor verifique el número.");
+                alert("⚠️ Error: La cédula introducida no es válida. Por favor verifique los números.");
                 return;
             }
 
-            // 2. Validar mínimos y máximos de depósito/certificado
+            // 2. Validar Montos y Límites
             if (moneda === 'DOP') {
                 if (monto < 2000) {
-                    alert("⚠️ Error: El monto mínimo de apertura para certificados financieros es de RD$2,000.");
+                    alert("⚠️ Error: El monto mínimo de apertura para certificados es de RD$2,000.");
                     return;
                 }
                 if (monto > 50000) {
-                    alert("⚠️ Error: El monto máximo de depósito permitido en línea es de RD$50,000. Para montos superiores, visite nuestra oficina en Puerto Plata.");
+                    alert("⚠️ Error: El monto máximo de depósito en línea es de RD$50,000.");
                     return;
                 }
             } else if (moneda === 'USD') {
                 if (monto > 1000) {
-                    alert("⚠️ Error: El depósito máximo permitido en dólares es de $1,000 USD.");
+                    alert("⚠️ Error: El depósito máximo en dólares es de $1,000 USD.");
                     return;
                 }
             }
 
-            // 3. Validar contrato de lavado de activos
+            // 3. Validar Contrato de Lavado de Activos
             if (!contratoAceptado) {
-                alert("⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos para continuar.");
+                alert("⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos.");
                 return;
             }
 
-            alert("¡Cédula válida y montos aprobados! Guardando registro de cliente en Supabase conforme a las normativas de Inversiones F y E.");
-        }
+            // 4. Registro en Supabase Auth y Base de Datos
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: correo,
+                    password: password,
+                    options: {
+                        data: { nombre: nombre, cedula: cedula, telefono: telefono }
+                    }
+                });
 
-        checkConnection();
+                if (error) {
+                    alert("Error en el registro: " + error.message);
+                    return;
+                }
+
+                alert("¡Cuenta creada exitosamente y registrada en Supabase conforme a las regulaciones!");
+                
+                // Cambiar automáticamente a la pantalla de Inicio de Sesión
+                switchTab('login');
+                document.getElementById('login-correo').value = correo;
+            } catch (err) {
+                alert("Ocurrió un error al procesar el registro con el servidor.");
+            }
+        }
     </script>
 </body>
 </html>
+
