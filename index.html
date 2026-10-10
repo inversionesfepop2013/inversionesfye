@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,93 +10,193 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --fye-verde: #1E5F2D; /* Verde corporativo oficial */
+            --fye-verde-oscuro: #154420;
+            --fye-amarillo: #FFB823; /* Amarillo corporativo */
+        }
+        .bg-fye-verde { background-color: var(--fye-verde); }
+        .text-fye-verde { color: var(--fye-verde); }
+        .border-fye-verde { border-color: var(--fye-verde); }
+        .btn-verde {
+            background-color: var(--fye-verde);
+            color: #FFFFFF;
+            transition: all 0.3s ease;
+        }
+        .btn-verde:hover {
+            background-color: var(--fye-verde-oscuro);
+            box-shadow: 0 4px 14px rgba(30, 95, 45, 0.35);
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
 
-    <!-- Navegación -->
-    <nav class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-xl">F&E</div>
-                <span class="text-xl font-extrabold tracking-wide text-white">Inversiones F y E</span>
+    <!-- Encabezado / Navegación Adaptativa -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            
+            <!-- Logo y Marca -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('inicio')">
+                <div class="bg-fye-verde text-white p-2 sm:p-2.5 rounded-xl font-bold text-base sm:text-lg tracking-wider shadow">F&E</div>
+                <div class="flex flex-col">
+                    <span class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">INVERSIONES F Y E</span>
+                    <span class="text-[10px] sm:text-xs font-semibold text-fye-verde tracking-widest uppercase">Puerto Plata, R.D.</span>
+                </div>
             </div>
-            <div id="nav-buttons" class="space-x-3">
-                <button onclick="showTab('login')" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition">Iniciar Sesión</button>
-                <button onclick="showTab('register')" class="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition shadow-lg shadow-blue-500/30">Registrarse</button>
+
+            <!-- Navegación -->
+            <nav class="hidden md:flex space-x-6 lg:space-x-8 items-center text-sm font-semibold">
+                <a href="#inicio" onclick="showSection('inicio')" class="text-slate-700 hover:text-fye-verde transition">Inicio</a>
+                <a href="#quienes-somos" onclick="showSection('quienes-somos')" class="text-slate-700 hover:text-fye-verde transition">Quiénes Somos</a>
+                <a href="#servicios" onclick="showSection('inicio')" class="text-slate-700 hover:text-fye-verde transition">Servicios</a>
+                <button onclick="showSection('inicio'); switchTab('registro');" class="btn-verde px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md">Acceso / Registro</button>
+            </nav>
+
+            <!-- Menú Móvil Hamburguesa -->
+            <div class="md:hidden flex items-center">
+                <button onclick="toggleMobileMenu()" class="text-slate-700 hover:text-fye-verde p-2 focus:outline-none" aria-label="Menú">
+                    <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                </button>
             </div>
         </div>
-    </nav>
 
-    <!-- Estado de conexión -->
-    <div id="status-bar" class="bg-slate-800 border-b border-slate-700 py-1.5 text-center text-xs text-slate-400">
-        <i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Verificando conexión con el sistema...
+        <!-- Desplegable Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3 shadow-lg">
+            <a href="#inicio" onclick="showSection('inicio'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Inicio</a>
+            <a href="#quienes-somos" onclick="showSection('quienes-somos'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Quiénes Somos</a>
+            <a href="#servicios" onclick="showSection('inicio'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Servicios</a>
+            <button onclick="showSection('inicio'); switchTab('registro'); toggleMobileMenu();" class="w-full btn-verde py-3 rounded-xl font-semibold text-sm shadow-md text-center">Acceso / Registro</button>
+        </div>
+    </header>
+
+    <!-- Barra de Estado de Conexión -->
+    <div id="status-bar" class="bg-slate-100 border-b border-slate-200 py-2 px-4 text-center text-xs text-slate-600 font-medium">
+        <i class="fa-solid fa-circle-notch animate-spin mr-1.5 text-fye-verde"></i> Conectando con Supabase...
     </div>
 
     <!-- Contenido Principal -->
-    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full flex justify-center items-center">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow w-full">
 
-        <!-- Formulario de Iniciar Sesión -->
-        <div id="tab-login" class="w-full max-w-md bg-slate-800/90 border border-slate-700 p-8 rounded-2xl shadow-2xl backdrop-blur-sm">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white">Bienvenido de nuevo</h2>
-                <p class="text-sm text-slate-400 mt-1">Ingresa a tu cuenta de Inversiones F y E</p>
+        <!-- SECCIÓN INICIO -->
+        <div id="section-inicio" class="space-y-10">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
+                <!-- Presentación y Animación de la Pelota -->
+                <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
+                    <div class="inline-block bg-green-100 text-fye-verde px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
+                        Soluciones Financieras Seguras
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Tu futuro financiero en un solo lugar.
+                    </h1>
+                    <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        Gestionamos préstamos, bienes raíces, rent car y cambio de divisas con la solidez y transparencia que tu crecimiento merece.
+                    </p>
+
+                    <!-- Widget Interactivo con la Pelota Rebotando (Logo F&E + Sonido de Billetes) -->
+                    <div class="relative w-full h-56 sm:h-64 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg mt-4">
+                        <canvas id="fyeCanvas" class="w-full h-full block"></canvas>
+                        <div class="absolute bottom-3 left-4 text-xs font-semibold text-slate-400 pointer-events-none flex items-center">
+                            <i class="fa-solid fa-coins text-fye-verde mr-1.5"></i> Inversiones F y E — Dinámica Activa
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Autenticación / Registro (Conectada a Supabase) -->
+                <div class="lg:col-span-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
+                    
+                    <!-- Login -->
+                    <div id="tab-login">
+                        <div class="mb-6 text-center lg:text-left">
+                            <h2 class="text-2xl font-bold text-slate-900">Iniciar Sesión</h2>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">Accede al portal de clientes de Inversiones F y E.</p>
+                        </div>
+                        <form onsubmit="handleLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Correo Electrónico</label>
+                                <input type="email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Contraseña</label>
+                                <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <button type="submit" class="w-full py-3.5 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
+                        </form>
+                        <p class="text-xs sm:text-sm text-center text-slate-500 mt-6">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate aquí</a></p>
+                    </div>
+
+                    <!-- Registro -->
+                    <div id="tab-registro" class="hidden">
+                        <div class="mb-6 text-center lg:text-left">
+                            <h2 class="text-2xl font-bold text-slate-900">Registro de Cliente</h2>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">Completa tus datos para apertura de cuenta.</p>
+                        </div>
+                        <form onsubmit="handleRegister(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Nombre Completo</label>
+                                <input type="text" required placeholder="Ej. Juan Pérez" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Cédula</label>
+                                    <input type="text" required placeholder="001-0000000-0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Teléfono</label>
+                                    <input type="tel" required placeholder="809-000-0000" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Correo Electrónico</label>
+                                <input type="email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Contraseña</label>
+                                <input type="password" required placeholder="Mínimo 6 caracteres" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+                            <button type="submit" class="w-full py-3.5 btn-verde font-bold rounded-xl text-sm shadow-md">Completar Registro</button>
+                        </form>
+                        <p class="text-xs sm:text-sm text-center text-slate-500 mt-6">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login')" class="text-fye-verde font-bold hover:underline">Inicia Sesión</a></p>
+                    </div>
+
+                </div>
+
             </div>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Correo Electrónico</label>
-                    <input type="email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Contraseña</label>
-                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                </div>
-                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-lg text-white shadow-lg shadow-blue-600/30 transition text-sm">Ingresar a la Plataforma</button>
-            </form>
-            <p class="text-xs text-center text-slate-400 mt-6">¿No tienes una cuenta aún? <a href="#" onclick="showTab('register')" class="text-blue-400 font-semibold hover:underline">Regístrate aquí</a></p>
         </div>
 
-        <!-- Formulario de Registro -->
-        <div id="tab-register" class="hidden w-full max-w-lg bg-slate-800/90 border border-slate-700 p-8 rounded-2xl shadow-2xl backdrop-blur-sm">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white">Crear Cuenta Cliente</h2>
-                <p class="text-sm text-slate-400 mt-1">Únete a Inversiones F y E en pocos pasos</p>
+        <!-- SECCIÓN QUIÉNES SOMOS (PDF EMBEBIDO RESPONSIVO) -->
+        <div id="section-quienes-somos" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Quiénes Somos - Nuestra Historia</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Conoce la trayectoria corporativa, misión y visión de Inversiones F y E SRL.</p>
+                </div>
+                <button onclick="showSection('inicio')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition self-end sm:self-auto">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i> Volver al Inicio
+                </button>
             </div>
-            <form onsubmit="handleRegister(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Nombre Completo</label>
-                    <input type="text" required placeholder="Ej. Juan Pérez" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Cédula</label>
-                        <input type="text" required placeholder="001-0000000-0" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Teléfono</label>
-                        <input type="tel" required placeholder="809-000-0000" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Correo Electrónico</label>
-                    <input type="email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Contraseña</label>
-                    <input type="password" required placeholder="Mínimo 6 caracteres" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500 text-sm">
-                </div>
-                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-lg text-white shadow-lg shadow-blue-600/30 transition text-sm">Completar Registro</button>
-            </form>
-            <p class="text-xs text-center text-slate-400 mt-6">¿Ya tienes cuenta? <a href="#" onclick="showTab('login')" class="text-blue-400 font-semibold hover:underline">Inicia Sesión</a></p>
+
+            <!-- Visor PDF Adaptativo -->
+            <div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl h-[70vh] sm:h-[80vh] lg:h-[85vh]">
+                <iframe src="historia.pdf" width="100%" height="100%" class="border-0">
+                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF. Asegúrate de tener el archivo <code>historia.pdf</code> cargado en tu repositorio de GitHub.</p>
+                </iframe>
+            </div>
         </div>
 
     </main>
 
-    <!-- Pie de página -->
-    <footer class="bg-slate-950 border-t border-slate-800 text-center py-4 text-xs text-slate-500">
-        © 2026 Inversiones F y E SRL. Todos los derechos reservados.
+    <!-- Pie de Página -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs sm:text-sm border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="font-semibold text-slate-300">© 2026 INVERSIONES F Y E SRL. Todos los derechos reservados.</p>
+            <p>Avenida Imbert Barrera No. 56, Centro Ciudad, San Felipe de Puerto Plata, Rep. Dom.</p>
+        </div>
     </footer>
 
-    <!-- Lógica de Navegación y Supabase -->
+    <!-- Lógica JavaScript (Supabase + Animación Pelota con Sonido de Billetes) -->
     <script>
         const SUPABASE_URL = 'https://inversionesfye-db.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
@@ -106,27 +206,143 @@
             const statusBar = document.getElementById('status-bar');
             try {
                 if (supabase) {
-                    statusBar.innerHTML = '<span class="text-emerald-400 font-medium"><i class="fa-solid fa-circle-check"></i> Sistema conectado correctamente con Supabase</span>';
+                    statusBar.innerHTML = '<span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema conectado exitosamente con Supabase</span>';
                 }
             } catch (e) {
-                statusBar.innerHTML = '<span class="text-rose-400"><i class="fa-solid fa-triangle-exclamation"></i> Error al conectar con Supabase</span>';
+                statusBar.innerHTML = '<span class="text-rose-600 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Error de conexión</span>';
             }
         }
 
-        function showTab(tab) {
+        // Generador de sonido sutil de fajo de billetes en cada rebote
+        function playBillSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+                const bufferSize = audioCtx.sampleRate * 0.04; // 40ms de duración
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25)) * 0.12;
+                }
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 1200;
+                noise.connect(filter);
+                filter.connect(audioCtx.destination);
+                noise.start();
+            } catch (e) {
+                // Navegador bloquea audio hasta interacción
+            }
+        }
+
+        // Animación Canvas de la Pelota F&E
+        const canvas = document.getElementById('fyeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let ball = {
+            x: 100,
+            y: 100,
+            dx: 3.5,
+            dy: 2.8,
+            radius: 38
+        };
+
+        function animateBall() {
+            if (!canvas || canvas.width === 0) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            let bounced = false;
+            if (ball.x - ball.radius <= 0) {
+                ball.x = ball.radius;
+                ball.dx = -ball.dx;
+                bounced = true;
+            } else if (ball.x + ball.radius >= canvas.width) {
+                ball.x = canvas.width - ball.radius;
+                ball.dx = -ball.dx;
+                bounced = true;
+            }
+
+            if (ball.y - ball.radius <= 0) {
+                ball.y = ball.radius;
+                ball.dy = -ball.dy;
+                bounced = true;
+            } else if (ball.y + ball.radius >= canvas.height) {
+                ball.y = canvas.height - ball.radius;
+                ball.dy = -ball.dy;
+                bounced = true;
+            }
+
+            if (bounced) {
+                playBillSound();
+                ball.dx += (Math.random() - 0.5) * 0.6;
+                ball.dy += (Math.random() - 0.5) * 0.6;
+                let speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+                if (speed < 3.0) { ball.dx *= 1.2; ball.dy *= 1.2; }
+                if (speed > 7.5) { ball.dx *= 0.8; ball.dy *= 0.8; }
+            }
+
+            // Dibujar Círculo / Pelota con colores corporativos
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#1E5F2D'; // Verde bosque corporativo
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#FFB823'; // Amarillo corporativo
+            ctx.stroke();
+            ctx.closePath();
+
+            // Texto F&E centrado
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('F&E', ball.x, ball.y);
+
+            requestAnimationFrame(animateBall);
+        }
+        animateBall();
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            menu.classList.toggle('hidden');
+            icon.className = menu.classList.contains('hidden') ? 'fa-solid fa-bars text-xl' : 'fa-solid fa-xmark text-xl';
+        }
+
+        function switchTab(tab) {
             document.getElementById('tab-login').classList.add('hidden');
-            document.getElementById('tab-register').classList.add('hidden');
+            document.getElementById('tab-registro').classList.add('hidden');
             document.getElementById('tab-' + tab).classList.remove('hidden');
+        }
+
+        function showSection(section) {
+            document.getElementById('section-inicio').classList.add('hidden');
+            document.getElementById('section-quienes-somos').classList.add('hidden');
+            document.getElementById('section-' + section).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function handleLogin(e) {
             e.preventDefault();
-            alert("Accediendo al sistema de Inversiones F y E...");
+            alert("Acceso seguro en desarrollo con Supabase Auth.");
         }
 
         function handleRegister(e) {
             e.preventDefault();
-            alert("Registro enviado exitosamente.");
+            alert("Registro completado. Los datos se guardarán en tu tabla de Clientes en Supabase.");
         }
 
         checkConnection();
