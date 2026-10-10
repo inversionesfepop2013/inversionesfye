@@ -38,7 +38,7 @@
             
             <!-- Logo y Marca -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('inicio')">
-                <img src="logo.png" alt="Logo F&E" class="h-10 w-10 object-contain rounded-xl shadow bg-white p-1" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/inversionesfepop2013/inversionesfepop2013.github.io/main/logo.png';">
+                <img src="logo.png.JPG" alt="Logo F&E" class="h-10 w-10 object-contain rounded-xl shadow bg-white p-1" onerror="this.onerror=null; this.src='logo.png';">
                 <div class="flex flex-col">
                     <span class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">INVERSIONES F Y E</span>
                     <span class="text-[10px] sm:text-xs font-semibold text-fye-verde tracking-widest uppercase">Puerto Plata, R.D.</span>
@@ -237,7 +237,7 @@
         </div>
     </footer>
 
-    <!-- Lógica JavaScript (Supabase + Animación + Validaciones y Transición) -->
+    <!-- Lógica JavaScript -->
     <script>
         const SUPABASE_URL = 'https://inversionesfye-db.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
@@ -273,9 +273,13 @@
             } catch (e) {}
         }
 
-        // Cargar la imagen del logo oficial para la pelota rebotante
+        // Cargar imagen probando con logo.png.JPG
         const logoImg = new Image();
-        logoImg.src = 'logo.png';
+        logoImg.src = 'logo.png.JPG';
+        logoImg.onerror = function() {
+            // Si no lo encuentra como logo.png.JPG, busca como logo.png
+            logoImg.src = 'logo.png';
+        };
 
         const canvas = document.getElementById('fyeCanvas');
         const ctx = canvas.getContext('2d');
@@ -375,7 +379,6 @@
             }
         }
 
-        // Validación estricta con cédula dominicana, montos y ley de lavado de activos
         function validarCedulaDominicana(cedula) {
             let limpiarCedula = cedula.replace(/-/g, '');
             if (limpiarCedula.length !== 11 || isNaN(limpiarCedula)) return false;
@@ -400,13 +403,11 @@
             const password = document.getElementById('reg-password').value;
             const contratoAceptado = document.getElementById('reg-contrato').checked;
 
-            // 1. Validar Cédula
             if (!validarCedulaDominicana(cedula)) {
-                alert("⚠️ Error: La cédula introducida no es válida. Por favor verifique los números.");
+                alert("⚠️ Error: La cédula introducida no es válida.");
                 return;
             }
 
-            // 2. Validar Montos y Límites
             if (moneda === 'DOP') {
                 if (monto < 2000) {
                     alert("⚠️ Error: El monto mínimo de apertura para certificados es de RD$2,000.");
@@ -423,13 +424,11 @@
                 }
             }
 
-            // 3. Validar Contrato de Lavado de Activos
             if (!contratoAceptado) {
                 alert("⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos.");
                 return;
             }
 
-            // 4. Registro en Supabase Auth y Base de Datos
             try {
                 const { data, error } = await supabase.auth.signUp({
                     email: correo,
@@ -445,8 +444,6 @@
                 }
 
                 alert("¡Cuenta creada exitosamente y registrada en Supabase conforme a las regulaciones!");
-                
-                // Cambiar automáticamente a la pantalla de Inicio de Sesión
                 switchTab('login');
                 document.getElementById('login-correo').value = correo;
             } catch (err) {
@@ -456,4 +453,5 @@
     </script>
 </body>
 </html>
+
 
