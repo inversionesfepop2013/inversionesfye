@@ -113,11 +113,11 @@
                     <!-- Botones de Acceso Social -->
                     <div class="space-y-3 mb-6">
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acceso instantáneo con un clic</p>
-                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-700 transition">
+                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-700">
                             <i class="fa-brands fa-google text-red-500 text-base"></i>
                             <span>Continuar con Google</span>
                         </button>
-                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold transition">
+                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold">
                             <i class="fa-brands fa-apple text-white text-lg"></i>
                             <span>Continuar con Apple</span>
                         </button>
@@ -145,7 +145,7 @@
                             </div>
                             <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
                         </form>
-                        <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate aquí</a></p>
+                        <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate</a></p>
                     </div>
 
                     <!-- Registro Regulado -->
@@ -195,7 +195,7 @@
                                 <label class="flex items-start space-x-2.5 cursor-pointer">
                                     <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
                                     <span class="text-[11px] text-slate-600 leading-tight">
-                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley 3-12</strong> y normas antifraude vigentes.
+                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Lavado de Activos</strong> y demás regulaciones aplicables.
                                     </span>
                                 </label>
                             </div>
@@ -244,10 +244,14 @@
     <script>
         const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
         const SUPABASE_ANON_KEY = 'Sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
-        
+
         const appUrl = (() => {
-            const pathname = window.location.pathname.replace(/index\.html$/, '').replace(/\/+$/, '');
-            return `${window.location.origin}${pathname}/`;
+            const hostname = window.location.hostname;
+            const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+            if (isLocal) {
+                return 'http://localhost:3000/auth/callback';
+            }
+            return 'https://inversionesfepop2013.github.io/inversionesfye/auth/callback';
         })();
 
         const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -261,9 +265,9 @@
             Toastify({
                 text: message,
                 duration: 4000,
-                gravity: "top",
-                position: "right",
-                style: { background: bg, borderRadius: "12px", fontSize: "14px", fontWeight: "600" }
+                gravity: 'top',
+                position: 'right',
+                style: { background: bg, borderRadius: '12px', fontSize: '14px', fontWeight: '600' }
             }).showToast();
         }
 
@@ -291,7 +295,9 @@
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
-                options: { redirectTo: appUrl }
+                options: {
+                    redirectTo: appUrl
+                }
             });
 
             if (error) {
@@ -552,4 +558,3 @@
     </script>
 </body>
 </html>
-
