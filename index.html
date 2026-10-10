@@ -4,42 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INVERSIONES F Y E | Plataforma Financiera</title>
-    <!-- Tailwind CSS CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Toastify CSS & JS (Notificaciones Modernas) -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <!-- Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --fye-verde: #1E5F2D; /* Verde corporativo oficial */
+            --fye-verde: #1E5F2D;
             --fye-verde-oscuro: #154420;
-            --fye-amarillo: #FFB823; /* Amarillo corporativo */
+            --fye-amarillo: #FFB823;
+            --fye-fondo: #f4f7f5;
+        }
+        * { box-sizing: border-box; }
+        html, body { font-family: 'Poppins', sans-serif; }
+        body {
+            background: linear-gradient(135deg, var(--fye-fondo), #eef6ef 52%, #fef9f0);
+            color: #0f172a;
         }
         .bg-fye-verde { background-color: var(--fye-verde); }
         .text-fye-verde { color: var(--fye-verde); }
         .border-fye-verde { border-color: var(--fye-verde); }
         .btn-verde {
             background-color: var(--fye-verde);
-            color: #FFFFFF;
-            transition: all 0.3s ease;
+            color: #fff;
+            transition: all 0.25s ease;
         }
         .btn-verde:hover {
             background-color: var(--fye-verde-oscuro);
-            box-shadow: 0 4px 14px rgba(30, 95, 45, 0.35);
+            box-shadow: 0 8px 22px rgba(30, 95, 45, 0.25);
+        }
+        .glass-card {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
+<body class="min-h-screen flex flex-col justify-between antialiased">
 
-    <!-- Encabezado / Navegación Adaptativa -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
-            
-            <!-- Logo y Marca -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('inicio')">
                 <img src="logo.png.JPG" alt="Logo F&E" class="h-10 w-10 object-contain rounded-xl shadow bg-white p-1" onerror="this.onerror=null; this.src='logo.png';">
                 <div class="flex flex-col">
@@ -48,7 +54,6 @@
                 </div>
             </div>
 
-            <!-- Navegación -->
             <nav class="hidden md:flex space-x-6 lg:space-x-8 items-center text-sm font-semibold">
                 <a href="#inicio" onclick="showSection('inicio')" class="text-slate-700 hover:text-fye-verde transition">Inicio</a>
                 <a href="#quienes-somos" onclick="showSection('quienes-somos')" class="text-slate-700 hover:text-fye-verde transition">Quiénes Somos</a>
@@ -56,7 +61,6 @@
                 <button onclick="showSection('inicio'); switchTab('registro');" class="btn-verde px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md">Acceso / Registro</button>
             </nav>
 
-            <!-- Menú Móvil Hamburguesa -->
             <div class="md:hidden flex items-center">
                 <button onclick="toggleMobileMenu()" class="text-slate-700 hover:text-fye-verde p-2 focus:outline-none" aria-label="Menú">
                     <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
@@ -64,7 +68,6 @@
             </div>
         </div>
 
-        <!-- Desplegable Móvil -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3 shadow-lg">
             <a href="#inicio" onclick="showSection('inicio'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Inicio</a>
             <a href="#quienes-somos" onclick="showSection('quienes-somos'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Quiénes Somos</a>
@@ -73,20 +76,14 @@
         </div>
     </header>
 
-    <!-- Barra de Estado de Conexión -->
     <div id="status-bar" class="bg-slate-100 border-b border-slate-200 py-2 px-4 text-center text-xs text-slate-600 font-medium">
-        <span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema Conectado con Supabase</span>
+        <span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema activo</span>
     </div>
 
-    <!-- Contenido Principal -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow w-full">
 
-        <!-- SECCIÓN INICIO -->
         <div id="section-inicio" class="space-y-10">
-            
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                
-                <!-- Presentación y Animación del Canvas -->
                 <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
                     <div class="inline-block bg-green-100 text-fye-verde px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
                         Soluciones Financieras Seguras
@@ -95,10 +92,9 @@
                         Tu futuro financiero en un solo lugar.
                     </h1>
                     <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
-                        Gestionamos préstamos, bienes raíces, rent car y cambio de divisas con la solidez y transparencia que tu crecimiento merece.
+                        Gestionamos préstamos, ahorro, inversiones y cambio de divisas con la solidez y transparencia que tu crecimiento merece.
                     </p>
 
-                    <!-- Widget Interactivo Rebotando -->
                     <div class="relative w-full h-56 sm:h-64 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg mt-4">
                         <canvas id="fyeCanvas" class="w-full h-full block"></canvas>
                         <div class="absolute bottom-3 left-4 text-xs font-semibold text-slate-400 pointer-events-none flex items-center bg-white/80 px-2 py-1 rounded-lg backdrop-blur-sm">
@@ -107,10 +103,7 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta de Autenticación / Registro -->
-                <div class="lg:col-span-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
-                    
-                    <!-- Login -->
+                <div class="lg:col-span-6 glass-card border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
                     <div id="tab-login" class="mt-4">
                         <div class="mb-4 text-center lg:text-left">
                             <h2 class="text-xl font-bold text-slate-900">Iniciar Sesión</h2>
@@ -129,7 +122,6 @@
                         <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate</a></p>
                     </div>
 
-                    <!-- Registro -->
                     <div id="tab-registro" class="hidden mt-4">
                         <div class="mb-4 text-center lg:text-left">
                             <h2 class="text-xl font-bold text-slate-900">Crear Nueva Cuenta</h2>
@@ -154,7 +146,6 @@
                                 <input type="password" id="reg-password-confirm" required placeholder="Confirmar contraseña" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                             </div>
 
-                            <!-- Contrato -->
                             <div class="pt-1">
                                 <label class="flex items-start space-x-2.5 cursor-pointer">
                                     <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
@@ -168,13 +159,10 @@
                         </form>
                         <p class="text-xs text-center text-slate-500 mt-4">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login')" class="text-fye-verde font-bold hover:underline">Inicia Sesión</a></p>
                     </div>
-
                 </div>
-
             </div>
         </div>
 
-        <!-- SECCIÓN QUIÉNES SOMOS -->
         <div id="section-quienes-somos" class="hidden space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm gap-4">
                 <div>
@@ -186,17 +174,14 @@
                 </button>
             </div>
 
-            <!-- Visor PDF Adaptativo -->
             <div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl h-[70vh] sm:h-[80vh] lg:h-[85vh]">
                 <iframe src="historia.pdf" width="100%" height="100%" class="border-0" title="Historia de INVERSIONES F Y E">
-                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF. Asegúrate de tener el archivo <code>historia.pdf</code> cargado en tu repo.</p>
+                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF.</p>
                 </iframe>
             </div>
         </div>
-
     </main>
 
-    <!-- Modal de Configuración de Perfil -->
     <div id="profile-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="bg-gradient-to-r from-fye-verde to-green-700 px-6 sm:px-8 py-6 flex justify-between items-center sticky top-0">
@@ -260,7 +245,6 @@
         </div>
     </div>
 
-    <!-- Pie de Página -->
     <footer class="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs sm:text-sm border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 space-y-2">
             <p class="font-semibold text-slate-300">© 2026 INVERSIONES F Y E SRL. Todos los derechos reservados.</p>
@@ -268,32 +252,18 @@
         </div>
     </footer>
 
-    <!-- Lógica JavaScript y Configuración de Supabase -->
     <script>
-        const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
-        const SUPABASE_ANON_KEY = 'Sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
-
-        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
+        const STORAGE_KEY = 'fye_users_v1';
         let cedulaVerificada = false;
-        let currentUser = null;
+        let pendingUserCedula = null;
 
-        // Notificaciones Flotantes Modernas (Toastify)
         function notify(message, type = 'info') {
             let bg = '#1E5F2D';
             if (type === 'error') bg = '#DC2626';
             if (type === 'warning') bg = '#D97706';
-
-            Toastify({
-                text: message,
-                duration: 4000,
-                gravity: 'top',
-                position: 'right',
-                style: { background: bg, borderRadius: '12px', fontSize: '14px', fontWeight: '600' }
-            }).showToast();
+            Toastify({ text: message, duration: 4000, gravity: 'top', position: 'right', style: { background: bg, borderRadius: '12px', fontSize: '14px', fontWeight: '600' } }).showToast();
         }
 
-        // Formateador automático de la cédula dominicana (001-0000000-0)
         function formatCedulaInput(input) {
             let val = input.value.replace(/\D/g, '');
             if (val.length > 3 && val.length <= 10) {
@@ -304,7 +274,6 @@
             input.value = val;
         }
 
-        // Validar cédula dominicana
         function validarCedulaDominicana(cedula) {
             const limpia = String(cedula || '').replace(/-/g, '').trim();
             if (limpia.length !== 11 || isNaN(limpia)) return false;
@@ -321,7 +290,15 @@
             return digitoVerificador === parseInt(limpia.charAt(10), 10);
         }
 
-        // Verificar cédula en registro
+        function getUsers() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+        }
+
         function verifyCedula() {
             const cedula = document.getElementById('reg-cedula').value.trim();
             const statusEl = document.getElementById('cedula-status');
@@ -347,73 +324,207 @@
                 return;
             }
 
-            // Simular verificación en base de datos
+            const users = getUsers();
+            const exists = users.some(user => user.cedula === cedula);
+            if (exists) {
+                statusEl.textContent = '⚠️ Esta cédula ya está registrada';
+                statusEl.classList.remove('text-green-600');
+                statusEl.classList.add('text-red-600');
+                cedulaVerificada = false;
+                btnRegister.disabled = true;
+                btnRegister.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
             statusEl.textContent = '✅ Cédula verificada correctamente';
             statusEl.classList.remove('text-red-600');
             statusEl.classList.add('text-green-600');
             cedulaVerificada = true;
+            pendingUserCedula = cedula;
             btnRegister.disabled = false;
             btnRegister.classList.remove('opacity-50', 'cursor-not-allowed');
         }
 
-        function ensureSupabase() {
-            if (!window.supabase || !supabase) {
-                notify('Supabase no está disponible en este momento. Verifica tu conexión.', 'error');
-                return false;
-            }
-            return true;
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if (!menu || !icon) return;
+            menu.classList.toggle('hidden');
+            icon.className = menu.classList.contains('hidden') ? 'fa-solid fa-bars text-xl' : 'fa-solid fa-xmark text-xl';
         }
 
-        let audioContext = null;
-
-        function getAudioContext() {
-            const AudioCtor = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtor) return null;
-
-            if (!audioContext) {
-                audioContext = new AudioCtor();
-            }
-
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
-            return audioContext;
+        function switchTab(tab) {
+            const tabs = ['login', 'registro'];
+            tabs.forEach(name => {
+                const el = document.getElementById('tab-' + name);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById('tab-' + tab);
+            if (target) target.classList.remove('hidden');
         }
 
-        function playBillSound() {
-            try {
-                const audioCtx = getAudioContext();
-                if (!audioCtx) return;
+        function showSection(section) {
+            const sections = ['inicio', 'quienes-somos'];
+            sections.forEach(name => {
+                const el = document.getElementById('section-' + name);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById('section-' + section);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-                const bufferSize = audioCtx.sampleRate * 0.04;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
+        function openProfileModal() {
+            document.getElementById('profile-modal').classList.remove('hidden');
+            document.getElementById('profile-modal').classList.add('flex');
+        }
 
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25)) * 0.12;
-                }
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+            document.getElementById('profile-modal').classList.remove('flex');
+        }
 
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.value = 1200;
-
-                noise.connect(filter);
-                filter.connect(audioCtx.destination);
-                noise.start();
-            } catch (error) {
-                console.warn('No se pudo reproducir el audio del rebote:', error);
+        function handleRegister(event) {
+            event.preventDefault();
+            if (!cedulaVerificada) {
+                notify('⚠️ Debes verificar la cédula antes de crear la cuenta.', 'error');
+                return;
             }
+
+            const cedula = document.getElementById('reg-cedula').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const passwordConfirm = document.getElementById('reg-password-confirm').value;
+            const contrato = document.getElementById('reg-contrato').checked;
+
+            if (!validarCedulaDominicana(cedula)) {
+                notify('⚠️ La cédula no es válida.', 'error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                notify('⚠️ Las contraseñas no coinciden.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                notify('⚠️ La contraseña debe tener al menos 6 caracteres.', 'error');
+                return;
+            }
+
+            if (!contrato) {
+                notify('⚠️ Debe aceptar el contrato de apertura.', 'warning');
+                return;
+            }
+
+            const users = getUsers();
+            if (users.some(user => user.cedula === cedula)) {
+                notify('⚠️ Esta cédula ya está registrada.', 'error');
+                return;
+            }
+
+            const newUser = {
+                id: crypto.randomUUID(),
+                cedula,
+                password,
+                nombre: '',
+                email: '',
+                telefono: '',
+                direccion: '',
+                tipo_cliente: '',
+                perfil_completo: false,
+                created_at: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            saveUsers(users);
+            pendingUserCedula = cedula;
+
+            notify('✅ Cuenta creada correctamente. Ahora completa tu perfil.', 'success');
+            document.getElementById('reg-cedula').value = '';
+            document.getElementById('reg-password').value = '';
+            document.getElementById('reg-password-confirm').value = '';
+            document.getElementById('reg-contrato').checked = false;
+            document.getElementById('cedula-status').textContent = '';
+            cedulaVerificada = false;
+            openProfileModal();
+        }
+
+        function handleProfileSetup(event) {
+            event.preventDefault();
+            const nombre = document.getElementById('profile-nombre').value.trim();
+            const email = document.getElementById('profile-email').value.trim();
+            const telefono = document.getElementById('profile-telefono').value.trim();
+            const direccion = document.getElementById('profile-direccion').value.trim();
+            const tipoCliente = document.querySelector('input[name="client-type"]:checked')?.value || '';
+
+            if (!pendingUserCedula) {
+                notify('⚠️ No hay usuario pendiente para completar.', 'error');
+                return;
+            }
+
+            const users = getUsers();
+            const userIndex = users.findIndex(user => user.cedula === pendingUserCedula);
+            if (userIndex === -1) {
+                notify('⚠️ Usuario no encontrado.', 'error');
+                return;
+            }
+
+            users[userIndex] = {
+                ...users[userIndex],
+                nombre,
+                email,
+                telefono,
+                direccion,
+                tipo_cliente: tipoCliente,
+                perfil_completo: true
+            };
+
+            saveUsers(users);
+            closeProfileModal();
+            notify('✅ Perfil guardado correctamente. Ya puedes iniciar sesión.', 'success');
+            switchTab('login');
+            document.getElementById('profile-nombre').value = '';
+            document.getElementById('profile-email').value = '';
+            document.getElementById('profile-telefono').value = '';
+            document.getElementById('profile-direccion').value = '';
+            document.querySelectorAll('input[name="client-type"]').forEach(input => input.checked = false);
+            pendingUserCedula = null;
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const cedula = document.getElementById('login-cedula').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!validarCedulaDominicana(cedula)) {
+                notify('⚠️ La cédula ingresada no es válida.', 'error');
+                return;
+            }
+
+            const users = getUsers();
+            const user = users.find(u => u.cedula === cedula && u.password === password);
+
+            if (!user) {
+                notify('⚠️ Cédula o contraseña incorrectos.', 'error');
+                return;
+            }
+
+            if (!user.perfil_completo) {
+                pendingUserCedula = user.cedula;
+                openProfileModal();
+                notify('⚠️ Debes completar tu perfil antes de continuar.', 'warning');
+                return;
+            }
+
+            notify('✅ Bienvenido(a), ' + user.nombre + '.', 'success');
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-cedula').value = '';
+            showSection('inicio');
         }
 
         const logoImg = new Image();
         logoImg.src = 'logo.png.JPG';
-        logoImg.onerror = function () {
-            logoImg.src = 'logo.png';
-        };
+        logoImg.onerror = function () { logoImg.src = 'logo.png'; };
 
         const canvas = document.getElementById('fyeCanvas');
         const ctx = canvas ? canvas.getContext('2d') : null;
@@ -428,6 +539,39 @@
         resizeCanvas();
 
         let ball = { x: 120, y: 100, dx: 3.2, dy: 2.6, radius: 45 };
+
+        function getAudioContext() {
+            const AudioCtor = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtor) return null;
+            if (!window.__fyeAudio) {
+                window.__fyeAudio = new AudioCtor();
+            }
+            if (window.__fyeAudio.state === 'suspended') window.__fyeAudio.resume();
+            return window.__fyeAudio;
+        }
+
+        function playBillSound() {
+            try {
+                const audioCtx = getAudioContext();
+                if (!audioCtx) return;
+                const bufferSize = audioCtx.sampleRate * 0.04;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25)) * 0.12;
+                }
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 1200;
+                noise.connect(filter);
+                filter.connect(audioCtx.destination);
+                noise.start();
+            } catch (error) {
+                console.warn('No se pudo reproducir el audio del rebote:', error);
+            }
+        }
 
         function animateBall() {
             if (!canvas || !ctx || canvas.width === 0) return;
@@ -482,134 +626,6 @@
 
         if (canvas && ctx) {
             requestAnimationFrame(animateBall);
-        }
-
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const icon = document.getElementById('menu-icon');
-            if (!menu || !icon) return;
-
-            menu.classList.toggle('hidden');
-            icon.className = menu.classList.contains('hidden') ? 'fa-solid fa-bars text-xl' : 'fa-solid fa-xmark text-xl';
-        }
-
-        function switchTab(tab) {
-            const tabs = ['login', 'registro'];
-            tabs.forEach((name) => {
-                const tabElement = document.getElementById('tab-' + name);
-                if (tabElement) tabElement.classList.add('hidden');
-            });
-
-            const target = document.getElementById('tab-' + tab);
-            if (target) target.classList.remove('hidden');
-        }
-
-        function showSection(section) {
-            const sections = ['inicio', 'quienes-somos'];
-            sections.forEach((name) => {
-                const element = document.getElementById('section-' + name);
-                if (element) element.classList.add('hidden');
-            });
-
-            const target = document.getElementById('section-' + section);
-            if (target) target.classList.remove('hidden');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function handleLogin(event) {
-            event.preventDefault();
-            if (!ensureSupabase()) return;
-
-            const cedula = document.getElementById('login-cedula').value.trim();
-            const password = document.getElementById('login-password').value;
-
-            if (!validarCedulaDominicana(cedula)) {
-                notify('⚠️ Cédula inválida', 'error');
-                return;
-            }
-
-            // Aquí irá la lógica de login con la cédula
-            notify('Iniciando sesión con cédula: ' + cedula, 'info');
-            // TODO: Implementar autenticación con cédula en Supabase
-        }
-
-        async function handleRegister(event) {
-            event.preventDefault();
-            if (!ensureSupabase()) return;
-
-            if (!cedulaVerificada) {
-                notify('⚠️ Debes verificar tu cédula primero', 'error');
-                return;
-            }
-
-            const cedula = document.getElementById('reg-cedula').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const passwordConfirm = document.getElementById('reg-password-confirm').value;
-            const contrato = document.getElementById('reg-contrato').checked;
-
-            if (password !== passwordConfirm) {
-                notify('⚠️ Las contraseñas no coinciden', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                notify('⚠️ La contraseña debe tener al menos 6 caracteres', 'error');
-                return;
-            }
-
-            if (!contrato) {
-                notify('⚠️ Debe aceptar el contrato de apertura', 'warning');
-                return;
-            }
-
-            notify('✅ Cuenta creada exitosamente. Completa tu perfil.', 'info');
-            
-            // Abrir modal de configuración de perfil
-            openProfileModal();
-            
-            // Limpiar formulario
-            document.getElementById('reg-cedula').value = '';
-            document.getElementById('reg-password').value = '';
-            document.getElementById('reg-password-confirm').value = '';
-            cedulaVerificada = false;
-        }
-
-        function openProfileModal() {
-            document.getElementById('profile-modal').classList.remove('hidden');
-            document.getElementById('profile-modal').classList.add('flex');
-        }
-
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.add('hidden');
-            document.getElementById('profile-modal').classList.remove('flex');
-        }
-
-        async function handleProfileSetup(event) {
-            event.preventDefault();
-
-            const nombre = document.getElementById('profile-nombre').value.trim();
-            const email = document.getElementById('profile-email').value.trim();
-            const telefono = document.getElementById('profile-telefono').value.trim();
-            const direccion = document.getElementById('profile-direccion').value.trim();
-            const clientType = document.querySelector('input[name="client-type"]:checked').value;
-
-            // Guardar datos de perfil
-            const userData = {
-                nombre,
-                email,
-                telefono,
-                direccion,
-                tipo_cliente: clientType
-            };
-
-            notify('✅ Perfil configurado como cliente ' + clientType, 'info');
-            
-            // TODO: Guardar datos en Supabase
-            console.log('User data:', userData);
-            
-            closeProfileModal();
-            switchTab('login');
         }
     </script>
 </body>
