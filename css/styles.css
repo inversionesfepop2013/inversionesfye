@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INVERSIONES F Y E | Plataforma Financiera</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Toastify CSS & JS (Notificaciones Modernas) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- Encabezado / Navegación Adaptativa -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            
+            <!-- Logo y Marca -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('inicio')">
+                <img src="logo.png.JPG" alt="Logo F&E" class="h-10 w-10 object-contain rounded-xl shadow bg-white p-1" onerror="this.onerror=null; this.src='logo.png';">
+                <div class="flex flex-col">
+                    <span class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">INVERSIONES F Y E</span>
+                    <span class="text-[10px] sm:text-xs font-semibold text-fye-verde tracking-widest uppercase">Puerto Plata, R.D.</span>
+                </div>
+            </div>
+
+            <!-- Navegación -->
+            <nav class="hidden md:flex space-x-6 lg:space-x-8 items-center text-sm font-semibold">
+                <a href="#inicio" onclick="showSection('inicio')" class="text-slate-700 hover:text-fye-verde transition">Inicio</a>
+                <a href="#quienes-somos" onclick="showSection('quienes-somos')" class="text-slate-700 hover:text-fye-verde transition">Quiénes Somos</a>
+                <a href="#servicios" onclick="showSection('inicio')" class="text-slate-700 hover:text-fye-verde transition">Servicios</a>
+                <button onclick="showSection('inicio'); switchTab('registro');" class="btn-verde px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md">Acceso / Registro</button>
+            </nav>
+
+            <!-- Menú Móvil Hamburguesa -->
+            <div class="md:hidden flex items-center">
+                <button onclick="toggleMobileMenu()" class="text-slate-700 hover:text-fye-verde p-2 focus:outline-none" aria-label="Menú">
+                    <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desplegable Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3 shadow-lg">
+            <a href="#inicio" onclick="showSection('inicio'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Inicio</a>
+            <a href="#quienes-somos" onclick="showSection('quienes-somos'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Quiénes Somos</a>
+            <a href="#servicios" onclick="showSection('inicio'); toggleMobileMenu();" class="block text-slate-700 hover:text-fye-verde font-semibold py-1.5">Servicios</a>
+            <button onclick="showSection('inicio'); switchTab('registro'); toggleMobileMenu();" class="w-full btn-verde py-3 rounded-xl font-semibold text-sm shadow-md text-center">Acceso / Registro</button>
+        </div>
+    </header>
+
+    <!-- Barra de Estado de Conexión -->
+    <div id="status-bar" class="bg-slate-100 border-b border-slate-200 py-2 px-4 text-center text-xs text-slate-600 font-medium">
+        <span class="text-fye-verde font-bold"><i class="fa-solid fa-circle-check mr-1"></i> Sistema Conectado con Supabase</span>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow w-full">
+
+        <!-- SECCIÓN INICIO -->
+        <div id="section-inicio" class="space-y-10">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
+                <!-- Presentación y Animación del Canvas -->
+                <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
+                    <div class="inline-block bg-green-100 text-fye-verde px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
+                        Soluciones Financieras Seguras
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Tu futuro financiero en un solo lugar.
+                    </h1>
+                    <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        Gestionamos préstamos, bienes raíces, rent car y cambio de divisas con la solidez y transparencia que tu crecimiento merece.
+                    </p>
+
+                    <!-- Widget Interactivo Rebotando -->
+                    <div class="relative w-full h-56 sm:h-64 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg mt-4">
+                        <canvas id="fyeCanvas" class="w-full h-full block"></canvas>
+                        <div class="absolute bottom-3 left-4 text-xs font-semibold text-slate-400 pointer-events-none flex items-center bg-white/80 px-2 py-1 rounded-lg backdrop-blur-sm">
+                            <i class="fa-solid fa-coins text-fye-verde mr-1.5"></i> INVERSIONES F Y E — Dinámica Activa
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Autenticación / Registro Regulado -->
+                <div class="lg:col-span-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
+                    
+                    <!-- Botones de Acceso Social -->
+                    <div class="space-y-3 mb-6">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acceso instantáneo con un clic</p>
+                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-700 transition">
+                            <i class="fa-brands fa-google text-red-500 text-base"></i>
+                            <span>Continuar con Google</span>
+                        </button>
+                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold transition">
+                            <i class="fa-brands fa-apple text-white text-lg"></i>
+                            <span>Continuar con Apple</span>
+                        </button>
+                    </div>
+
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-200"></div>
+                        <span class="flex-shrink mx-4 text-xs text-slate-400 uppercase font-semibold">o con correo electrónico</span>
+                        <div class="flex-grow border-t border-slate-200"></div>
+                    </div>
+
+                    <!-- Login -->
+                    <div id="tab-login" class="mt-4">
+                        <div class="mb-4 text-center lg:text-left">
+                            <h2 class="text-xl font-bold text-slate-900">Iniciar Sesión</h2>
+                        </div>
+                        <form onsubmit="handleLogin(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                                <input type="email" id="login-correo" required placeholder="correo@ejemplo.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                            </div>
+                            <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar al Sistema</button>
+                        </form>
+                        <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate</a></p>
+                    </div>
+
+                    <!-- Registro Regulado -->
+                    <div id="tab-registro" class="hidden mt-4">
+                        <div class="mb-4 text-center lg:text-left">
+                            <h2 class="text-xl font-bold text-slate-900">Apertura de Cuenta Regulada</h2>
+                        </div>
+                        <form onsubmit="handleRegister(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
+                                <input type="text" id="reg-nombre" required placeholder="Ej. Juan Pérez" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula (Válida R.D.)</label>
+                                    <input type="text" id="reg-cedula" required placeholder="001-0000000-0" maxlength="13" oninput="formatCedulaInput(this)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono</label>
+                                    <input type="tel" id="reg-telefono" required placeholder="809-000-0000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monto Depósito</label>
+                                    <input type="number" id="reg-monto" required placeholder="Mín. 2,000 / Máx. 50,000" min="0" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Moneda</label>
+                                    <select id="reg-moneda" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                        <option value="DOP">Pesos (DOP)</option>
+                                        <option value="USD">Dólares (USD)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                                <input type="email" id="reg-correo" required placeholder="correo@ejemplo.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+                                <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-fye-verde/20 focus:border-fye-verde text-sm">
+                            </div>
+
+                            <!-- Contrato y Ley de Lavado de Activos -->
+                            <div class="pt-1">
+                                <label class="flex items-start space-x-2.5 cursor-pointer">
+                                    <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
+                                    <span class="text-[11px] text-slate-600 leading-tight">
+                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley 3-12</strong> y la normativa vigente sobre prevención de lavado de activos.
+                                    </span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md mt-2">Validar y Registrar Cuenta</button>
+                        </form>
+                        <p class="text-xs text-center text-slate-500 mt-4">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login')" class="text-fye-verde font-bold hover:underline">Inicia Sesión</a></p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECCIÓN QUIÉNES SOMOS -->
+        <div id="section-quienes-somos" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Quiénes Somos - Nuestra Historia</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Conoce la trayectoria corporativa, misión y visión de INVERSIONES F Y E SRL.</p>
+                </div>
+                <button onclick="showSection('inicio')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition self-end sm:self-auto">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i> Volver al Inicio
+                </button>
+            </div>
+
+            <!-- Visor PDF Adaptativo -->
+            <div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl h-[70vh] sm:h-[80vh] lg:h-[85vh]">
+                <iframe src="historia.pdf" width="100%" height="100%" class="border-0" title="Historia de INVERSIONES F Y E">
+                    <p class="p-6 text-center text-slate-600">Tu navegador no soporta la visualización directa de PDF. Asegúrate de tener el archivo <code>historia.pdf</code> cargado en tu repositorio.</p>
+                </iframe>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs sm:text-sm border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="font-semibold text-slate-300">© 2026 INVERSIONES F Y E SRL. Todos los derechos reservados.</p>
+            <p>Avenida Imbert Barrera No. 56, Centro Ciudad, San Felipe de Puerto Plata, Rep. Dom.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

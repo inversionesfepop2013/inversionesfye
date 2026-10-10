@@ -1,0 +1,47 @@
+# inversionesfye
+
+Sitio web oficial de INVERSIONES F Y E SRL, una plataforma financiera con enfoque en servicios digitales, autenticación, apertura de cuentas y presentación institucional.
+
+## Descripción del proyecto
+
+Este repositorio contiene la interfaz principal del sitio web de Inversiones F Y E, desarrollada con HTML, Tailwind CSS y JavaScript vanilla. Incluye:
+
+- landing page institucional
+- autenticación con Supabase
+- flujo de registro de cuenta
+- presentación de la historia corporativa
+- lógica visual y de notificación del sitio
+
+## Estructura principal
+
+- `index.html`: estructura principal del sitio
+- `css/styles.css`: estilos personalizados del proyecto
+- `js/app.js`: lógica principal del sitio y autenticación
+- `js/dashboard.js`: módulo opcional del dashboard financiero
+- `historia.pdf`: documento institucional
+- `logo.png.JPG`: logo corporativo
+
+## Cómo ejecutarlo
+
+1. Clona el repositorio.
+2. Abre `index.html` directamente en tu navegador.
+3. O usa un servidor local simple, por ejemplo:
+
+```bash
+python -m http.server 8000
+```
+
+Luego abre `http://localhost:8000`.
+
+## Funcionalidades clave
+
+- Registro y login con correo y contraseña
+- Validación de cédula dominicana
+- Notificaciones visuales con Toastify
+- Animación del logo en canvas
+- Integración con Supabase
+- Visualización de la historia corporativa en PDF
+
+## Notas
+
+Este proyecto está en una fase inicial de organización. Se recomienda separar aún más componentes y evitar dejar lógica sensible en el frontend para despliegues de producción.
