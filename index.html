@@ -107,28 +107,9 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta de Autenticación / Registro Regulado -->
+                <!-- Tarjeta de Autenticación / Registro -->
                 <div class="lg:col-span-6 bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
                     
-                    <!-- Botones de Acceso Social -->
-                    <div class="space-y-3 mb-6">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Acceso instantáneo con un clic</p>
-                        <button onclick="signInWithSocial('google')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-700">
-                            <i class="fa-brands fa-google text-red-500 text-base"></i>
-                            <span>Continuar con Google</span>
-                        </button>
-                        <button onclick="signInWithSocial('apple')" class="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-black text-white rounded-xl hover:bg-slate-800 font-semibold">
-                            <i class="fa-brands fa-apple text-white text-lg"></i>
-                            <span>Continuar con Apple</span>
-                        </button>
-                    </div>
-
-                    <div class="relative flex py-2 items-center">
-                        <div class="flex-grow border-t border-slate-200"></div>
-                        <span class="flex-shrink mx-4 text-xs text-slate-400 uppercase font-semibold">o con correo electrónico</span>
-                        <div class="flex-grow border-t border-slate-200"></div>
-                    </div>
-
                     <!-- Login -->
                     <div id="tab-login" class="mt-4">
                         <div class="mb-4 text-center lg:text-left">
@@ -136,8 +117,8 @@
                         </div>
                         <form onsubmit="handleLogin(event)" class="space-y-3">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
-                                <input type="email" id="login-correo" required placeholder="correo@ejemplo.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula</label>
+                                <input type="text" id="login-cedula" required placeholder="001-0000000-0" maxlength="13" oninput="formatCedulaInput(this)" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
@@ -148,59 +129,42 @@
                         <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro')" class="text-fye-verde font-bold hover:underline">Regístrate</a></p>
                     </div>
 
-                    <!-- Registro Regulado -->
+                    <!-- Registro -->
                     <div id="tab-registro" class="hidden mt-4">
                         <div class="mb-4 text-center lg:text-left">
-                            <h2 class="text-xl font-bold text-slate-900">Apertura de Cuenta Regulada</h2>
+                            <h2 class="text-xl font-bold text-slate-900">Crear Nueva Cuenta</h2>
                         </div>
                         <form onsubmit="handleRegister(event)" class="space-y-3">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
-                                <input type="text" id="reg-nombre" required placeholder="Ej. Juan Pérez" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula (Válida R.D.)</label>
-                                    <input type="text" id="reg-cedula" required placeholder="001-0000000-0" maxlength="13" oninput="formatCedulaInput(this)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula (Válida R.D.)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="reg-cedula" required placeholder="001-0000000-0" maxlength="13" oninput="formatCedulaInput(this)" class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                                    <button type="button" onclick="verifyCedula()" class="px-4 py-2.5 btn-verde rounded-xl text-xs font-bold shadow-md">Verificar</button>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono</label>
-                                    <input type="tel" id="reg-telefono" required placeholder="809-000-0000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                                </div>
+                                <p id="cedula-status" class="text-xs mt-1 text-slate-500"></p>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monto Depósito</label>
-                                    <input type="number" id="reg-monto" required placeholder="Mín. 2,000 / Máx. 50,000" min="0" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Moneda</label>
-                                    <select id="reg-moneda" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                                        <option value="DOP">Pesos (DOP)</option>
-                                        <option value="USD">Dólares (USD)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
-                                <input type="email" id="reg-correo" required placeholder="correo@ejemplo.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
-                            </div>
+
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
                                 <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
                             </div>
 
-                            <!-- Contrato y Ley de Lavado de Activos -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Confirmar Contraseña</label>
+                                <input type="password" id="reg-password-confirm" required placeholder="Confirmar contraseña" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                            </div>
+
+                            <!-- Contrato -->
                             <div class="pt-1">
                                 <label class="flex items-start space-x-2.5 cursor-pointer">
                                     <input type="checkbox" id="reg-contrato" required class="mt-1 rounded text-fye-verde focus:ring-fye-verde">
                                     <span class="text-[11px] text-slate-600 leading-tight">
-                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Lavado de Activos</strong> y demás regulaciones aplicables.
+                                        Acepto el <strong>Contrato de Apertura</strong> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Lavado de Activos</strong>.
                                     </span>
                                 </label>
                             </div>
 
-                            <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md mt-2">Validar y Registrar Cuenta</button>
+                            <button type="submit" id="btn-register" disabled class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md mt-2 opacity-50 cursor-not-allowed">Crear Cuenta</button>
                         </form>
                         <p class="text-xs text-center text-slate-500 mt-4">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login')" class="text-fye-verde font-bold hover:underline">Inicia Sesión</a></p>
                     </div>
@@ -232,6 +196,70 @@
 
     </main>
 
+    <!-- Modal de Configuración de Perfil -->
+    <div id="profile-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-gradient-to-r from-fye-verde to-green-700 px-6 sm:px-8 py-6 flex justify-between items-center sticky top-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-white">Completar tu Perfil</h2>
+                <button onclick="closeProfileModal()" class="text-white hover:bg-white/20 p-2 rounded-lg">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleProfileSetup(event)" class="p-6 sm:p-8 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
+                    <input type="text" id="profile-nombre" required placeholder="Ej. Juan Pérez" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email</label>
+                        <input type="email" id="profile-email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono</label>
+                        <input type="tel" id="profile-telefono" required placeholder="809-000-0000" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dirección</label>
+                    <input type="text" id="profile-direccion" required placeholder="Ej. Avenida Principal 123, Apto 4B" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:outline-none focus:border-fye-verde text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Tipo de Cliente</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="client-type" value="ahorista" required class="w-4 h-4 text-fye-verde">
+                            <span class="text-sm text-slate-700">
+                                <strong>Cliente de Ahorro</strong>
+                                <span class="text-xs text-slate-500 block">Planes de ahorro seguro</span>
+                            </span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="client-type" value="inversionista" required class="w-4 h-4 text-fye-verde">
+                            <span class="text-sm text-slate-700">
+                                <strong>Cliente Inversionista</strong>
+                                <span class="text-xs text-slate-500 block">Inversiones y portafolio</span>
+                            </span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="client-type" value="cambio" required class="w-4 h-4 text-fye-verde">
+                            <span class="text-sm text-slate-700">
+                                <strong>Cliente de Cambio de Divisas</strong>
+                                <span class="text-xs text-slate-500 block">Conversión de moneda extranjera</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Guardar Perfil y Continuar</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Pie de Página -->
     <footer class="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs sm:text-sm border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 space-y-2">
@@ -245,16 +273,10 @@
         const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
         const SUPABASE_ANON_KEY = 'Sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
 
-        const appUrl = (() => {
-            const hostname = window.location.hostname;
-            const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-            if (isLocal) {
-                return 'http://localhost:3000/auth/callback';
-            }
-            return 'https://inversionesfepop2013.github.io/inversionesfye/auth/callback';
-        })();
-
         const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        let cedulaVerificada = false;
+        let currentUser = null;
 
         // Notificaciones Flotantes Modernas (Toastify)
         function notify(message, type = 'info') {
@@ -271,7 +293,7 @@
             }).showToast();
         }
 
-        // Formateador automático en tiempo real de la cédula dominicana (001-0000000-0)
+        // Formateador automático de la cédula dominicana (001-0000000-0)
         function formatCedulaInput(input) {
             let val = input.value.replace(/\D/g, '');
             if (val.length > 3 && val.length <= 10) {
@@ -282,27 +304,64 @@
             input.value = val;
         }
 
+        // Validar cédula dominicana
+        function validarCedulaDominicana(cedula) {
+            const limpia = String(cedula || '').replace(/-/g, '').trim();
+            if (limpia.length !== 11 || isNaN(limpia)) return false;
+
+            let suma = 0;
+            const peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+
+            for (let i = 0; i < 10; i++) {
+                const mult = parseInt(limpia.charAt(i), 10) * peso[i];
+                suma += (mult >= 10) ? Math.floor(mult / 10) + (mult % 10) : mult;
+            }
+
+            const digitoVerificador = (10 - (suma % 10)) % 10;
+            return digitoVerificador === parseInt(limpia.charAt(10), 10);
+        }
+
+        // Verificar cédula en registro
+        function verifyCedula() {
+            const cedula = document.getElementById('reg-cedula').value.trim();
+            const statusEl = document.getElementById('cedula-status');
+            const btnRegister = document.getElementById('btn-register');
+
+            if (!cedula) {
+                statusEl.textContent = '❌ Ingresa una cédula';
+                statusEl.classList.remove('text-green-600');
+                statusEl.classList.add('text-red-600');
+                cedulaVerificada = false;
+                btnRegister.disabled = true;
+                btnRegister.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            if (!validarCedulaDominicana(cedula)) {
+                statusEl.textContent = '❌ Cédula inválida o incorrecta';
+                statusEl.classList.remove('text-green-600');
+                statusEl.classList.add('text-red-600');
+                cedulaVerificada = false;
+                btnRegister.disabled = true;
+                btnRegister.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            // Simular verificación en base de datos
+            statusEl.textContent = '✅ Cédula verificada correctamente';
+            statusEl.classList.remove('text-red-600');
+            statusEl.classList.add('text-green-600');
+            cedulaVerificada = true;
+            btnRegister.disabled = false;
+            btnRegister.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
         function ensureSupabase() {
             if (!window.supabase || !supabase) {
                 notify('Supabase no está disponible en este momento. Verifica tu conexión.', 'error');
                 return false;
             }
             return true;
-        }
-
-        async function signInWithSocial(provider) {
-            if (!ensureSupabase()) return;
-
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo: appUrl
-                }
-            });
-
-            if (error) {
-                notify('Error al conectar con ' + provider + ': ' + error.message, 'error');
-            }
         }
 
         let audioContext = null;
@@ -462,98 +521,95 @@
             event.preventDefault();
             if (!ensureSupabase()) return;
 
-            const email = document.getElementById('login-correo').value.trim();
+            const cedula = document.getElementById('login-cedula').value.trim();
             const password = document.getElementById('login-password').value;
 
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                notify('Error al iniciar sesión: ' + error.message, 'error');
-            } else {
-                notify('¡Inicio de sesión exitoso! Bienvenido a INVERSIONES F Y E.');
-            }
-        }
-
-        function validarCedulaDominicana(cedula) {
-            const limpia = String(cedula || '').replace(/-/g, '').trim();
-            if (limpia.length !== 11 || isNaN(limpia)) return false;
-
-            let suma = 0;
-            const peso = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
-
-            for (let i = 0; i < 10; i++) {
-                const mult = parseInt(limpia.charAt(i), 10) * peso[i];
-                suma += (mult >= 10) ? Math.floor(mult / 10) + (mult % 10) : mult;
+            if (!validarCedulaDominicana(cedula)) {
+                notify('⚠️ Cédula inválida', 'error');
+                return;
             }
 
-            const digitoVerificador = (10 - (suma % 10)) % 10;
-            return digitoVerificador === parseInt(limpia.charAt(10), 10);
+            // Aquí irá la lógica de login con la cédula
+            notify('Iniciando sesión con cédula: ' + cedula, 'info');
+            // TODO: Implementar autenticación con cédula en Supabase
         }
 
         async function handleRegister(event) {
             event.preventDefault();
             if (!ensureSupabase()) return;
 
-            const nombre = document.getElementById('reg-nombre').value.trim();
+            if (!cedulaVerificada) {
+                notify('⚠️ Debes verificar tu cédula primero', 'error');
+                return;
+            }
+
             const cedula = document.getElementById('reg-cedula').value.trim();
-            const telefono = document.getElementById('reg-telefono').value.trim();
-            const montoValue = document.getElementById('reg-monto').value;
-            const moneda = document.getElementById('reg-moneda').value;
-            const correo = document.getElementById('reg-correo').value.trim();
             const password = document.getElementById('reg-password').value;
-            const contratoAceptado = document.getElementById('reg-contrato').checked;
+            const passwordConfirm = document.getElementById('reg-password-confirm').value;
+            const contrato = document.getElementById('reg-contrato').checked;
 
-            if (!validarCedulaDominicana(cedula)) {
-                notify('⚠️ Error: La cédula introducida no es válida.', 'error');
-                return;
-            }
-            if (!contratoAceptado) {
-                notify('⚠️ Debe aceptar el contrato de cumplimiento y prevención de lavado de activos.', 'warning');
+            if (password !== passwordConfirm) {
+                notify('⚠️ Las contraseñas no coinciden', 'error');
                 return;
             }
 
-            const monto = Number(montoValue);
-            if (!Number.isFinite(monto) || monto <= 0) {
-                notify('Ingresa un monto válido para abrir la cuenta.', 'error');
+            if (password.length < 6) {
+                notify('⚠️ La contraseña debe tener al menos 6 caracteres', 'error');
                 return;
             }
 
-            if (moneda === 'DOP') {
-                if (monto < 2000) {
-                    notify('⚠️ Error: El monto mínimo de apertura para certificados es de RD$2,000.', 'error');
-                    return;
-                }
-                if (monto > 50000) {
-                    notify('⚠️ Error: El monto máximo de depósito en línea es de RD$50,000.', 'error');
-                    return;
-                }
-            } else if (moneda === 'USD') {
-                if (monto > 1000) {
-                    notify('⚠️ Error: El depósito máximo en dólares es de $1,000 USD.', 'error');
-                    return;
-                }
-            }
-
-            const { data, error } = await supabase.auth.signUp({
-                email: correo,
-                password,
-                options: {
-                    data: { nombre, cedula, telefono, monto, moneda }
-                }
-            });
-
-            if (error) {
-                notify('Error en el registro: ' + error.message, 'error');
+            if (!contrato) {
+                notify('⚠️ Debe aceptar el contrato de apertura', 'warning');
                 return;
             }
 
-            if (data?.user) {
-                notify('¡Cuenta creada exitosamente! Revisa tu correo para confirmar la cuenta.');
-                switchTab('login');
-                document.getElementById('login-correo').value = correo;
-            } else {
-                notify('Se ha enviado la solicitud de registro. Revisa tu correo para continuar.');
-            }
+            notify('✅ Cuenta creada exitosamente. Completa tu perfil.', 'info');
+            
+            // Abrir modal de configuración de perfil
+            openProfileModal();
+            
+            // Limpiar formulario
+            document.getElementById('reg-cedula').value = '';
+            document.getElementById('reg-password').value = '';
+            document.getElementById('reg-password-confirm').value = '';
+            cedulaVerificada = false;
+        }
+
+        function openProfileModal() {
+            document.getElementById('profile-modal').classList.remove('hidden');
+            document.getElementById('profile-modal').classList.add('flex');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+            document.getElementById('profile-modal').classList.remove('flex');
+        }
+
+        async function handleProfileSetup(event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById('profile-nombre').value.trim();
+            const email = document.getElementById('profile-email').value.trim();
+            const telefono = document.getElementById('profile-telefono').value.trim();
+            const direccion = document.getElementById('profile-direccion').value.trim();
+            const clientType = document.querySelector('input[name="client-type"]:checked').value;
+
+            // Guardar datos de perfil
+            const userData = {
+                nombre,
+                email,
+                telefono,
+                direccion,
+                tipo_cliente: clientType
+            };
+
+            notify('✅ Perfil configurado como cliente ' + clientType, 'info');
+            
+            // TODO: Guardar datos en Supabase
+            console.log('User data:', userData);
+            
+            closeProfileModal();
+            switchTab('login');
         }
     </script>
 </body>
