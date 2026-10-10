@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --fye-verde: #1E5F2D;
@@ -253,7 +254,11 @@
     </footer>
 
     <script>
+        const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
+        const SUPABASE_ANON_KEY = 'Sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
         const STORAGE_KEY = 'fye_users_v1';
+        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
         let cedulaVerificada = false;
         let pendingUserCedula = null;
 
@@ -261,6 +266,7 @@
             let bg = '#1E5F2D';
             if (type === 'error') bg = '#DC2626';
             if (type === 'warning') bg = '#D97706';
+            if (type === 'success') bg = '#15803d';
             Toastify({ text: message, duration: 4000, gravity: 'top', position: 'right', style: { background: bg, borderRadius: '12px', fontSize: '14px', fontWeight: '600' } }).showToast();
         }
 
@@ -290,13 +296,45 @@
             return digitoVerificador === parseInt(limpia.charAt(10), 10);
         }
 
-        function getUsers() {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : [];
+        function getLocalUsers() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch {
+                return [];
+            }
         }
 
-        function saveUsers(users) {
+        function saveLocalUsers(users) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+        }
+
+        async function getUsers() {
+            const localUsers = getLocalUsers();
+            if (!supabase) return localUsers;
+
+            try {
+                const { data, error } = await supabase.from('clientes').select('*');
+                if (!error && Array.isArray(data) && data.length) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    return data;
+                }
+            } catch (err) {
+                console.warn('Supabase clientes table not ready yet; using localStorage fallback.', err);
+            }
+            return localUsers;
+        }
+
+        async function saveUserToSupabase(user) {
+            if (!supabase) return;
+            try {
+                const { error } = await supabase.from('clientes').upsert([user], { onConflict: 'cedula' });
+                if (error) {
+                    console.warn('Supabase upsert warning:', error.message);
+                }
+            } catch (err) {
+                console.warn('Supabase unavailable:', err);
+            }
         }
 
         function verifyCedula() {
@@ -324,25 +362,26 @@
                 return;
             }
 
-            const users = getUsers();
-            const exists = users.some(user => user.cedula === cedula);
-            if (exists) {
-                statusEl.textContent = '⚠️ Esta cédula ya está registrada';
-                statusEl.classList.remove('text-green-600');
-                statusEl.classList.add('text-red-600');
-                cedulaVerificada = false;
-                btnRegister.disabled = true;
-                btnRegister.classList.add('opacity-50', 'cursor-not-allowed');
-                return;
-            }
+            getUsers().then(users => {
+                const exists = users.some(user => user.cedula === cedula);
+                if (exists) {
+                    statusEl.textContent = '⚠️ Esta cédula ya está registrada';
+                    statusEl.classList.remove('text-green-600');
+                    statusEl.classList.add('text-red-600');
+                    cedulaVerificada = false;
+                    btnRegister.disabled = true;
+                    btnRegister.classList.add('opacity-50', 'cursor-not-allowed');
+                    return;
+                }
 
-            statusEl.textContent = '✅ Cédula verificada correctamente';
-            statusEl.classList.remove('text-red-600');
-            statusEl.classList.add('text-green-600');
-            cedulaVerificada = true;
-            pendingUserCedula = cedula;
-            btnRegister.disabled = false;
-            btnRegister.classList.remove('opacity-50', 'cursor-not-allowed');
+                statusEl.textContent = '✅ Cédula verificada correctamente';
+                statusEl.classList.remove('text-red-600');
+                statusEl.classList.add('text-green-600');
+                cedulaVerificada = true;
+                pendingUserCedula = cedula;
+                btnRegister.disabled = false;
+                btnRegister.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
         }
 
         function toggleMobileMenu() {
@@ -384,7 +423,7 @@
             document.getElementById('profile-modal').classList.remove('flex');
         }
 
-        function handleRegister(event) {
+        async function handleRegister(event) {
             event.preventDefault();
             if (!cedulaVerificada) {
                 notify('⚠️ Debes verificar la cédula antes de crear la cuenta.', 'error');
@@ -416,7 +455,7 @@
                 return;
             }
 
-            const users = getUsers();
+            const users = await getUsers();
             if (users.some(user => user.cedula === cedula)) {
                 notify('⚠️ Esta cédula ya está registrada.', 'error');
                 return;
@@ -436,7 +475,8 @@
             };
 
             users.push(newUser);
-            saveUsers(users);
+            saveLocalUsers(users);
+            await saveUserToSupabase(newUser);
             pendingUserCedula = cedula;
 
             notify('✅ Cuenta creada correctamente. Ahora completa tu perfil.', 'success');
@@ -449,7 +489,7 @@
             openProfileModal();
         }
 
-        function handleProfileSetup(event) {
+        async function handleProfileSetup(event) {
             event.preventDefault();
             const nombre = document.getElementById('profile-nombre').value.trim();
             const email = document.getElementById('profile-email').value.trim();
@@ -462,24 +502,16 @@
                 return;
             }
 
-            const users = getUsers();
-            const userIndex = users.findIndex(user => user.cedula === pendingUserCedula);
+            let users = await getUsers();
+            let userIndex = users.findIndex(user => user.cedula === pendingUserCedula);
             if (userIndex === -1) {
                 notify('⚠️ Usuario no encontrado.', 'error');
                 return;
             }
 
-            users[userIndex] = {
-                ...users[userIndex],
-                nombre,
-                email,
-                telefono,
-                direccion,
-                tipo_cliente: tipoCliente,
-                perfil_completo: true
-            };
-
-            saveUsers(users);
+            users[userIndex] = { ...users[userIndex], nombre, email, telefono, direccion, tipo_cliente: tipoCliente, perfil_completo: true };
+            saveLocalUsers(users);
+            await saveUserToSupabase(users[userIndex]);
             closeProfileModal();
             notify('✅ Perfil guardado correctamente. Ya puedes iniciar sesión.', 'success');
             switchTab('login');
@@ -491,7 +523,7 @@
             pendingUserCedula = null;
         }
 
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             const cedula = document.getElementById('login-cedula').value.trim();
             const password = document.getElementById('login-password').value;
@@ -501,7 +533,7 @@
                 return;
             }
 
-            const users = getUsers();
+            const users = await getUsers();
             const user = users.find(u => u.cedula === cedula && u.password === password);
 
             if (!user) {
