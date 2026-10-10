@@ -3,156 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inversiones F Y E | Soluciones Financieras y Servicios</title>
-    <!-- Tailwind CSS desde CDN para diseño moderno -->
+    <title>Inversiones F Y E POP S.R.L. | Plataforma Financiera</title>
+    <!-- Tailwind CSS desde CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Iconos Lucide desde CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandGreen: '#1e7336',
+                        brandYellow: '#f5a623',
+                        brandDark: '#0d2818'
+                    }
+                }
+            }
         }
-    </style>
+    </script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
-    <!-- Encabezado / Navegación -->
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i data-lucide="trending-up" class="w-8 h-8 text-blue-700"></i>
-                <span class="text-2xl font-extrabold text-blue-900 tracking-tight">Inversiones F Y E</span>
+    <!-- Configuración e Inicialización de Supabase -->
+    <script>
+        const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+
+    <!-- Encabezado / Navegación principal -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-full border-2 border-brandGreen flex items-center justify-center p-1 bg-white shadow-sm">
+                    <div class="text-center">
+                        <span class="block text-xs font-black text-brandGreen leading-none">$</span>
+                        <span class="block text-[8px] font-bold text-brandYellow leading-none">F&E</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xl font-black text-slate-900 tracking-tight block">INVERSIONES F & E</span>
+                    <span class="text-[10px] uppercase font-bold tracking-widest text-brandGreen block">POP S.R.L.</span>
+                </div>
             </div>
-            <a href="https://wa.me/18494778269?text=Hola,%20quisiera%20más%20información%20sobre%20sus%20servicios" 
-               target="_blank" 
-               class="hidden sm:inline-flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition duration-200 shadow">
-                <i data-lucide="message-circle" class="w-5 h-5"></i>
-                <span>Contáctanos</span>
-            </a>
+
+            <div class="flex items-center space-x-3" id="navAuthArea">
+                <button onclick="openAuthModal('login')" class="flex items-center space-x-2 bg-brandGreen hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl transition duration-200 text-sm shadow-md">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>Portal Cliente</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Sección Principal (Hero) -->
-    <section class="gradient-bg text-white py-16 px-4">
-        <div class="max-w-4xl mx-auto text-center space-y-6">
-            <span class="bg-blue-800/60 text-blue-200 text-sm font-semibold px-4 py-1.5 rounded-full inline-block border border-blue-700/50">
-                Aprobación en 24 Horas • Rápido y Seguro
+    <!-- Banner Principal (Hero) -->
+    <section class="relative bg-gradient-to-br from-brandDark via-brandGreen to-emerald-900 text-white py-16 px-4 overflow-hidden">
+        <div class="max-w-5xl mx-auto text-center space-y-6 relative z-10">
+            <span class="bg-brandYellow text-slate-900 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider inline-block shadow-lg">
+                Soluciones Financieras Reguladas y Seguras
             </span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                Impulsamos tus proyectos con soluciones financieras a tu medida
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                Impulsamos tu crecimiento con 3% de Rendimiento Mensual
             </h1>
-            <p class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto">
-                Préstamos, planes de ahorro e inversión con garantía y transparencia para el desarrollo personal y empresarial.
+            <p class="text-slate-200 text-base sm:text-lg max-w-2xl mx-auto font-light">
+                Préstamos ágiles, planes de ahorro e inversión estructurados con capitalización automática cada 29 días y respaldo garantizado.
             </p>
             <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
-                <a href="https://wa.me/18494778269?text=Hola,%20me%20interesa%20solicitar%20un%20préstamo" 
-                   target="_blank" 
-                   class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3.5 rounded-xl transition duration-200 shadow-lg flex items-center justify-center space-x-2">
-                    <i data-lucide="file-text" class="w-5 h-5"></i>
-                    <span>Solicitar Préstamo</span>
+                <a href="https://wa.me/18494778269?text=Hola,%20deseo%20información%20sobre%20inversiones%20y%20préstamos" target="_blank" class="bg-brandYellow hover:bg-amber-400 text-slate-900 font-extrabold px-6 py-3.5 rounded-xl transition duration-200 shadow-xl flex items-center justify-center space-x-2">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    <span>Contactar vía WhatsApp</span>
                 </a>
-                <a href="#servicios" 
-                   class="bg-slate-800 hover:bg-slate-700 text-gray-200 font-semibold px-6 py-3.5 rounded-xl border border-slate-700 transition duration-200">
-                    Ver Servicios
-                </a>
+                <button onclick="openAuthModal('login')" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3.5 rounded-xl border border-white/30 backdrop-blur-md transition duration-200 flex items-center justify-center space-x-2">
+                    <i data-lucide="lock" class="w-5 h-5"></i>
+                    <span>Acceder al Portal</span>
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Sección de Servicios -->
-    <section id="servicios" class="max-w-6xl mx-auto px-4 py-16">
+    <!-- Cuentas Oficiales para Depósitos -->
+    <section class="max-w-7xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 mb-12">
+            <h3 class="text-lg font-bold text-slate-900 mb-4 text-center flex items-center justify-center space-x-2">
+                <i data-lucide="landmark" class="w-5 h-5 text-brandGreen"></i>
+                <span>Cuentas Autorizadas para Depósitos y Transferencias</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                    <span class="font-bold text-brandGreen block mb-1">Banco Popular Dominicano</span>
+                    <p class="text-slate-700 font-mono text-base font-semibold">818190076</p>
+                    <span class="text-xs text-slate-500">Cuenta Corriente</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                    <span class="font-bold text-brandGreen block mb-1">Banco BHD</span>
+                    <p class="text-slate-700 font-semibold">Vianelys Restituyo Paulino</p>
+                    <span class="text-xs text-slate-500">Ahorros</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                    <span class="font-bold text-brandGreen block mb-1">Banco de Reservas</span>
+                    <p class="text-slate-700 font-semibold">Geronima Chevalier</p>
+                    <span class="text-xs text-slate-500">Ahorros</span>
+                </div>
+            </div>
+        </div>
+
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Nuestros Servicios Financieros</h2>
-            <p class="text-gray-600 mt-2">Garantizamos tu inversión con atención personalizada y ágil.</p>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Servicios Destacados</h2>
+            <div class="w-16 h-1 bg-brandYellow mx-auto mt-2 rounded-full"></div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Servicio 1 -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-200">
-                <div class="w-12 h-12 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center mb-4">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition">
+                <div class="w-12 h-12 bg-emerald-100 text-brandGreen rounded-xl flex items-center justify-center mb-4">
                     <i data-lucide="hand-coins" class="w-6 h-6"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Préstamos Rápidos</h3>
-                <p class="text-gray-600 text-sm leading-relaxed mb-4">
-                    Planes flexibles con cuotas calculadas de forma clara y aprobación en 24 horas.
-                </p>
-                <a href="https://wa.me/18494778269?text=Hola,%20deseo%20información%20sobre%20los%20préstamos" 
-                   target="_blank" class="text-blue-700 font-semibold text-sm inline-flex items-center hover:underline">
-                    Consultar cuotas <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
-                </a>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Préstamos Rápidos</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">Evaluación ágil y cuotas ajustadas a tus posibilidades con respaldo formal.</p>
             </div>
-
-            <!-- Servicio 2 -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-200">
-                <div class="w-12 h-12 bg-green-100 text-green-700 rounded-xl flex items-center justify-center mb-4">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition">
+                <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center mb-4">
                     <i data-lucide="piggy-bank" class="w-6 h-6"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Planes de Ahorro e Inversión</h3>
-                <p class="text-gray-600 text-sm leading-relaxed mb-4">
-                    Programas estructurados de rendimiento y ahorro constante para alcanzar tus metas financieras.
-                </p>
-                <a href="https://wa.me/18494778269?text=Hola,%20quiero%20conocer%20los%20planes%20de%20inversión" 
-                   target="_blank" class="text-blue-700 font-semibold text-sm inline-flex items-center hover:underline">
-                    Saber más <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
-                </a>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Ahorro e Inversión 3%</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">Rentabilidad fija mensual con retención de ley automática y opción de capitalización a 29 días.</p>
             </div>
-
-            <!-- Servicio 3 -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-200">
-                <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-xl flex items-center justify-center mb-4">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition">
+                <div class="w-12 h-12 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center mb-4">
                     <i data-lucide="car" class="w-6 h-6"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Alquiler de Vehículos</h3>
-                <p class="text-gray-600 text-sm leading-relaxed mb-4">
-                    Soluciones de movilidad confiables y accesibles para traslados personales o comerciales.
-                </p>
-                <a href="https://wa.me/18494778269?text=Hola,%20me%20interesa%20alquilar%20un%20vehículo" 
-                   target="_blank" class="text-blue-700 font-semibold text-sm inline-flex items-center hover:underline">
-                    Ver disponibilidad <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
-                </a>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Alquiler de Vehículos</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">Soluciones de transporte y movilidad corporativa con unidades garantizadas.</p>
             </div>
         </div>
     </section>
 
-    <!-- Información de Contacto / Ubicación -->
-    <section class="bg-gray-100 py-16 px-4">
-        <div class="max-w-4xl mx-auto bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Ubicación y Contacto Directo</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
-                <div class="flex items-start space-x-3">
-                    <i data-lucide="map-pin" class="w-6 h-6 text-blue-700 shrink-0 mt-0.5"></i>
-                    <div>
-                        <h4 class="font-bold text-gray-900">Dirección</h4>
-                        <p class="text-gray-600">Av. Isabel de Torres #56 (Encima del Centro de Copias Luis), Puerto Plata, República Dominicana.</p>
+    <!-- Sección Reconocimiento a Colaboradores -->
+    <section class="bg-slate-100 py-16 px-4">
+        <div class="max-w-5xl mx-auto bg-white rounded-3xl p-8 shadow-md border border-slate-200">
+            <div class="text-center mb-8">
+                <span class="text-brandGreen font-bold text-xs uppercase tracking-widest block mb-1">Nuestro Talento Humano</span>
+                <h2 class="text-2xl font-black text-slate-900">Reconocimiento Especial</h2>
+            </div>
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="w-full md:w-1/2 flex justify-center">
+                    <div class="relative rounded-2xl overflow-hidden border-4 border-brandGreen shadow-xl max-w-xs">
+                        <img src="https://i.ibb.co/L8K3x9H/vianelys.png" alt="Vianelys Restituyó Paulino" class="w-full h-auto object-cover" onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80'">
                     </div>
                 </div>
-                <div class="flex items-start space-x-3">
-                    <i data-lucide="phone" class="w-6 h-6 text-blue-700 shrink-0 mt-0.5"></i>
-                    <div>
-                        <h4 class="font-bold text-gray-900">Teléfonos de Atención</h4>
-                        <p class="text-gray-600">(809) 739-4404</p>
-                        <p class="text-gray-600">(849) 477-8269 / (849) 477-8229</p>
+                <div class="w-full md:w-1/2 space-y-4">
+                    <div class="inline-block bg-emerald-100 text-brandGreen font-bold px-3 py-1 rounded-lg text-xs">
+                        Día del Trabajador
                     </div>
+                    <h3 class="text-2xl font-black text-slate-900">Vianelys Restituyó Paulino</h3>
+                    <p class="text-slate-600 leading-relaxed text-sm">
+                        En **INVERSIONES F Y E POP S.R.L.** honramos la dedicación, el talento y la entrega de quienes hacen posible nuestro crecimiento continuo y excelencia en el servicio al cliente.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Pie de Página -->
-    <footer class="bg-slate-900 text-gray-400 py-8 px-4 text-center text-sm">
-        <p>© 2026 Inversiones F Y E. Todos los derechos reservados.</p>
+    <footer class="bg-slate-900 text-slate-400 py-8 px-4 text-center text-sm">
+        <p class="font-bold text-white mb-1">INVERSIONES F Y E POP S.R.L.</p>
+        <p class="text-xs">Puerto Plata, República Dominicana.</p>
+        <p class="text-xs text-slate-500 mt-4">© 2026 Todos los derechos reservados.</p>
     </footer>
 
-    <!-- Botón Flotante de WhatsApp para Móvil -->
-    <a href="https://wa.me/18494778269?text=Hola,%20quisiera%20más%20información" 
-       target="_blank" 
-       class="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition duration-300 transform hover:scale-110 z-50 flex items-center justify-center">
-        <i data-lucide="message-circle" class="w-7 h-7"></i>
-    </a>
+    <!-- MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO) -->
+    <div id="authModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 relative border border-slate-100">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
 
-    <!-- Inicialización de iconos Lucide -->
+            <!-- Selector de pestañas Login / Registro -->
+            <div class="flex border-b border-slate-200 mb-6">
+                <button onclick="switchTab('login')" id="tabLoginBtn" class="w-1/2 pb-3 font-bold text-brandGreen border-b-2 border-brandGreen text-sm">Iniciar Sesión</button>
+                <button onclick="switchTab('register')" id="tabRegisterBtn" class="w-1/2 pb-3 font-bold text-slate-400 text-sm">Crear Cuenta</button>
+            </div>
+
+            <!-- Formulario de Login -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula de Identidad</label>
+                    <input type="text" id="loginCedula" required placeholder="001-0000000-0" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brandGreen focus:outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-brandGreen hover:bg-emerald-800 text-white font-extrabold py-3.5 rounded-xl shadow-lg transition duration-200 text-sm">
+                    Entrar al Portal
+                </button>
+            </form>
+
+            <!-- Formulario de Registro -->
+            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
+                    <input type="text" id="regNombre" required placeholder="Juan Pérez" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brandGreen focus:outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cédula</label>
+                    <input type="text" id="regCedula" required placeholder="001-0000000-0" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brandGreen focus:outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono / WhatsApp</label>
+                    <input type="text" id="regTelefono" required placeholder="809-000-0000" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brandGreen focus:outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                    <input type="email" id="regCorreo" required placeholder="correo@domain.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brandGreen focus:outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-brandYellow hover:bg-amber-400 text-slate-900 font-extrabold py-3.5 rounded-xl shadow-lg transition duration-200 text-sm">
+                    Registrarse en el Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script de Integración con Supabase y Funcionalidades -->
     <script>
         lucide.createIcons();
+
+        let currentUser = null;
+
+        function openAuthModal(mode) {
+            document.getElementById('authModal').classList.remove('hidden');
+            switchTab(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchTab(tab) {
+            const loginBtn = document.getElementById('tabLoginBtn');
+            const registerBtn = document.getElementById('tabRegisterBtn');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            if (tab === 'login') {
+                loginBtn.className = "w-1/2 pb-3 font-bold text-brandGreen border-b-2 border-brandGreen text-sm";
+                registerBtn.className = "w-1/2 pb-3 font-bold text-slate-400 text-sm";
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                registerBtn.className = "w-1/2 pb-3 font-bold text-brandGreen border-b-2 border-brandGreen text-sm";
+                loginBtn.className = "w-1/2 pb-3 font-bold text-slate-400 text-sm";
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value;
+            const cedula = document.getElementById('regCedula').value;
+            const telefono = document.getElementById('regTelefono').value;
+            const correo = document.getElementById('regCorreo').value;
+
+            const { data, error } = await supabaseClient
+                .from('usuarios')
+                .insert([{ nombre_completo: nombre, cedula: cedula, telefono: telefono, correo: correo, estado_kyc: 'Pendiente' }])
+                .select();
+
+            if (error) {
+                alert('Error al registrar: ' + (error.message || 'La cédula ya se encuentra registrada.'));
+            } else {
+                alert('¡Registro exitoso! Ya puedes iniciar sesión con tu cédula.');
+                switchTab('login');
+                document.getElementById('loginCedula').value = cedula;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const cedula = document.getElementById('loginCedula').value;
+
+            const { data, error } = await supabaseClient
+                .from('usuarios')
+                .select('*')
+                .eq('cedula', cedula)
+                .single();
+
+            if (error || !data) {
+                alert('Cédula no encontrada en el sistema. Regístrese primero.');
+            } else {
+                currentUser = data;
+                closeAuthModal();
+                renderDashboard();
+            }
+        }
+
+        function renderDashboard() {
+            const navArea = document.getElementById('navAuthArea');
+            navArea.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs font-bold text-slate-700 hidden sm:inline">Hola, ${currentUser.nombre_completo}</span>
+                    <button onclick="logout()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-xl font-bold text-xs">Salir</button>
+                </div>
+            `;
+
+            const mainContent = document.querySelector('main') || document.body;
+            // Reemplazar hero/servicios con el Panel del Cliente
+            document.querySelector('section').outerHTML = `
+                <section class="max-w-7xl mx-auto px-4 py-12">
+                    <div class="bg-white rounded-3xl p-8 shadow-md border border-slate-200 mb-8">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                            <div>
+                                <span class="bg-emerald-100 text-brandGreen text-xs font-bold px-3 py-1 rounded-full uppercase">Cliente Verificado</span>
+                                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">Bienvenido, ${currentUser.nombre_completo}</h2>
+                                <p class="text-xs text-slate-500">Cédula: ${currentUser.cedula} | Estado KYC: ${currentUser.estado_kyc}</p>
+                            </div>
+                            <a href="https://wa.me/18494778269?text=Hola,%20soy%20${encodeURIComponent(currentUser.nombre_completo)}%20(Cédula:%20${currentUser.cedula}),%20deseo%20notificar%20un%20depósito." target="_blank" class="bg-brandGreen text-white font-bold px-5 py-3 rounded-xl flex items-center space-x-2 text-sm shadow-lg">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                               <span>Notificar Depósito por WhatsApp</span>
+                            </a>
+                        </div>
+
+                        <!-- Panel de Estadísticas Financieras -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                                <span class="text-xs font-bold text-slate-500 uppercase">Capital Invertido</span>
+                                <h3 class="text-2xl font-black text-slate-900 mt-1">$0.00 <span class="text-xs font-normal text-slate-500">DOP</span></h3>
+                            </div>
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                                <span class="text-xs font-bold text-slate-500 uppercase">Rendimiento (3% Mensual)</span>
+                                <h3 class="text-2xl font-black text-brandGreen mt-1">$0.00 <span class="text-xs font-normal text-slate-500">DOP (Neto Ley)</span></h3>
+                            </div>
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                                <span class="text-xs font-bold text-slate-500 uppercase">Próxima Capitalización</span>
+                                <h3 class="text-xl font-bold text-slate-800 mt-1">Cada 29 Días</h3>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+            lucide.createIcons();
+        }
+
+        function logout() {
+            currentUser = null;
+            location.reload();
+        }
     </script>
 </body>
 </html>
