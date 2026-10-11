@@ -60,9 +60,20 @@
   <script>
     const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
     const SUPABASE_ANON_KEY = 'Sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const supabase = window.supabase && typeof window.supabase.createClient === 'function'
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
 
     async function finishAuth() {
+      const statusEl = document.getElementById('status');
+
+      if (!supabase) {
+        statusEl.textContent = 'No se pudo inicializar Supabase. Revisa tu conexión e inténtalo de nuevo.';
+        statusEl.classList.add('error');
+        return;
+      }
+
       try {
         const { data, error } = await supabase.auth.getSession();
 
@@ -71,19 +82,19 @@
         }
 
         if (data?.session) {
-          document.getElementById('status').textContent = '¡Acceso correcto! Redirigiendo...';
+          statusEl.textContent = '¡Acceso correcto! Redirigiendo...';
           setTimeout(() => {
             window.location.href = '../../';
           }, 700);
           return;
         }
 
-        document.getElementById('status').textContent = 'No se pudo completar la sesión. Intenta nuevamente.';
-        document.getElementById('status').classList.add('error');
+        statusEl.textContent = 'No se pudo completar la sesión. Intenta nuevamente.';
+        statusEl.classList.add('error');
       } catch (err) {
-        document.getElementById('status').textContent = 'Hubo un problema con el inicio de sesión. Intenta nuevamente.';
-        document.getElementById('status').classList.add('error');
-        console.error(err);
+        console.error('Error al completar la autenticación:', err);
+        statusEl.textContent = 'Hubo un problema con el inicio de sesión. Intenta nuevamente.';
+        statusEl.classList.add('error');
       }
     }
 
