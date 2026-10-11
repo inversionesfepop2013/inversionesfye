@@ -1,0 +1,5 @@
+alter table clientes
+  add column if not exists tipo_documento text default 'cedula',
+  add column if not exists pais text,
+  add column if not exists docs jsonb,
+  add column if not exists doc_estado text default 'verificado';
