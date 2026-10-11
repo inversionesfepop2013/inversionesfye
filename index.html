@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<meta name="referrer" content="no-referrer">
 <style>
 :root{--v:#1E5F2D;--vo:#154420;--a:#FFB823}
 *{box-sizing:border-box}
@@ -38,7 +40,7 @@ body{top:0!important}
 
 <div class="relative z-50 bg-slate-900 text-white text-xs py-1.5 px-4 flex justify-end items-center gap-2" translate="no">
  <i class="fa-solid fa-globe text-amber-400"></i>
- <button type="button" id="lang-btn" onclick="$('lang-tray').classList.toggle('hidden')" class="flex items-center gap-2 bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1 hover:bg-slate-700"><span class="sr-only">Idioma</span></button>
+ <button type="button" id="lang-btn" onclick="$('lang-tray').classList.toggle('hidden')" class="flex items-center gap-2 bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1 hover:bg-slate-700"></button>
  <div id="lang-tray" class="hidden absolute right-2 top-full mt-1 w-[19rem] max-w-[calc(100vw-1rem)] max-h-80 overflow-y-auto bg-white text-slate-800 rounded-2xl shadow-2xl p-2 grid grid-cols-3 gap-1"></div>
  <div id="google_translate_element" style="position:absolute;left:-9999px;top:0" aria-hidden="true"></div>
 </div>
@@ -82,50 +84,52 @@ body{top:0!important}
    </div>
    <div class="lg:col-span-6 glass-card border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-lg mx-auto lg:max-w-none">
     <div id="tab-login">
-      <h2 class="text-xl font-bold mb-4">Iniciar sesión</h2>
-      <form onsubmit="handleLogin(event)" class="space-y-3">
-       <div><label class="block text-xs font-bold text-slate-700 mb-1">Cédula o pasaporte</label>
-        <input type="text" id="login-cedula" required placeholder="001-0000000-0 / Passport" maxlength="20" autocapitalize="characters" class="inp"></div>
-       <div><label class="block text-xs font-bold text-slate-700 mb-1">Contraseña</label>
-        <input type="password" id="login-password" required placeholder="••••••••" class="inp">
-        <a href="#" onclick="recoverStart();return false" class="text-xs text-fye-verde font-bold hover:underline mt-1.5 inline-block">¿Olvidaste tu contraseña?</a></div>
-       <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar</button>
-      </form>
-      <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro');return false" class="text-fye-verde font-bold hover:underline">Regístrate</a></p>
+     <h2 class="text-xl font-bold mb-4">Iniciar sesión</h2>
+     <p id="portal-banner" class="hidden mb-3 px-3 py-2 rounded-xl bg-green-100 text-fye-verde text-xs font-bold"></p>
+     <form onsubmit="handleLogin(event)" class="space-y-3">
+      <div><label class="block text-xs font-bold text-slate-700 mb-1">Cédula o pasaporte</label>
+       <input type="text" id="login-cedula" required placeholder="001-0000000-0 / Passport" maxlength="20" autocapitalize="characters" class="inp"></div>
+      <div><label class="block text-xs font-bold text-slate-700 mb-1">Contraseña</label>
+       <input type="password" id="login-password" required placeholder="••••••••" class="inp">
+       <a href="#" onclick="recoverStart();return false" class="text-xs text-fye-verde font-bold hover:underline mt-1.5 inline-block">¿Olvidaste tu contraseña?</a></div>
+      <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Ingresar</button>
+     </form>
+     <p class="text-xs text-center text-slate-500 mt-4">¿Aún no tienes cuenta? <a href="#" onclick="switchTab('registro');return false" class="text-fye-verde font-bold hover:underline">Regístrate</a></p>
     </div>
     <div id="tab-registro" class="hidden">
-      <h2 class="text-xl font-bold mb-4">Crear cuenta</h2>
-      <form onsubmit="handleRegister(event)" class="space-y-3">
-       <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
-        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-300 cursor-pointer"><input type="radio" name="reg-mode" value="cedula" checked onchange="setDocMode('cedula')">Cédula dominicana</label>
-        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-300 cursor-pointer"><input type="radio" name="reg-mode" value="pasaporte" onchange="setDocMode('pasaporte')">Pasaporte (extranjero)</label>
-       </div>
-       <div id="reg-block-ced"><label class="block text-xs font-bold text-slate-700 mb-1">Cédula</label>
-        <input type="text" id="reg-cedula" required placeholder="001-0000000-0" maxlength="13" inputmode="numeric" oninput="formatCedulaInput(this);setCed(false,'')" class="inp"></div>
-       <div id="reg-block-pas" class="hidden space-y-3">
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">País de origen</label>
-         <input type="text" id="reg-pais" placeholder="Ej. Estados Unidos" class="inp" oninput="setCed(false,'')"></div>
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">Número de pasaporte</label>
-         <input type="text" id="reg-pasaporte" maxlength="20" autocapitalize="characters" class="inp uppercase" oninput="setCed(false,'')"></div>
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">Foto de la página de datos del pasaporte</label>
-         <input type="file" id="reg-doc-pasaporte" accept="image/*,application/pdf" class="inp"></div>
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">Recibo reciente de agua, luz u otro pago de servicio de tu país</label>
-         <input type="file" id="reg-doc-recibo" accept="image/*,application/pdf" class="inp"></div>
-        <p class="text-[11px] text-slate-500">Foto o PDF (máx. 2 MB). Revisaremos tus documentos antes de habilitar los servicios.</p>
-       </div>
-       <div><button type="button" onclick="verifyCedula()" class="w-full py-2.5 btn-verde rounded-xl text-xs font-bold">Verificar documento</button>
-        <p id="cedula-status" class="text-xs mt-1 text-slate-500"></p></div>
-       <div><label class="block text-xs font-bold text-slate-700 mb-1">Contraseña</label>
-        <input type="password" id="reg-password" required minlength="6" placeholder="Mínimo 6 caracteres" class="inp"></div>
-       <div><label class="block text-xs font-bold text-slate-700 mb-1">Confirmar contraseña</label>
-        <input type="password" id="reg-password-confirm" required placeholder="Repite la contraseña" class="inp"></div>
-       <div class="flex items-start space-x-2.5 pt-1">
-        <input type="checkbox" id="reg-contrato" class="mt-1 rounded" onclick="event.preventDefault();openContrato()" aria-label="Leer y firmar el contrato">
-        <span class="text-[11px] text-slate-600 leading-tight">Acepto el <a href="#" onclick="openContrato();return false" class="text-fye-verde font-bold underline">Contrato de Apertura</a> y declaro bajo juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Lavado de Activos</strong>.<span id="contrato-status" class="block font-semibold text-slate-500 mt-0.5">Toca para leer y firmar.</span></span>
-       </div>
-       <button type="submit" id="btn-register" disabled class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md opacity-50 cursor-not-allowed">Crear cuenta</button>
-      </form>
-      <p class="text-xs text-center text-slate-500 mt-4">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login');return false" class="text-fye-verde font-bold hover:underline">Inicia sesión</a></p>
+     <h2 class="text-xl font-bold mb-4">Crear cuenta</h2>
+     <form onsubmit="handleRegister(event)" class="space-y-3">
+      <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+       <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-300 cursor-pointer"><input type="radio" name="reg-mode" value="cedula" checked onchange="setDocMode('cedula')">Cédula dominicana</label>
+       <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-300 cursor-pointer"><input type="radio" name="reg-mode" value="pasaporte" onchange="setDocMode('pasaporte')">Pasaporte (extranjero)</label>
+      </div>
+      <div id="reg-block-ced"><label class="block text-xs font-bold text-slate-700 mb-1">Cédula</label>
+       <input type="text" id="reg-cedula" required placeholder="001-0000000-0" maxlength="13" inputmode="numeric" oninput="formatCedulaInput(this);setCed(false,'')" class="inp"></div>
+      <div id="reg-block-pas" class="hidden space-y-3">
+       <div><label class="block text-xs font-bold text-slate-700 mb-1">País de origen</label>
+        <input type="text" id="reg-pais" placeholder="Ej. Estados Unidos" class="inp" oninput="setCed(false,'')"></div>
+       <div><label class="block text-xs font-bold text-slate-700 mb-1">Número de pasaporte</label>
+        <input type="text" id="reg-pasaporte" maxlength="20" autocapitalize="characters" class="inp uppercase" oninput="setCed(false,'')"></div>
+       <div><label class="block text-xs font-bold text-slate-700 mb-1">Foto de la página de datos del pasaporte</label>
+        <input type="file" id="reg-doc-pasaporte" accept="image/*,application/pdf" class="inp"></div>
+       <div><label class="block text-xs font-bold text-slate-700 mb-1">Recibo reciente de agua, luz u otro pago de servicio de tu país</label>
+        <input type="file" id="reg-doc-recibo" accept="image/*,application/pdf" class="inp"></div>
+       <p class="text-[11px] text-slate-500">Foto o PDF (máx. 2 MB). Revisaremos tus documentos antes de habilitar los servicios.</p>
+      </div>
+      <div><button type="button" onclick="verifyCedula()" class="w-full py-2.5 btn-verde rounded-xl text-xs font-bold">Verificar documento</button>
+       <p id="cedula-status" class="text-xs mt-1 text-slate-500"></p></div>
+      <div><label class="block text-xs font-bold text-slate-700 mb-1">Contraseña</label>
+       <input type="password" id="reg-password" required minlength="6" placeholder="Mínimo 6 caracteres" class="inp"></div>
+      <div><label class="block text-xs font-bold text-slate-700 mb-1">Confirmar contraseña</label>
+       <input type="password" id="reg-password-confirm" required placeholder="Repite la contraseña" class="inp"></div>
+      <div class="flex items-start space-x-2.5 pt-1">
+       <input type="checkbox" id="reg-contrato" class="mt-1 rounded" onclick="event.preventDefault();openContrato()" aria-label="Leer y firmar el contrato">
+       <span class="text-[11px] text-slate-600 leading-tight">Acepto el <a href="#" onclick="openContrato();return false" class="text-fye-verde font-bold underline">Contrato de Apertura</a> y declaro bajo fe de juramento que los fondos provienen de actividades lícitas, conforme a la <strong>Ley de Lavado de Activos</strong>.
+        <span id="contrato-status" class="block font-semibold text-slate-500 mt-0.5">Toca para leer y firmar.</span></span>
+      </div>
+      <button type="submit" id="btn-register" disabled class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md opacity-50 cursor-not-allowed">Crear cuenta</button>
+     </form>
+     <p class="text-xs text-center text-slate-500 mt-4">¿Ya tienes cuenta? <a href="#" onclick="switchTab('login');return false" class="text-fye-verde font-bold hover:underline">Inicia sesión</a></p>
     </div>
    </div>
   </div>
@@ -138,9 +142,8 @@ body{top:0!important}
     <p class="text-sm text-slate-500">Trayectoria, misión y visión de INVERSIONES F Y E SRL.</p></div>
    <button onclick="showSection('inicio')" class="bg-slate-100 hover:bg-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold"><i class="fa-solid fa-arrow-left mr-1.5"></i>Volver</button>
   </div>
-  <div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl h-[70vh] lg:h-[85vh]">
-   <iframe src="historia.pdf" width="100%" height="100%" class="border-0" title="Historia de INVERSIONES F Y E"></iframe>
-  </div>
+  <div id="historia-pages" class="w-full bg-white border border-slate-200 rounded-3xl shadow-2xl p-2 sm:p-4 space-y-3"><p class="text-sm text-slate-500 p-4">Cargando documento…</p></div>
+  <a href="historia.pdf" target="_blank" rel="noopener" class="block text-center text-sm font-semibold text-fye-verde underline"><i class="fa-solid fa-file-pdf mr-1"></i>Abrir o descargar el PDF</a>
  </div>
 
  <!-- PANEL DEL USUARIO -->
@@ -178,9 +181,9 @@ body{top:0!important}
     <input type="text" id="profile-direccion" required placeholder="Calle, número, sector" class="inp"></div>
    <div><p class="text-xs font-bold text-slate-700 mb-2">Tipo de cliente</p>
     <div class="space-y-2">
-     <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="client-type" value="ahorista" required><span class="text-sm"><strong>Cliente de ahorro</strong><span class="text-slate-500 block text-xs">Planes de ahorro seguros</span></span></label>
-     <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="client-type" value="inversionista" required><span class="text-sm"><strong>Cliente inversionista</strong><span class="text-slate-500 block text-xs">Inversiones y portafolios</span></span></label>
-     <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="client-type" value="cambio" required><span class="text-sm"><strong>Cliente de cambio de divisas</strong><span class="text-slate-500 block text-xs">Conversión de moneda extranjera</span></span></label>
+     <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="client-type" value="ahorista" required><span class="text-sm"><strong>Cliente de ahorro</strong><span class="text-xs text-slate-500 block">Planes de ahorro seguro</span></span></label>
+     <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="client-type" value="inversionista" required><span class="text-sm"><strong>Cliente inversionista</strong><span class="text-xs text-slate-500 block">Inversiones y portafolio</span></span></label>
+     <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="client-type" value="cambio" required><span class="text-sm"><strong>Cliente de cambio de divisas</strong><span class="text-xs text-slate-500 block">Conversión de moneda extranjera</span></span></label>
     </div></div>
    <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">Guardar y entrar</button>
   </form>
@@ -199,17 +202,17 @@ body{top:0!important}
    <p class="!text-xs !text-slate-500 border-b border-slate-200 pb-3 !mb-4">RNC: 13279804-1 | Domicilio: Av. Isabel de Torres No. 56 (altos), Puerto Plata, República Dominicana</p>
 
    <h3>PREÁMBULO Y GENERALIDADES</h3>
-   <p>El presente Contrato de Términos y Condiciones de Uso y Apertura de Cuenta (en adelante, el "Contrato") regula la relación jurídica entre la entidad legal <strong>INVERSIONES F Y E POP</strong>, titular del RNC No. 13279804-1 (en adelante, la "EMPRESA"), y cualquier persona física o jurídica que acceda, se registre, cree una cuenta y/o utilice los servicios financieros y digitales a través del portal web oficial https://inversionesfepop2013.github.io/inversionesfye/ (en adelante, la "PLATAFORMA" o el "SITIO").</p>
-   <p>El presente contrato se suscribe y rige bajo las leyes vigentes de la República Dominicana, en especial la <strong>Ley No. 126-02</strong> sobre Comercio Electrónico, Firmas y Mensajes de Datos, la <strong>Ley No. 172-13</strong> sobre Protección de Datos Personales, la <strong>Ley No. 358-05</strong> General de Protección de los Derechos del Consumidor y el <strong>Código Civil Dominicano</strong>.</p>
+   <p>El presente Contrato de Términos y Condiciones de Uso y Apertura de Cuenta (en adelante, el "Contrato") regula la relación jurídica entre la entidad legal <strong>INVERSIONES F Y E POP</strong>, titular del RNC No. 13279804-1 (en adelante, la "EMPRESA"), y cualquier persona física que acceda, se registre, cree una cuenta y/o utilice los servicios financieros y digitales a través del portal web oficial https://inversionesfepop2013.github.io/inversionesfye/ (en adelante, el "USUARIO" y la "PLATAFORMA", respectivamente).</p>
+   <p>El presente contrato se suscribe y rige bajo las leyes vigentes de la República Dominicana, en especial la <strong>Ley No. 126-02</strong> sobre Comercio Electrónico, Firmas y Mensajes de Datos, la <strong>Ley No. 172-13</strong> sobre Protección de Datos Personales, la <strong>Ley No. 358-05</strong> General de Protección de los Derechos del Consumidor o Usuario, y el Código Civil Dominicano.</p>
 
    <h3>CLÁUSULA PRIMERA: ACEPTACIÓN MEDIANTE REGISTRO Y CONTRATACIÓN ELECTRÓNICA</h3>
-   <p><strong>1.1. Manifestación de Voluntad y Clickwrap:</strong> El envío de los datos de registro, la creación del usuario y la marcación interactiva del botón o casilla de aceptación de estos Términos y Condiciones constituye una firma electrónica válida, conforme a la legislación vigente.</p>
-   <p><strong>1.2. Inexistencia de Vicios del Consentimiento:</strong> El USUARIO declara que al aceptar este Contrato actúa libremente, contando con plena capacidad legal para obligarse, y que no mediarán vicios del consentimiento como error, dolo, violencia o lesión contra la persona o sus bienes.</p>
+   <p><strong>1.1. Manifiesta Voluntad y Clickwrap:</strong> El envío de los datos de registro, la creación del usuario y la marcación interactiva del botón o casilla de aceptación de estos Términos y Condiciones constituye una firma electrónica con plena validez, fuerza vinculante y ejecutoriedad legal, conforme a los Arts. 2, 4 y 31 de la Ley No. 126-02.</p>
+   <p><strong>1.2. Inexistencia de Vicios del Consentimiento:</strong> El USUARIO declara que al aceptar este Contrato actúa libremente, contando con plena capacidad legal para obligarse, y que no median vicios de consentimiento como error, dolo, violencia o lesión contractual.</p>
 
    <h3>CLÁUSULA SEGUNDA: ELEGIBILIDAD Y REQUISITOS DE APERTURA DE CUENTA</h3>
    <p><strong>2.1. Edad Mínima:</strong> Para registrarse y abrir una cuenta en la PLATAFORMA, el USUARIO debe ser mayor de edad, con un mínimo de dieciocho (18) años cumplidos al momento de la solicitud.</p>
-   <p><strong>2.2. Nacionalidad e Identificación Aceptada:</strong> El acceso a la PLATAFORMA está abierto a personas de cualquier nacionalidad. Para el proceso de verificación de identidad (KYC), el USUARIO dominicano deberá proporcionar su Cédula de Identidad y Electoral; los USUARIOS extranjeros deberán proporcionar Pasaporte vigente.</p>
-   <p><strong>2.3. Veracidad de la Información:</strong> El USUARIO se obliga a suministrar información exacta, verídica, actualizada y completa. Cualquier falsedad o adulteración documental acarrea el cierre inmediato de la cuenta sin responsabilidad para la EMPRESA y las acciones legales pertinentes.</p>
+   <p><strong>2.2. Nacionalidad e Identificación Aceptada:</strong> El acceso a la PLATAFORMA está abierto a personas de cualquier nacionalidad. Para el proceso de verificación de identidad (KYC - Know Your Customer), el USUARIO dominicano deberá proveer su Cédula de Identidad y Electoral; los USUARIOS extranjeros deberán proporcionar su Pasaporte vigente.</p>
+   <p><strong>2.3. Veracidad de la Información:</strong> El USUARIO se obliga a suministrar información exacta, verídica, actualizada y completa. Cualquier falsedad o adulteración documental acarreará el cierre inmediato de la cuenta sin responsabilidad para la EMPRESA y las acciones legales pertinentes.</p>
 
    <h3>CLÁUSULA TERCERA: DESCRIPCIÓN DE LOS SERVICIOS DE LA PLATAFORMA</h3>
    <p>A través de la PLATAFORMA, el USUARIO podrá solicitar, contratar y gestionar los siguientes servicios:</p>
@@ -221,20 +224,25 @@ body{top:0!important}
    </ul>
 
    <h3>CLÁUSULA CUARTA: DEPÓSITOS Y OPERACIONES FINANCIERAS</h3>
-   <p><strong>4.1. Cuentas Oficiales y Exclusividad de Canales:</strong> Para la constitución de certificados de inversión o depósitos en la PLATAFORMA, el USUARIO reconoce y acepta formalmente que los únicos canales autorizados son los que la EMPRESA haya publicado oficialmente a través del portal web institucional.</p>
-   <div class="overflow-x-auto mb-3"><table class="min-w-full border border-slate-200 text-xs"><thead class="bg-slate-100"><tr><th class="text-left p-2">Canal / Entidad</th><th class="text-left p-2">Detalle de la Cuenta</th><th class="text-left p-2">Titular / Especificación</th></tr></thead><tbody class="divide-y divide-slate-200"><tr><td class="p-2 font-medium">Banco Popular Dominicano</td><td class="p-2">Cuenta de Ahorros No. 818190076</td><td class="p-2">Vianelys Restituyo Paulino</td></tr><tr><td class="p-2 font-medium">Pasarela PayPal</td><td class="p-2">Cuenta Digital Internacional</td><td class="p-2">Notificada oficialmente en el portal</td></tr></tbody></table></div>
-   <p><strong>4.2. Exención Absoluta por Depósitos No Autorizados:</strong> La EMPRESA <strong>NO</strong> reconoce ni se hace responsable bajo ninguna circunstancia por depósitos o transferencias realizadas a cuentas, intermediarios o personas no oficialmente autorizadas por la EMPRESA. Toda operación fuera del canal oficial se considerará ajena a la empresa y no será reembolsada.</p>
+   <p><strong>4.1. Cuentas Oficiales y Exclusividad de Canales:</strong> Para la constitución de certificados de inversión o depósitos en la PLATAFORMA, el USUARIO reconoce y acepta formalmente que los únicos canales autorizados son:</p>
+   <div class="overflow-x-auto mb-3"><table class="min-w-full border border-slate-200 text-xs">
+    <thead class="bg-slate-100"><tr><th class="text-left p-2">Canal / Entidad</th><th class="text-left p-2">Detalle de la Cuenta</th><th class="text-left p-2">Titular / Especificación</th></tr></thead>
+    <tbody class="divide-y divide-slate-200">
+     <tr><td class="p-2 font-medium">Banco Popular Dominicano</td><td class="p-2">Cuenta de Ahorros No. 818190076</td><td class="p-2">Vianelys Restituyo Paulino</td></tr>
+     <tr><td class="p-2 font-medium">Pasarela PayPal</td><td class="p-2">Cuenta Digital Internacional</td><td class="p-2">Notificada oficialmente en el portal</td></tr>
+    </tbody></table></div>
+   <p><strong>4.2. Exención Absoluta por Depósitos No Autorizados:</strong> La EMPRESA <strong>NO</strong> reconoce ni se hace responsable bajo ninguna circunstancia por depósitos o transferencias realizados a cuentas de terceros, intermediarios no autorizados o números de cuenta distintos a los señalados taxativamente en la cláusula 4.1.</p>
 
    <h3>CLÁUSULA QUINTA: CALENDARIO Y POLÍTICAS DE PROCESAMIENTO DE RETIROS</h3>
-   <p><strong>5.1. Retiros Ordinarios:</strong> Las solicitudes de retiro de efectivo mediante transferencia bancaria enviadas de lunes a jueves serán procesadas dentro de los plazos operativos establecidos por la PLATAFORMA.</p>
-   <p><strong>5.2. Regla Especial de Viernes, Fines de Semana y Días Feriados:</strong> Todo retiro solicitado durante los días viernes, sábados, domingos o días feriados nacionales en la República Dominicana se procesará formalmente a partir de las 10:00 a.m. del primer día hábil siguiente (lunes o día laborable posterior al festivo).</p>
+   <p><strong>5.1. Retiros Ordinarios:</strong> Las solicitudes de retiro de efectivo mediante transferencia bancaria enviadas de lunes a jueves serán procesadas dentro de los plazos operativos estándar de la PLATAFORMA.</p>
+   <p><strong>5.2. Regla Especial de Viernes, Fines de Semana y Días Feriados:</strong> Todo retiro solicitado durante los días viernes, sábados, domingos o días feriados nacionales en la República Dominicana será procesado formalmente a partir de las 10:00 a.m. del primer día hábil siguiente (lunes o día laborable posterior al festivo). El USUARIO exonera a la EMPRESA de cualquier reclamación por demoras imputables a los ciclos de compensación interbancaria (ACH o Pagos Al Instante BCRD).</p>
 
    <h3>CLÁUSULA SEXTA: AUTORIZACIONES EXPRESAS Y BURÓS DE CRÉDITO</h3>
-   <p><strong>6.1. Consulta de Historial Crediticio:</strong> El USUARIO autoriza de manera expresa, libre e incondicional a INVERSIONES F Y E POP a consultar, verificar y evaluar su comportamiento crediticio en las bases de datos de la Sociedad de Información Crediticia (Buró de Crédito) o similares, conforme a la Ley No. 172-13.</p>
+   <p><strong>6.1. Consulta de Historial Crediticio:</strong> El USUARIO autoriza de manera expresa, libre e incondicional a INVERSIONES F Y E POP a consultar, verificar y evaluar su comportamiento crediticio en las bases de datos de las Sociedades de Información Crediticia (Burós de Crédito como TransUnion, Datacrédito o similares), conforme a los postulados de la Ley No. 172-13.</p>
    <p><strong>6.2. Consentimiento para el Tratamiento de Datos:</strong> De conformidad con la Ley No. 172-13, el USUARIO autoriza el tratamiento automatizado de sus datos personales y financieros con fines de validación de identidad, prevención de lavado de activos y gestión del servicio contratado.</p>
 
    <h3>CLÁUSULA SÉPTIMA: POLÍTICA RIGUROSA DE SUSPENSIÓN Y CANCELACIÓN DE CUENTA</h3>
-   <p>La EMPRESA se reserva el derecho exclusivo de suspender, inhabilitar de forma temporal o cancelar definitivamente la cuenta del USUARIO, de forma inmediata y sin necesidad de intimación ni resolución judicial previa, en los siguientes casos:</p>
+   <p>La EMPRESA se reserva el derecho exclusivo de suspender, inhabilitar de forma temporal o cancelar definitivamente la cuenta del USUARIO, de forma inmediata y sin necesidad de intimación ni requerimiento judicial previo, en los siguientes casos:</p>
    <ol class="list-decimal ml-5">
     <li><strong>Fraude o Suplantación:</strong> Detección de fraude, intento de estafa o suplantación de identidad.</li>
     <li><strong>Uso Indebido de Tecnología:</strong> Uso de bots, scrapers, exploits o software automatizado no autorizado dentro del sitio web.</li>
@@ -245,8 +253,8 @@ body{top:0!important}
    </ol>
 
    <h3>CLÁUSULA OCTAVA: LIMITACIÓN EXPRESA DE RESPONSABILIDAD</h3>
-   <p><strong>8.1. Fallas Técnicas e Interrupciones de Terceros:</strong> La EMPRESA no garantiza el acceso ininterrumpido a la PLATAFORMA y queda exenta de responsabilidad por fallas en las redes de telecomunicaciones, servidores de alojamiento (GitHub Pages u otros), interrupciones en los sistemas del Banco Popular Dominicano, PayPal o demoras del Sistema de Pagos de la República Dominicana (SIPAP). </p>
-   <p><strong>8.2. Caso Fortuito y Fuerza Mayor:</strong> Ninguna de las partes será responsable por el incumplimiento derivado de eventos de caso fortuito o fuerza mayor, incluyendo pero no limitándose a desastres naturales, ciberataques internacionales o regulaciones gubernamentales sobresvenidas.</p>
+   <p><strong>8.1. Fallas Técnicas e Interrupciones de Terceros:</strong> La EMPRESA no garantiza el acceso ininterrumpido a la PLATAFORMA y queda exenta de responsabilidad por fallas en las redes de telecomunicaciones, servidores de alojamiento (GitHub Pages u otros), interrupciones en los sistemas del Banco Popular Dominicano, PayPal o demoras del Sistema de Pagos de la República Dominicana (SIPARD).</p>
+   <p><strong>8.2. Caso Fortuito y Fuerza Mayor:</strong> Ninguna de las partes será responsable por el incumplimiento derivado de eventos de caso fortuito o fuerza mayor, incluyendo pero no limitándose a desastres naturales, fallas eléctricas masivas, ciberataques internacionales o regulaciones gubernamentales sobrevenidas.</p>
 
    <h3>CLÁUSULA NOVENA: PROPIEDAD INTELECTUAL</h3>
    <p>Todos los derechos de propiedad intelectual, marcas, logotipos, código fuente, nombres comerciales y contenidos alojados en la PLATAFORMA pertenecen de manera exclusiva a <strong>INVERSIONES F Y E POP</strong>. Queda terminantemente prohibida su reproducción, copia o distribución sin autorización previa por escrito.</p>
@@ -255,7 +263,7 @@ body{top:0!important}
    <p><strong>10.1. Ley Aplicable:</strong> El presente Contrato se interpreta y rige íntegramente por las leyes vigentes en la República Dominicana.</p>
    <p><strong>10.2. Jurisdicción Competente:</strong> Para todo lo relativo a la ejecución, interpretación o solución de controversias derivadas del presente Contrato, las partes se someten expresamente a la jurisdicción de los Tribunales ordinarios del Distrito Judicial de Puerto Plata, República Dominicana, renunciando a cualquier otro fuero que pudiera corresponderles.</p>
 
-   <p class="!text-xs !text-slate-400 text-center border-t border-slate-200 pt-4 mt-6">© INVERSIONES F Y E POP. Todos los derechos reservados.<br>Documento legal respaldado bajo la legislación dominicana.</p>
+   <p class="!text-xs !text-slate-400 text-center border-t border-slate-200 pt-4 mt-6">© INVERSIONES F Y E POP. Todos los derechos reservados.<br>Documento legal respaldado bajo la legislación de la República Dominicana.</p>
   </div>
   <div class="p-4 border-t border-slate-200 space-y-3">
    <p id="scroll-hint" class="text-[11px] text-amber-600 font-semibold"><i class="fa-solid fa-arrow-down mr-1"></i>Lee hasta el final para activar la casilla de firma.</p>
@@ -288,58 +296,64 @@ try{ sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_
 
 /* ---------- Módulos y permisos ---------- */
 const MODULES={
-  resumen:{t:'Resumen',i:'fa-house'},
-  prestamos:{t:'Préstamos',i:'fa-hand-holding-dollar'},
-  ahorro:{t:'Ahorro',i:'fa-piggy-bank'},
-  inversiones:{t:'Inversiones',i:'fa-chart-line'},
-  divisas:{t:'Cambio de divisas',i:'fa-money-bill-transfer'},
-  perfil:{t:'Mi perfil',i:'fa-user'},
-  usuarios:{t:'Usuarios y permisos',i:'fa-user-shield'}
+ resumen:{t:'Resumen',i:'fa-house'},
+ credito:{t:'Crédito pendiente',i:'fa-hand-holding-dollar'},
+ ahorro:{t:'Ahorro',i:'fa-piggy-bank'},
+ certificado:{t:'Certificado',i:'fa-certificate'},
+ divisas:{t:'Cambio de divisas',i:'fa-money-bill-transfer'},
+ perfil:{t:'Mi perfil',i:'fa-user'},
+ usuarios:{t:'Usuarios y permisos',i:'fa-user-shield'}
 };
-const ASIGNABLES=['prestamos','ahorro','inversiones','divisas'];
-const POR_TIPO={ahorista:['ahorro'],inversionista:['inversiones'],cambio:['divisas']};
+const ASIGNABLES=['credito','ahorro','certificado','divisas']; // los configura el admin
+const POR_TIPO={ahorista:['ahorro'],inversionista:['certificado'],cambio:['divisas']};
+const STAFF_EMAILS={'flaquitabella875@gmail.com':'secretaria'}; // secretaria: edita ahorro, certificado, crédito y usuarios con código
+const isSecretaria=u=>!!u&&!!STAFF_EMAILS[String(u.email||'').trim().toLowerCase()];
+const PORTAL=new URLSearchParams(location.search).get('portal'); // ?portal=secretaria | ?portal=admin
 const TIPOS={ahorista:'Cliente de ahorro',inversionista:'Cliente inversionista',cambio:'Cliente de cambio de divisas'};
 
 let me=null, cedulaVerificada=false, pendingUserCedula=null, currentModule='resumen';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
-const ROOT_EMAIL='inversionesfepop@gmail.com';
+const ROOT_EMAIL='inversionesfepop@gmail.com'; // único usuario que asigna roles y permisos
 const isRoot=u=>!!u&&String(u.email||'').trim().toLowerCase()===ROOT_EMAIL;
+const isStaff=u=>isRoot(u)||isSecretaria(u);
 function can(u,m){
-  if(!u)return false;
-  if(m==='usuarios')return isRoot(u);
-  if(u.rol==='admin'||isRoot(u))return true;
-  if(m==='resumen'||m==='perfil')return true;
-  if(u.tipo_documento==='pasaporte'&&u.doc_estado!=='verificado')return false;
-  return (u.permisos||[]).includes(m);
+ if(!u)return false;
+ if(m==='usuarios')return isStaff(u);
+ if(isRoot(u))return true;
+ if(isSecretaria(u))return ['resumen','perfil','ahorro','certificado','credito'].includes(m);
+ if(u.rol==='admin')return true;
+ if(m==='resumen'||m==='perfil')return true;
+ if(u.tipo_documento==='pasaporte'&&u.doc_estado!=='verificado')return false;
+ return (u.permisos||[]).includes(m);
 }
 
 function notify(msg,type='info'){
-  const bg={error:'#DC2626',warning:'#D97706',success:'#15803d'}[type]||'#1E5F2D';
-  if(window.Toastify)Toastify({text:msg,duration:4000,gravity:'top',position:'right',style:{background:bg,borderRadius:'12px',fontSize:'14px',fontWeight:'600'}}).showToast();
-  else alert(msg);
+ const bg={error:'#DC2626',warning:'#D97706',success:'#15803d'}[type]||'#1E5F2D';
+ if(window.Toastify)Toastify({text:msg,duration:4000,gravity:'top',position:'right',style:{background:bg,borderRadius:'12px',fontSize:'14px',fontWeight:'600'}}).showToast();
+ else alert(msg);
 }
 
 /* ---------- Cédula ---------- */
 function formatCedulaInput(el){
-  let v=el.value.replace(/\D/g,'').slice(0,11);
-  if(v.length>10)v=v.slice(0,3)+'-'+v.slice(3,10)+'-'+v.slice(10);
-  else if(v.length>3)v=v.slice(0,3)+'-'+v.slice(3);
-  el.value=v;
+ let v=el.value.replace(/\D/g,'').slice(0,11);
+ if(v.length>10)v=v.slice(0,3)+'-'+v.slice(3,10)+'-'+v.slice(10);
+ else if(v.length>3)v=v.slice(0,3)+'-'+v.slice(3);
+ el.value=v;
 }
 function validarCedulaDominicana(c){
-  const l=String(c||'').replace(/-/g,'').trim();
-  if(!/^\d{11}$/.test(l))return false;
-  const p=[1,2,1,2,1,2,1,2,1,2];let s=0;
-  for(let i=0;i<10;i++){const m=+l[i]*p[i];s+=m>=10?Math.floor(m/10)+m%10:m;}
-  return (10-s%10)%10===+l[10];
+ const l=String(c||'').replace(/-/g,'').trim();
+ if(!/^\d{11}$/.test(l))return false;
+ const p=[1,2,1,2,1,2,1,2,1,2];let s=0;
+ for(let i=0;i<10;i++){const m=+l[i]*p[i];s+=m>=10?Math.floor(m/10)+m%10:m;}
+ return (10-s%10)%10===+l[10];
 }
 function setCed(ok,msg,err){
-  cedulaVerificada=ok;
-  const st=$('cedula-status'),b=$('btn-register');
-  st.textContent=msg;st.className='text-xs mt-1 '+(ok?'text-green-600':err?'text-red-600':'text-slate-500');
-  b.disabled=!ok;b.classList.toggle('opacity-50',!ok);b.classList.toggle('cursor-not-allowed',!ok);
+ cedulaVerificada=ok;
+ const st=$('cedula-status'),b=$('btn-register');
+ st.textContent=msg;st.className='text-xs mt-1 '+(ok?'text-green-600':err?'text-red-600':'text-slate-500');
+ b.disabled=!ok;b.classList.toggle('opacity-50',!ok);b.classList.toggle('cursor-not-allowed',!ok);
 }
 
 /* ---------- Documento: cédula o pasaporte ---------- */
@@ -348,290 +362,425 @@ const fmtCed=d=>/^\d{11}$/.test(d)?d.slice(0,3)+'-'+d.slice(3,10)+'-'+d.slice(10
 const findDoc=(users,raw)=>{const k=docKey(raw);return users.find(x=>x.cedula===fmtCed(k)||x.cedula==='P-'+k);};
 let regMode='cedula';
 function setDocMode(m){
-  regMode=m;const ext=m==='pasaporte';
-  $('reg-block-ced').classList.toggle('hidden',ext);$('reg-block-pas').classList.toggle('hidden',!ext);
-  $('reg-cedula').required=!ext;
-  ['reg-pais','reg-pasaporte','reg-doc-pasaporte','reg-doc-recibo'].forEach(i=>$(i).required=ext);
-  setCed(false,'');
+ regMode=m;const ext=m==='pasaporte';
+ $('reg-block-ced').classList.toggle('hidden',ext);$('reg-block-pas').classList.toggle('hidden',!ext);
+ $('reg-cedula').required=!ext;
+ ['reg-pais','reg-pasaporte','reg-doc-pasaporte','reg-doc-recibo'].forEach(i=>$(i).required=ext);
+ setCed(false,'');
 }
 async function toBlob(file){
-  if(file.type==='application/pdf'){if(file.size>2e6)throw new Error('El PDF no debe superar 2 MB.');return file;}
-  if(!file.type.startsWith('image/'))throw new Error('Usa una foto (JPG o PNG) o un PDF.');
-  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('Imagen no válida.'));i.src=URL.createObjectURL(file);});
-  const k=Math.min(1,1400/Math.max(img.width,img.height)),c=document.createElement('canvas');
-  c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
-  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-  return await new Promise(r=>c.toBlob(r,'image/jpeg',.72));
+ if(file.type==='application/pdf'){if(file.size>2e6)throw new Error('El PDF no debe superar 2 MB.');return file;}
+ if(!file.type.startsWith('image/'))throw new Error('Usa una foto (JPG o PNG) o un PDF.');
+ const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('Imagen no válida.'));i.src=URL.createObjectURL(file);});
+ const k=Math.min(1,1400/Math.max(img.width,img.height)),c=document.createElement('canvas');
+ c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+ c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+ return await new Promise(r=>c.toBlob(r,'image/jpeg',.72));
 }
 const blobToData=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b);});
 async function storeDoc(id,kind,file){
-  const b=await toBlob(file),ext=b.type==='application/pdf'?'pdf':'jpg',path=id+'/'+kind+'.'+ext;
-  if(sb){try{const{error}=await sb.storage.from('documentos').upload(path,b,{upsert:true,contentType:b.type});
-   if(!error)return 'sb:'+path;console.warn('Storage:',error.message);}catch(e){console.warn(e);}}
-  try{localStorage.setItem('fye_doc_'+id+'_'+kind,await blobToData(b));return 'local:'+kind;}
-  catch(e){throw new Error('No hay espacio para guardar el documento. Usa una imagen más liviana.');}
+ const b=await toBlob(file),ext=b.type==='application/pdf'?'pdf':'jpg',path=id+'/'+kind+'.'+ext;
+ if(sb){try{const{error}=await sb.storage.from('documentos').upload(path,b,{upsert:true,contentType:b.type});
+  if(!error)return 'sb:'+path;console.warn('Storage:',error.message);}catch(e){console.warn(e);}}
+ try{localStorage.setItem('fye_doc_'+id+'_'+kind,await blobToData(b));return 'local:'+kind;}
+ catch(e){throw new Error('No hay espacio para guardar el documento. Usa una imagen más liviana.');}
 }
 async function viewDoc(id,kind){
-  if(!can(me,'usuarios'))return;
-  const u=(await getUsers()).find(x=>x.id===id),ref=u&&u.docs&&u.docs[kind];
-  if(!ref)return notify('Documento no disponible.','warning');
-  let url=null;
-  if(ref.startsWith('sb:')&&sb){const{data}=await sb.storage.from('documentos').createSignedUrl(ref.slice(3),120);url=data&&data.signedUrl;}
-  else if(ref.startsWith('local:')){const d=localStorage.getItem('fye_doc_'+id+'_'+kind);if(d)url=URL.createObjectURL(await(await fetch(d)).blob());}
-  if(!url)return notify('No se pudo abrir el documento en este dispositivo.','warning');
-  window.open(url,'_blank');
+ if(!can(me,'usuarios'))return;
+ const u=(await getUsers()).find(x=>x.id===id),ref=u&&u.docs&&u.docs[kind];
+ if(!ref)return notify('Documento no disponible.','warning');
+ let url=null;
+ if(ref.startsWith('sb:')&&sb){const{data}=await sb.storage.from('documentos').createSignedUrl(ref.slice(3),120);url=data&&data.signedUrl;}
+ else if(ref.startsWith('local:')){const d=localStorage.getItem('fye_doc_'+id+'_'+kind);if(d)url=URL.createObjectURL(await(await fetch(d)).blob());}
+ if(!url)return notify('No se pudo abrir el documento en este dispositivo.','warning');
+ window.open(url,'_blank');
 }
-async function setDocEstado(ced,estado){
-  if(!can(me,'usuarios'))return;
-  const u=(await getUsers()).find(x=>x.cedula===ced);if(!u)return;
-  u.doc_estado=estado;await saveUser(u);notify('Verificación actualizada: '+estado+'.','success');
+const setDocEstado=(c,e)=>withCode(()=>_setDocEstado(c,e));
+async function _setDocEstado(ced,estado){
+ if(!can(me,'usuarios'))return;
+ const u=(await getUsers()).find(x=>x.cedula===ced);if(!u)return;
+ u.doc_estado=estado;await saveUser(u);notify('Verificación actualizada: '+estado+'.','success');
 }
 
 /* ---------- Almacenamiento ---------- */
 function getLocalUsers(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch{return[];}}
 function saveLocalUsers(u){localStorage.setItem(STORAGE_KEY,JSON.stringify(u));}
 async function getUsers(){
-  const local=getLocalUsers();
-  if(!sb)return local;
-  try{
-   const{data,error}=await sb.from('clientes').select('*');
-   if(error||!Array.isArray(data))return local;
-   const m=new Map();
-   [...data,...local].forEach(u=>{const o=m.get(u.cedula);
-    if(!o||(u.updated_at||u.created_at||'')>=(o.updated_at||o.created_at||''))m.set(u.cedula,u);});
-   const all=[...m.values()];saveLocalUsers(all);return all;
-  }catch(e){console.warn('Supabase no disponible, uso local',e);return local;}
+ const local=getLocalUsers();
+ if(!sb)return local;
+ try{
+  const{data,error}=await sb.from('clientes').select('*');
+  if(error||!Array.isArray(data))return local;
+  const m=new Map(); // fusiona remoto y local; gana el más reciente
+  [...data,...local].forEach(u=>{const o=m.get(u.cedula);
+   if(!o||(u.updated_at||u.created_at||'')>=(o.updated_at||o.created_at||''))m.set(u.cedula,u);});
+  const all=[...m.values()];saveLocalUsers(all);return all;
+ }catch(e){console.warn('Supabase no disponible, uso local',e);return local;}
 }
 async function saveUser(u){
-  u.updated_at=new Date().toISOString();
-  const all=getLocalUsers();const i=all.findIndex(x=>x.cedula===u.cedula);
-  if(i>=0)all[i]=u;else all.push(u);saveLocalUsers(all);
-  if(!sb)return;
-  try{const{error}=await sb.from('clientes').upsert([u],{onConflict:'cedula'});
-   if(error)console.warn('Supabase:',error.message);}catch(e){console.warn(e);}
+ u.updated_at=new Date().toISOString();
+ const all=getLocalUsers();const i=all.findIndex(x=>x.cedula===u.cedula);
+ if(i>=0)all[i]=u;else all.push(u);saveLocalUsers(all);
+ if(!sb)return;
+ try{const{error}=await sb.from('clientes').upsert([u],{onConflict:'cedula'});
+  if(error)console.warn('Supabase:',error.message);}catch(e){console.warn(e);}
 }
 async function hashPw(pw,salt){
-  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+pw));
-  return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+pw));
+ return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
 
 /* ---------- Navegación ---------- */
 function toggleMobileMenu(){
-  const m=$('mobile-menu');m.classList.toggle('hidden');
-  $('menu-icon').className=m.classList.contains('hidden')?'fa-solid fa-bars text-xl':'fa-solid fa-xmark text-xl';
+ const m=$('mobile-menu');m.classList.toggle('hidden');
+ $('menu-icon').className=m.classList.contains('hidden')?'fa-solid fa-bars text-xl':'fa-solid fa-xmark text-xl';
 }
 function switchTab(t){
-  ['login','registro'].forEach(n=>$('tab-'+n).classList.toggle('hidden',n!==t));
+ ['login','registro'].forEach(n=>$('tab-'+n).classList.toggle('hidden',n!==t));
 }
 function showSection(s){
-  if(s==='inicio'&&me)s='panel';
-  if(s==='panel'&&!me)s='inicio';
-  ['inicio','quienes-somos','panel'].forEach(n=>$('section-'+n).classList.toggle('hidden',n!==s));
-  window.scrollTo({top:0,behavior:'smooth'});
+ if(s==='inicio'&&me)s='panel';
+ if(s==='panel'&&!me)s='inicio';
+ if(s==='quienes-somos')loadHistoria();
+ ['inicio','quienes-somos','panel'].forEach(n=>$('section-'+n).classList.toggle('hidden',n!==s));
+ window.scrollTo({top:0,behavior:'smooth'});
 }
 function updateHeader(){
-  document.querySelectorAll('.js-guest').forEach(e=>e.classList.toggle('hidden',!!me));
-  document.querySelectorAll('.js-auth').forEach(e=>e.classList.toggle('hidden',!me));
-  document.querySelectorAll('.js-name').forEach(e=>e.textContent=me?(me.nombre||me.cedula):'');
+ document.querySelectorAll('.js-guest').forEach(e=>e.classList.toggle('hidden',!!me));
+ document.querySelectorAll('.js-auth').forEach(e=>e.classList.toggle('hidden',!me));
+ document.querySelectorAll('.js-name').forEach(e=>e.textContent=me?(me.nombre||me.cedula):'');
 }
 function openProfileModal(){$('profile-modal').classList.remove('hidden');$('profile-modal').classList.add('flex');}
 function closeProfileModal(){$('profile-modal').classList.add('hidden');$('profile-modal').classList.remove('flex');}
 
 /* ---------- Sesión y panel ---------- */
+let idleT;
+function resetIdle(){clearTimeout(idleT);if(me)idleT=setTimeout(()=>{logout();notify('Sesión cerrada por inactividad.','warning');},15*60000);}
+['click','keydown','touchstart','scroll'].forEach(ev=>addEventListener(ev,resetIdle,{passive:true}));
 function enterApp(user,mod='resumen'){
-  me=user;sessionStorage.setItem(SESSION_KEY,user.cedula);
-  updateHeader();renderMenu();openModule(mod);showSection('panel');
+ me=user;sessionStorage.setItem(SESSION_KEY,user.cedula);resetIdle();
+ updateHeader();renderMenu();openModule(mod);showSection('panel');
 }
 function logout(){
-  me=null;sessionStorage.removeItem(SESSION_KEY);updateHeader();
-  switchTab('login');showSection('inicio');notify('Sesión cerrada.','info');
+ me=null;sessionStorage.removeItem(SESSION_KEY);updateHeader();
+ switchTab('login');showSection('inicio');notify('Sesión cerrada.','info');
 }
 function renderMenu(){
-  $('p-rol').textContent=isRoot(me)?'Usuario principal':me.rol==='admin'?'Administrador':(TIPOS[me.tipo_cliente]||'Cliente');
-  const keys=Object.keys(MODULES).filter(k=>can(me,k));
-  $('p-menu').innerHTML=keys.map(k=>`<button class="menu-btn ${k===currentModule?'on':''}" onclick="openModule('${k}')"><i class="fa-solid ${MODULES[k].i} w-5 text-center"></i>${MODULES[k].t}</button>`).join('');
+ $('p-rol').textContent=isRoot(me)?'Usuario principal':isSecretaria(me)?'Secretaría':me.rol==='admin'?'Administrador':(TIPOS[me.tipo_cliente]||'Cliente');
+ const keys=Object.keys(MODULES).filter(k=>can(me,k));
+ $('p-menu').innerHTML=keys.map(k=>`<button class="menu-btn ${k===currentModule?'on':''}" onclick="openModule('${k}')"><i class="fa-solid ${MODULES[k].i} w-5 text-center"></i>${MODULES[k].t}</button>`).join('');
 }
 function openModule(k){
-  if(!can(me,k)){notify('No tienes permiso para este módulo.','error');k='resumen';}
-  currentModule=k;renderMenu();
-  const c=$('p-content');
-  if(k==='resumen')c.innerHTML=viewResumen();
-  else if(k==='perfil')c.innerHTML=viewPerfil();
-  else if(k==='usuarios'){c.innerHTML='<p class="text-slate-500 text-sm">Cargando usuarios…</p>';viewUsuarios();}
-  else c.innerHTML=`<div class="text-center py-12"><i class="fa-solid ${MODULES[k].i} text-4xl text-fye-verde mb-4"></i><h2 class="text-xl font-bold">${MODULES[k].t}</h2><p class="text-slate-500 text-sm mt-2">Este módulo estará disponible muy pronto.</p></div>`;
+ if(!can(me,k)){notify('No tienes permiso para este módulo.','error');k='resumen';}
+ currentModule=k;renderMenu();
+ const c=$('p-content');
+ if(k==='resumen'){c.innerHTML=viewResumen();fillBalances();}
+ else if(k==='perfil')c.innerHTML=viewPerfil();
+ else if(k==='usuarios'){c.innerHTML='<p class="text-slate-500 text-sm">Cargando usuarios…</p>';viewUsuarios();}
+ else if(['ahorro','certificado','credito'].includes(k))viewBalance(k);
+ else c.innerHTML=`<div class="text-center py-12"><i class="fa-solid ${MODULES[k].i} text-4xl text-fye-verde mb-4"></i>
+  <h2 class="text-xl font-bold">${MODULES[k].t}</h2>
+  <p class="text-slate-500 text-sm mt-2">Este módulo estará disponible muy pronto.</p></div>`;
 }
 function viewResumen(){
-  const cards=Object.keys(MODULES).filter(k=>k!=='resumen'&&can(me,k)).map(k=>
-   `<button onclick="openModule('${k}')" class="text-left p-4 rounded-2xl border border-slate-200 bg-white hover:border-fye-verde transition"><i class="fa-solid ${MODULES[k].i} text-fye-verde text-xl mb-2"></i><p class="font-semibold text-sm">${MODULES[k].t}</p></button>`).join('');
-  return `<h2 class="text-2xl font-bold">Bienvenido(a), ${esc(me.nombre)}</h2><p class="text-sm text-slate-500 mt-1">${esc(TIPOS[me.tipo_cliente]||'Usuario principal')} · ${me.tipo_documento==='pasaporte'?'Pasaporte':'Cédula'} ${esc(me.cedula.replace(/^P-/,''))}</p>${me.tipo_documento==='pasaporte'&&me.doc_estado!=='verificado'?`<div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-sm text-amber-800">${me.doc_estado==='rechazado'?'Tus documentos fueron rechazados. Contacta a soporte para revisar tu caso.':'Estamos revisando tus documentos. Habilitaremos tus servicios cuando se verifiquen.'}</div>`:''}<h3 class="font-semibold mt-8 mb-3">Tus servicios</h3><div class="grid grid-cols-2 lg:grid-cols-3 gap-3">${cards}</div>`;
+ const cards=Object.keys(MODULES).filter(k=>k!=='resumen'&&can(me,k)).map(k=>
+  `<button onclick="openModule('${k}')" class="text-left p-4 rounded-2xl border border-slate-200 bg-white hover:border-fye-verde transition">
+   <i class="fa-solid ${MODULES[k].i} text-fye-verde text-xl mb-2"></i><p class="font-semibold text-sm">${MODULES[k].t}</p></button>`).join('');
+ return `<h2 class="text-2xl font-bold">Bienvenido(a), ${esc(me.nombre)}</h2>
+  <p class="text-sm text-slate-500 mt-1">${esc(TIPOS[me.tipo_cliente]||'Usuario principal')} · ${me.tipo_documento==='pasaporte'?'Pasaporte':'Cédula'} ${esc(me.cedula.replace(/^P-/,''))}</p>
+  ${me.tipo_documento==='pasaporte'&&me.doc_estado!=='verificado'?`<div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-sm text-amber-800">${me.doc_estado==='rechazado'?'Tus documentos fueron rechazados. Contáctanos para enviar nuevos documentos.':'Estamos revisando tu pasaporte y tu recibo. Habilitaremos tus servicios cuando se verifiquen.'}</div>`:''}
+  <h3 class="font-semibold mt-8 mb-3">Tus servicios</h3>
+  <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">${cards}</div>
+  <div id="resumen-balances" class="mt-8"></div>`;
 }
 function viewPerfil(){
-  const f=[['Nombre',me.nombre],[me.tipo_documento==='pasaporte'?'Pasaporte':'Cédula',me.cedula.replace(/^P-/,'')],...(me.pais?[['País',me.pais]]:[]),['Email',me.email],['Teléfono',me.telefono],['Dirección',me.direccion],['Tipo de cliente',TIPOS[me.tipo_cliente]||''],['Rol',isRoot(me)?'Usuario principal':me.rol==='admin'?'Administrador':'Cliente']];
-  return `<h2 class="text-xl font-bold mb-4">Mi perfil</h2><dl class="divide-y divide-slate-100">`+
-   f.map(([a,b])=>`<div class="py-3 sm:flex gap-4"><dt class="sm:w-40 text-xs font-bold text-slate-500">${a}</dt><dd class="text-sm">${esc(b)||'—'}</dd></div>`).join('')+`</dl>`;
+ const f=[['Nombre',me.nombre],[me.tipo_documento==='pasaporte'?'Pasaporte':'Cédula',me.cedula.replace(/^P-/,'')],...(me.pais?[['País',me.pais]]:[]),['Email',me.email],['Teléfono',me.telefono],['Dirección',me.direccion],['Tipo de cliente',TIPOS[me.tipo_cliente]||'—'],['Rol',isRoot(me)?'Usuario principal':me.rol==='admin'?'Administrador':'Cliente']];
+ return `<h2 class="text-xl font-bold mb-4">Mi perfil</h2><dl class="divide-y divide-slate-100">`+
+  f.map(([a,b])=>`<div class="py-3 sm:flex gap-4"><dt class="sm:w-40 text-xs font-bold text-slate-500">${a}</dt><dd class="text-sm">${esc(b)||'—'}</dd></div>`).join('')+`</dl>`;
 }
 async function viewUsuarios(){
-  if(!can(me,'usuarios'))return;
-  const users=await getUsers();
-  const rows=users.map(u=>{
-   const root=isRoot(u), adm=root||u.rol==='admin';
-   return `<div class="p-4 rounded-2xl border border-slate-200 bg-white space-y-3"><div class="flex flex-wrap justify-between gap-2"><div><p class="font-semibold text-sm">${esc(u.nombre||'(perfil incompleto)')}${root?' <span class="text-xs text-fye-verde">(usuario principal)</span>':''}</p><p class="text-xs text-slate-500">${esc(u.cedula)} · ${esc(u.email||'sin email')} · ${esc(TIPOS[u.tipo_cliente]||'Sin tipo')}</p></div><select class="inp !w-auto !py-1.5" ${root?'disabled title="El usuario principal siempre es administrador"':''} onchange="setRol('${u.cedula}',this.value)"><option value="cliente" ${adm?'':'selected'}>Cliente</option><option value="admin" ${adm?'selected':''}>Administrador</option></select></div>${u.tipo_documento==='pasaporte'?`<div class="flex flex-wrap items-center gap-3 text-xs p-3 rounded-xl bg-slate-50"><span class="font-semibold">Extranjero (${esc(u.pais||'—')}):</span><button class="underline text-fye-verde font-semibold" onclick="viewDoc('${u.id}','pasaporte')">Ver pasaporte</button><button class="underline text-fye-verde font-semibold" onclick="viewDoc('${u.id}','recibo')">Ver recibo</button><select class="inp !w-auto !py-1" onchange="setDocEstado('${u.cedula}',this.value)">${['pendiente','verificado','rechazado'].map(s=>`<option value="${s}" ${u.doc_estado===s?'selected':''}>${s}</option>`).join('')}</select></div>':''}<div class="flex flex-wrap gap-x-5 gap-y-2">${ASIGNABLES.map(m=>`<label class="flex items-center gap-2 text-xs font-medium ${adm?'opacity-50':''}"><input type="checkbox" ${adm||(u.permisos||[]).includes(m)?'checked':''} ${adm?'disabled':''} onchange="setPerm('${u.cedula}','${m}',this.checked)">${MODULES[m].t}</label>`).join('')}</div>${adm?'<p class="text-[11px] text-slate-400">Los administradores ven todos los módulos. Solo el usuario principal gestiona roles.</p>':''}</div>`;}).join('');
-  if(currentModule==='usuarios')$('p-content').innerHTML=`<h2 class="text-xl font-bold">Usuarios y permisos</h2><p class="text-sm text-slate-500 mt-1 mb-5">Elige qué módulos ve cada usuario. Los cambios se guardan al marcar.</p><div class="space-y-3">${rows}</div>`;
+ if(!can(me,'usuarios'))return;
+ const users=await getUsers();
+ const rows=users.map(u=>{
+  const root=isRoot(u), adm=root||u.rol==='admin';
+  return `<div class="p-4 rounded-2xl border border-slate-200 bg-white space-y-3">
+   <div class="flex flex-wrap justify-between gap-2">
+    <div><p class="font-semibold text-sm">${esc(u.nombre||'(perfil incompleto)')}${root?' <span class="text-xs text-fye-verde">(usuario principal)</span>':''}</p>
+     <p class="text-xs text-slate-500">${esc(u.cedula)} · ${esc(u.email||'sin email')} · ${esc(TIPOS[u.tipo_cliente]||'Sin tipo')}</p></div>
+    <select class="inp !w-auto !py-1.5" ${root||!isRoot(me)?'disabled title="Solo el usuario principal cambia roles"':''} onchange="setRol('${u.cedula}',this.value)">
+     <option value="cliente" ${adm?'':'selected'}>Cliente</option><option value="admin" ${adm?'selected':''}>Administrador</option></select>
+   </div>
+   ${u.tipo_documento==='pasaporte'?`<div class="flex flex-wrap items-center gap-3 text-xs p-3 rounded-xl bg-slate-50">
+    <span class="font-semibold">Extranjero (${esc(u.pais||'—')}):</span>
+    <button class="underline text-fye-verde font-semibold" onclick="viewDoc('${u.id}','pasaporte')">Ver pasaporte</button>
+    <button class="underline text-fye-verde font-semibold" onclick="viewDoc('${u.id}','recibo')">Ver recibo</button>
+    <select class="inp !w-auto !py-1" onchange="setDocEstado('${u.cedula}',this.value)">${['pendiente','verificado','rechazado'].map(s=>`<option value="${s}" ${u.doc_estado===s?'selected':''}>${s}</option>`).join('')}</select></div>`:''}
+   <div class="flex flex-wrap gap-x-5 gap-y-2">
+    ${ASIGNABLES.map(m=>`<label class="flex items-center gap-2 text-xs font-medium ${adm?'opacity-50':''}">
+     <input type="checkbox" ${adm||(u.permisos||[]).includes(m)?'checked':''} ${adm?'disabled':''} onchange="setPerm('${u.cedula}','${m}',this.checked)">${MODULES[m].t}</label>`).join('')}
+   </div>
+   ${adm?'<p class="text-[11px] text-slate-400">Los administradores ven todos los módulos. Solo el usuario principal gestiona roles.</p>':''}
+  </div>`;}).join('');
+ if(currentModule==='usuarios')$('p-content').innerHTML=`<h2 class="text-xl font-bold">Usuarios y permisos</h2>
+  <p class="text-sm text-slate-500 mt-1 mb-5">Elige qué módulos ve cada usuario. Los cambios se guardan al marcar.</p>
+  <div class="space-y-3">${rows}</div>`;
 }
-async function setPerm(ced,mod,on){
-  if(!can(me,'usuarios'))return;
-  const u=(await getUsers()).find(x=>x.cedula===ced);if(!u)return;
-  const s=new Set(u.permisos||[]);on?s.add(mod):s.delete(mod);
-  u.permisos=[...s];await saveUser(u);
-  notify('Permisos actualizados.','success');
+let pendingAction=null;
+async function withCode(action){
+ if(isRoot(me)||!isSecretaria(me))return action();
+ if(!sb)return notify('Se necesita conexión para enviar el código de verificación.','error');
+ try{const{error}=await sb.functions.invoke('send-code',{body:{usuario_id:me.id}});if(error)throw error;}
+ catch(e){viewUsuarios();return notify('No se pudo enviar el código. No se hizo ningún cambio.','error');}
+ pendingAction=action;
+ openSec(`<h2 class="text-xl font-bold">Código de verificación</h2>
+ <p class="text-sm text-slate-500 mt-1 mb-4">Te enviamos un código de 6 dígitos a tu correo y teléfono. Vence en 10 minutos.</p>
+ <form onsubmit="doCode(event)" class="space-y-3"><input id="code-in" required inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" class="inp text-center text-2xl tracking-widest">
+ <button ${BTN}>Confirmar cambio</button></form>
+ <button type="button" onclick="closeSec();pendingAction=null;viewUsuarios()" class="w-full mt-2 text-xs text-slate-500 py-2">Cancelar</button>`);
+}
+async function doCode(e){
+ e.preventDefault();
+ try{const{data,error}=await sb.functions.invoke('verify-code',{body:{usuario_id:me.id,codigo:$('code-in').value.trim()}});
+  if(error||!data||!data.ok)return notify('Código incorrecto o vencido.','error');}
+ catch(err){return notify('No se pudo verificar el código.','error');}
+ closeSec();const a=pendingAction;pendingAction=null;if(a)await a();
+}
+const setPerm=(c,m,o)=>withCode(()=>_setPerm(c,m,o));
+async function _setPerm(ced,mod,on){
+ if(!can(me,'usuarios'))return;
+ const u=(await getUsers()).find(x=>x.cedula===ced);if(!u)return;
+ const s=new Set(u.permisos||[]);on?s.add(mod):s.delete(mod);
+ u.permisos=[...s];await saveUser(u);
+ notify('Permisos actualizados.','success');
 }
 async function setRol(ced,rol){
-  if(!can(me,'usuarios'))return;
-  const u=(await getUsers()).find(x=>x.cedula===ced);if(!u||isRoot(u))return;
-  u.rol=rol==='admin'?'admin':'cliente';await saveUser(u);notify('Rol actualizado.','success');viewUsuarios();
+ if(!isRoot(me))return;
+ const u=(await getUsers()).find(x=>x.cedula===ced);if(!u||isRoot(u))return;
+ u.rol=rol==='admin'?'admin':'cliente';await saveUser(u);notify('Rol actualizado.','success');viewUsuarios();
 }
+
+/* ---------- Balances (Google Sheets) ---------- */
+// La hoja debe tener pestañas "ahorro", "certificado" y "credito", cada una con columnas: documento | concepto | monto
+const SHEET_ID='1YXNYtAVVV1b2-pDXX9UfPBQbXuTImHJW';
+const SHEET_TABS={ahorro:'ahorro',certificado:'certificado',credito:'credito'};
+const money=n=>'RD$ '+n.toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2});
+function parseCSV(t){
+ const rows=[];let r=[],c='',q=false;
+ for(let i=0;i<t.length;i++){const ch=t[i];
+  if(q){if(ch==='"'&&t[i+1]==='"'){c+='"';i++;}else if(ch==='"')q=false;else c+=ch;}
+  else if(ch==='"')q=true;else if(ch===','){r.push(c);c='';}
+  else if(ch==='\n'){r.push(c);rows.push(r);r=[];c='';}else if(ch!=='\r')c+=ch;}
+ if(c||r.length){r.push(c);rows.push(r);}return rows;
+}
+async function loadTab(tab){
+ const res=await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(tab));
+ if(!res.ok)throw new Error('hoja');
+ const rows=parseCSV(await res.text()),h=rows.shift().map(x=>x.trim().toLowerCase()),ix=n=>h.indexOf(n);
+ if(ix('documento')<0||ix('monto')<0)throw new Error('columnas');
+ return rows.map(r=>({doc:docKey(r[ix('documento')]),concepto:r[ix('concepto')]||'',monto:parseFloat(String(r[ix('monto')]||'0').replace(/[^0-9.\-]/g,''))||0}));
+}
+const myDoc=()=>docKey(me.cedula.replace(/^P-/,''));
+const BAL_ERR='<p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">No se pudo leer la hoja de balances. Debe ser una hoja de Google compartida, con las pestañas ahorro, certificado y credito, y columnas documento, concepto y monto.</p>';
+async function fillBalances(){
+ const mods=['ahorro','certificado','credito'].filter(k=>can(me,k)&&!isStaff(me)),box=$('resumen-balances');
+ if(!box||!mods.length)return;
+ box.innerHTML='<p class="text-sm text-slate-500">Cargando balances…</p>';
+ try{
+  const d=await Promise.all(mods.map(async k=>({k,t:(await loadTab(SHEET_TABS[k])).filter(r=>r.doc===myDoc()).reduce((s,r)=>s+r.monto,0)})));
+  const total=d.filter(x=>x.k!=='credito').reduce((s,x)=>s+x.t,0);
+  box.innerHTML=`<h3 class="font-semibold mb-3">Mis balances</h3><table class="w-full text-sm"><tbody class="divide-y divide-slate-100">
+   ${d.map(x=>`<tr><td class="py-2.5">${MODULES[x.k].t}</td><td class="py-2.5 text-right font-semibold">${money(x.t)}</td></tr>`).join('')}
+   <tr class="border-t-2 border-slate-300"><td class="py-3 font-bold">Balance total</td><td class="py-3 text-right font-bold text-fye-verde">${money(total)}</td></tr></tbody></table>
+   ${d.some(x=>x.k==='credito')?'<p class="text-[11px] text-slate-400 mt-1">El crédito pendiente se muestra aparte y no se suma al balance total.</p>':''}`;
+ }catch(e){box.innerHTML=BAL_ERR;}
+}
+async function viewBalance(k){
+ const c=$('p-content'),staff=isStaff(me);
+ c.innerHTML=`<h2 class="text-xl font-bold">${MODULES[k].t}</h2><p class="text-sm text-slate-500 mt-3">Cargando…</p>`;
+ try{
+  let rows=await loadTab(SHEET_TABS[k]);
+  if(!staff)rows=rows.filter(r=>r.doc===myDoc());
+  const t=rows.reduce((s,r)=>s+r.monto,0);
+  if(currentModule!==k)return;
+  c.innerHTML=`<h2 class="text-xl font-bold">${MODULES[k].t}</h2><div class="overflow-x-auto mt-4"><table class="min-w-full text-sm">
+   <thead><tr class="text-left text-xs text-slate-500 border-b">${staff?'<th class="py-2 pr-4">Documento</th>':''}<th class="py-2 pr-4">Concepto</th><th class="py-2 text-right">Monto</th></tr></thead>
+   <tbody class="divide-y divide-slate-100">${rows.map(r=>`<tr>${staff?`<td class="py-2 pr-4">${esc(r.doc)}</td>`:''}<td class="py-2 pr-4">${esc(r.concepto)}</td><td class="py-2 text-right">${money(r.monto)}</td></tr>`).join('')||'<tr><td class="py-4 text-slate-400" colspan="3">Sin movimientos.</td></tr>'}
+   <tr class="border-t-2 border-slate-300"><td class="py-3 font-bold" ${staff?'colspan="2"':''}>Balance total de ${MODULES[k].t.toLowerCase()}</td><td class="py-3 text-right font-bold text-fye-verde">${money(t)}</td></tr></tbody></table></div>
+   ${staff?'<p class="text-xs text-slate-400 mt-4">Por ahora los montos se editan directamente en la hoja de Google.</p>':''}`;
+ }catch(e){if(currentModule===k)c.innerHTML=`<h2 class="text-xl font-bold mb-3">${MODULES[k].t}</h2>`+BAL_ERR;}
+}
+
+/* ---------- Historia completa (todas las páginas del PDF) ---------- */
+let historiaOk=false;
+async function loadHistoria(){
+ if(historiaOk||!window.pdfjsLib)return;
+ const box=$('historia-pages');
+ try{
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf=await pdfjsLib.getDocument('historia.pdf').promise;
+  box.innerHTML='';
+  const w=box.clientWidth-16,dpr=Math.min(2,window.devicePixelRatio||1);
+  for(let n=1;n<=pdf.numPages;n++){
+   const pg=await pdf.getPage(n),sc=w/pg.getViewport({scale:1}).width,v=pg.getViewport({scale:sc*dpr});
+   const cv=document.createElement('canvas');cv.width=v.width;cv.height=v.height;cv.style.width='100%';cv.className='rounded-lg border border-slate-100';
+   box.appendChild(cv);await pg.render({canvasContext:cv.getContext('2d'),viewport:v}).promise;
+  }
+  historiaOk=true;
+ }catch(e){console.warn(e);box.innerHTML='<p class="p-4 text-sm text-slate-600">No se pudo mostrar el documento aquí. Usa el enlace de abajo para abrirlo completo.</p>';}
+}
+if(PORTAL==='admin'||PORTAL==='secretaria'){const b=$('portal-banner');b.textContent=PORTAL==='admin'?'Portal del administrador':'Portal de secretaría';b.classList.remove('hidden');}
 
 /* ---------- Contrato de apertura (firma digital) ---------- */
 const CONTRATO_NOMBRE='CONTRATO DE APERTURA';
 let contratoFirmado=null;
 function syncFirma(){
-  const b=$('btn-firmar'),on=$('firma-check').checked;
-  b.disabled=!on;b.classList.toggle('opacity-50',!on);b.classList.toggle('cursor-not-allowed',!on);
+ const b=$('btn-firmar'),on=$('firma-check').checked;
+ b.disabled=!on;b.classList.toggle('opacity-50',!on);b.classList.toggle('cursor-not-allowed',!on);
 }
 function checkScroll(){
-  const t=$('contrato-texto');
-  if(t.scrollTop+t.clientHeight>=t.scrollHeight-12){$('firma-check').disabled=false;$('scroll-hint').classList.add('hidden');}
+ const t=$('contrato-texto');
+ if(t.scrollTop+t.clientHeight>=t.scrollHeight-12){$('firma-check').disabled=false;$('scroll-hint').classList.add('hidden');}
 }
 function openContrato(){
-  $('contrato-modal').classList.remove('hidden');$('contrato-modal').classList.add('flex');
-  $('contrato-texto').scrollTop=0;
-  $('firma-check').checked=!!contratoFirmado;$('firma-check').disabled=!contratoFirmado;
-  $('scroll-hint').classList.toggle('hidden',!!contratoFirmado);
-  syncFirma();setTimeout(checkScroll,60);
+ $('contrato-modal').classList.remove('hidden');$('contrato-modal').classList.add('flex');
+ $('contrato-texto').scrollTop=0;
+ $('firma-check').checked=!!contratoFirmado;$('firma-check').disabled=!contratoFirmado;
+ $('scroll-hint').classList.toggle('hidden',!!contratoFirmado);
+ syncFirma();setTimeout(checkScroll,60);
 }
 function closeContrato(){$('contrato-modal').classList.add('hidden');$('contrato-modal').classList.remove('flex');}
 function resetContrato(){
-  contratoFirmado=null;$('reg-contrato').checked=false;
-  const s=$('contrato-status');s.textContent='Toca para leer y firmar.';s.className='block font-semibold text-slate-500 mt-0.5';
+ contratoFirmado=null;$('reg-contrato').checked=false;
+ const s=$('contrato-status');s.textContent='Toca para leer y firmar.';s.className='block font-semibold text-slate-500 mt-0.5';
 }
 function firmarContrato(){
-  if(!$('firma-check').checked)return;
-  contratoFirmado=new Date().toISOString();
-  $('reg-contrato').checked=true;
-  const s=$('contrato-status');
-  s.textContent='✅ Firmado digitalmente el '+new Date(contratoFirmado).toLocaleString('es-DO');
-  s.className='block font-semibold text-green-600 mt-0.5';
-  closeContrato();notify('Contrato firmado digitalmente.','success');
+ if(!$('firma-check').checked)return;
+ contratoFirmado=new Date().toISOString();
+ $('reg-contrato').checked=true;
+ const s=$('contrato-status');
+ s.textContent='✅ Firmado digitalmente el '+new Date(contratoFirmado).toLocaleString('es-DO');
+ s.className='block font-semibold text-green-600 mt-0.5';
+ closeContrato();notify('Contrato firmado digitalmente.','success');
 }
 
 /* ---------- Registro, perfil, login ---------- */
 async function verifyCedula(){
-  if(regMode==='pasaporte'){
-   const k=docKey($('reg-pasaporte').value);
-   if(!$('reg-pais').value.trim())return setCed(false,'❌ Indica tu país de origen',true);
-   if(!/^[A-Z0-9]{6,20}$/.test(k))return setCed(false,'❌ Pasaporte inválido (6 a 20 letras o números)',true);
-   if((await getUsers()).some(u=>u.cedula==='P-'+k))return setCed(false,'⚠️ Este pasaporte ya está registrado',true);
-   pendingUserCedula='P-'+k;return setCed(true,'✅ Pasaporte aceptado. Sube tus documentos y continúa');
-  }
-  const c=$('reg-cedula').value.trim();
-  if(!c)return setCed(false,'❌ Ingresa una cédula',true);
-  if(!validarCedulaDominicana(c))return setCed(false,'❌ Cédula inválida o incorrecta',true);
-  const users=await getUsers();
-  if(users.some(u=>u.cedula===c))return setCed(false,'⚠️ Esta cédula ya está registrada',true);
-  pendingUserCedula=c;setCed(true,'✅ Cédula verificada correctamente');
+ if(regMode==='pasaporte'){
+  const k=docKey($('reg-pasaporte').value);
+  if(!$('reg-pais').value.trim())return setCed(false,'❌ Indica tu país de origen',true);
+  if(!/^[A-Z0-9]{6,20}$/.test(k))return setCed(false,'❌ Pasaporte inválido (6 a 20 letras o números)',true);
+  if((await getUsers()).some(u=>u.cedula==='P-'+k))return setCed(false,'⚠️ Este pasaporte ya está registrado',true);
+  pendingUserCedula='P-'+k;return setCed(true,'✅ Pasaporte aceptado. Sube tus documentos y continúa');
+ }
+ const c=$('reg-cedula').value.trim();
+ if(!c)return setCed(false,'❌ Ingresa una cédula',true);
+ if(!validarCedulaDominicana(c))return setCed(false,'❌ Cédula inválida o incorrecta',true);
+ const users=await getUsers();
+ if(users.some(u=>u.cedula===c))return setCed(false,'⚠️ Esta cédula ya está registrada',true);
+ pendingUserCedula=c;setCed(true,'✅ Cédula verificada correctamente');
 }
 async function handleRegister(e){
-  e.preventDefault();
-  const ext=regMode==='pasaporte';
-  const cedula=ext?'P-'+docKey($('reg-pasaporte').value):$('reg-cedula').value.trim(),pw=$('reg-password').value;
-  if(!contratoFirmado)return notify('Debes leer y firmar el Contrato de Apertura.','warning');
-  if(!cedulaVerificada||(!ext&&!validarCedulaDominicana(cedula)))return notify('Verifica tu documento antes de crear la cuenta.','error');
-  if(ext&&(!$('reg-doc-pasaporte').files[0]||!$('reg-doc-recibo').files[0]))return notify('Sube la foto de tu pasaporte y un recibo de servicio.','error');
-  if(pw.length<6)return notify('La contraseña debe tener al menos 6 caracteres.','error');
-  if(pw!==$('reg-password-confirm').value)return notify('Las contraseñas no coinciden.','error');
-  const users=await getUsers();
-  if(users.some(u=>u.cedula===cedula))return notify('Esta cédula ya está registrada.','error');
-  const id=crypto.randomUUID();
-  let docs=null;
-  if(ext){
-   try{docs={pasaporte:await storeDoc(id,'pasaporte',$('reg-doc-pasaporte').files[0]),recibo:await storeDoc(id,'recibo',$('reg-doc-recibo').files[0])};}
-   catch(err){return notify(err.message||'No se pudieron procesar los documentos.','error');}
-  }
-  const user={id,cedula,password_hash:await hashPw(pw,id),nombre:'',email:'',telefono:'',direccion:'',tipo_cliente:'',rol:'cliente',permisos:[],perfil_completo:false,created_at:new Date().toISOString(),contrato_firmado_at:contratoFirmado,contrato_archivo:CONTRATO_NOMBRE,tipo_documento:ext?'pasaporte':'cedula',pais:ext?$('reg-pais').value.trim():'',docs,doc_estado:ext?'pendiente':'verificado'};
-  await saveUser(user);
-  pendingUserCedula=cedula;
-  ['reg-cedula','reg-password','reg-password-confirm','reg-pasaporte','reg-pais','reg-doc-pasaporte','reg-doc-recibo'].forEach(i=>$(i).value='');
-  document.querySelector('input[name="reg-mode"][value="cedula"]').checked=true;setDocMode('cedula');
-  resetContrato();setCed(false,'');
-  notify('Cuenta creada. Completa tu perfil.','success');
-  openProfileModal();
+ e.preventDefault();
+ const ext=regMode==='pasaporte';
+ const cedula=ext?'P-'+docKey($('reg-pasaporte').value):$('reg-cedula').value.trim(),pw=$('reg-password').value;
+ if(!contratoFirmado)return notify('Debes leer y firmar el Contrato de Apertura.','warning');
+ if(!cedulaVerificada||(!ext&&!validarCedulaDominicana(cedula)))return notify('Verifica tu documento antes de crear la cuenta.','error');
+ if(ext&&(!$('reg-doc-pasaporte').files[0]||!$('reg-doc-recibo').files[0]))return notify('Sube la foto de tu pasaporte y un recibo de servicio.','error');
+ if(pw.length<6)return notify('La contraseña debe tener al menos 6 caracteres.','error');
+ if(pw!==$('reg-password-confirm').value)return notify('Las contraseñas no coinciden.','error');
+ const users=await getUsers();
+ if(users.some(u=>u.cedula===cedula))return notify('Esta cédula ya está registrada.','error');
+ const id=crypto.randomUUID();
+ let docs=null;
+ if(ext){
+  try{docs={pasaporte:await storeDoc(id,'pasaporte',$('reg-doc-pasaporte').files[0]),recibo:await storeDoc(id,'recibo',$('reg-doc-recibo').files[0])};}
+  catch(err){return notify(err.message||'No se pudieron procesar los documentos.','error');}
+ }
+ const user={id,cedula,password_hash:await hashPw(pw,id),nombre:'',email:'',telefono:'',direccion:'',tipo_cliente:'',
+  rol:'cliente',permisos:[],perfil_completo:false,created_at:new Date().toISOString(),
+  contrato_firmado_at:contratoFirmado,contrato_archivo:CONTRATO_NOMBRE,
+  tipo_documento:ext?'pasaporte':'cedula',pais:ext?$('reg-pais').value.trim():'',docs,doc_estado:ext?'pendiente':'verificado'};
+ await saveUser(user);
+ pendingUserCedula=cedula;
+ ['reg-cedula','reg-password','reg-password-confirm','reg-pasaporte','reg-pais','reg-doc-pasaporte','reg-doc-recibo'].forEach(i=>$(i).value='');
+ document.querySelector('input[name="reg-mode"][value="cedula"]').checked=true;setDocMode('cedula');
+ resetContrato();setCed(false,'');
+ notify('Cuenta creada. Completa tu perfil.','success');
+ openProfileModal();
 }
 async function handleProfileSetup(e){
-  e.preventDefault();
-  if(!pendingUserCedula)return notify('No hay usuario pendiente.','error');
-  const all=await getUsers();
-  const u=all.find(x=>x.cedula===pendingUserCedula);
-  if(!u)return notify('Usuario no encontrado.','error');
-  const mail=$('profile-email').value.trim().toLowerCase();
-  if(all.some(x=>x.cedula!==u.cedula&&String(x.email||'').trim().toLowerCase()===mail))
-   return notify('Ese email ya está registrado en otra cuenta.','error');
-  const tel=$('profile-telefono').value.replace(/\D/g,'');
-  if(tel&&all.some(x=>x.cedula!==u.cedula&&String(x.telefono||'').replace(/\D/g,'')===tel))
-   return notify('Ese teléfono ya está registrado en otra cuenta.','error');
-  if(mail===ROOT_EMAIL)u.rol='admin';
-  const tipo=document.querySelector('input[name="client-type"]:checked')?.value||'';
-  Object.assign(u,{nombre:$('profile-nombre').value.trim(),email:$('profile-email').value.trim(),telefono:$('profile-telefono').value.trim(),direccion:$('profile-direccion').value.trim(),tipo_cliente:tipo,perfil_completo:true});
-  if(!(u.permisos||[]).length)u.permisos=POR_TIPO[tipo]||[];
-  await saveUser(u);
-  closeProfileModal();
-  ['profile-nombre','profile-email','profile-telefono','profile-direccion'].forEach(i=>$(i).value='');
-  document.querySelectorAll('input[name="client-type"]').forEach(i=>i.checked=false);
-  pendingUserCedula=null;
-  if(!(u.preguntas||[]).length){notify('Perfil guardado. Ahora elige tus preguntas de seguridad.','success');return setupSec(u);}
-  notify('Perfil guardado. ¡Bienvenido(a), '+u.nombre+'!','success');
-  enterApp(u);
+ e.preventDefault();
+ if(!pendingUserCedula)return notify('No hay usuario pendiente.','error');
+ const all=await getUsers();
+ const u=all.find(x=>x.cedula===pendingUserCedula);
+ if(!u)return notify('Usuario no encontrado.','error');
+ const mail=$('profile-email').value.trim().toLowerCase();
+ if(all.some(x=>x.cedula!==u.cedula&&String(x.email||'').trim().toLowerCase()===mail))
+  return notify('Ese email ya está registrado en otra cuenta.','error');
+ const tel=$('profile-telefono').value.replace(/\D/g,'');
+ if(tel&&all.some(x=>x.cedula!==u.cedula&&String(x.telefono||'').replace(/\D/g,'')===tel))
+  return notify('Ese teléfono ya está registrado en otra cuenta.','error');
+ if(mail===ROOT_EMAIL)u.rol='admin';
+ const tipo=document.querySelector('input[name="client-type"]:checked')?.value||'';
+ Object.assign(u,{nombre:$('profile-nombre').value.trim(),email:$('profile-email').value.trim(),
+  telefono:$('profile-telefono').value.trim(),direccion:$('profile-direccion').value.trim(),
+  tipo_cliente:tipo,perfil_completo:true});
+ if(!(u.permisos||[]).length)u.permisos=POR_TIPO[tipo]||[]; // permisos iniciales según tipo; luego los ajusta el admin
+ await saveUser(u);
+ closeProfileModal();
+ ['profile-nombre','profile-email','profile-telefono','profile-direccion'].forEach(i=>$(i).value='');
+ document.querySelectorAll('input[name="client-type"]').forEach(i=>i.checked=false);
+ pendingUserCedula=null;
+ if(!(u.preguntas||[]).length){notify('Perfil guardado. Ahora elige tus preguntas de seguridad.','success');return setupSec(u);}
+ notify('Perfil guardado. ¡Bienvenido(a), '+u.nombre+'!','success');
+ enterApp(u);
 }
 async function handleLogin(e){
-  e.preventDefault();
-  const raw=$('login-cedula').value.trim(),pw=$('login-password').value;
-  if(docKey(raw).length<6)return notify('Ingresa tu cédula o pasaporte.','error');
-  const users=await getUsers();
-  const u=findDoc(users,raw);
-  const cedula=u?u.cedula:'P-'+docKey(raw);
-  if(lockLeft(cedula))return notify(lockMsg(cedula),'error');
-  let ok=false;
-  if(u){
-   if(u.password_hash)ok=(await hashPw(pw,u.id)===u.password_hash);
-   else if(u.password){ok=u.password===pw;if(ok){u.password_hash=await hashPw(pw,u.id);delete u.password;}}
+ e.preventDefault();
+ const raw=$('login-cedula').value.trim(),pw=$('login-password').value;
+ if(docKey(raw).length<6)return notify('Ingresa tu cédula o pasaporte.','error');
+ const users=await getUsers();
+ const u=findDoc(users,raw);
+ const cedula=u?u.cedula:'P-'+docKey(raw);
+ if(lockLeft(cedula))return notify(lockMsg(cedula),'error');
+ let ok=false;
+ if(u){
+  if(u.password_hash)ok=(await hashPw(pw,u.id)===u.password_hash);
+  else if(u.password){ // cuenta antigua con clave en texto plano: se migra a hash
+   ok=u.password===pw;
+   if(ok){u.password_hash=await hashPw(pw,u.id);delete u.password;}
   }
-  if(!ok){addFail(cedula);return notify('Cédula o contraseña incorrectos.','error');}
-  clearFails(cedula);
-  if(!u.rol)u.rol='cliente';
-  if(isRoot(u))u.rol='admin';
-  if(!u.permisos)u.permisos=POR_TIPO[u.tipo_cliente]||[];
-  await saveUser(u);
-  $('login-password').value='';$('login-cedula').value='';
-  if(!u.perfil_completo){pendingUserCedula=u.cedula;openProfileModal();return notify('Completa tu perfil para continuar.','warning');}
-  if(!(u.preguntas||[]).length){notify('Configura tus preguntas de seguridad para continuar.','warning');return setupSec(u);}
-  if(!trusted(u))return challenge(u);
-  notify('Bienvenido(a), '+u.nombre+'.','success');
-  enterApp(u);
+ }
+ if(!ok){addFail(cedula);return notify('Cédula o contraseña incorrectos.','error');}
+ clearFails(cedula);
+ if((PORTAL==='admin'&&!isRoot(u))||(PORTAL==='secretaria'&&!isStaff(u)))return notify('Esta cuenta no tiene acceso a este portal.','error');
+ if(!u.rol)u.rol='cliente';
+ if(isRoot(u))u.rol='admin';
+ if(!u.permisos)u.permisos=POR_TIPO[u.tipo_cliente]||[];
+ u.permisos=u.permisos.map(p=>({inversiones:'certificado',prestamos:'credito'}[p]||p));
+ await saveUser(u);
+ $('login-password').value='';$('login-cedula').value='';
+ if(!u.perfil_completo){pendingUserCedula=u.cedula;openProfileModal();return notify('Completa tu perfil para continuar.','warning');}
+ if(!(u.preguntas||[]).length){notify('Configura tus preguntas de seguridad para continuar.','warning');return setupSec(u);}
+ if(!trusted(u))return challenge(u);
+ notify('Bienvenido(a), '+u.nombre+'.','success');
+ enterApp(u);
 }
 async function restoreSession(){
-  const ced=sessionStorage.getItem(SESSION_KEY);if(!ced)return;
-  const u=(await getUsers()).find(x=>x.cedula===ced&&x.perfil_completo);
-  if(u)enterApp(u);else sessionStorage.removeItem(SESSION_KEY);
+ const ced=sessionStorage.getItem(SESSION_KEY);if(!ced)return;
+ const u=(await getUsers()).find(x=>x.cedula===ced&&x.perfil_completo);
+ if(u)enterApp(u);else sessionStorage.removeItem(SESSION_KEY);
 }
 
 /* ---------- Seguridad: preguntas, dispositivo nuevo y recuperación ---------- */
-const PREGUNTAS=['¿Cómo se llamaba tu primera mascota?','¿En qué ciudad nació tu madre?','¿Cuál es el segundo nombre de tu padre?','¿Cómo se llamaba tu escuela primaria?','¿Cuál fue tu mejor amigo de la infancia?'];
+const PREGUNTAS=['¿Cómo se llamaba tu primera mascota?','¿En qué ciudad nació tu madre?','¿Cuál es el segundo nombre de tu padre?','¿Cómo se llamaba tu escuela primaria?','¿Cuál fue tu primer trabajo?','¿Cuál era tu comida favorita de niño(a)?','¿Cómo se llama tu mejor amigo de la infancia?','¿Cuál fue la marca de tu primer teléfono?'];
 const normAns=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 function deviceId(){let d=localStorage.getItem('fye_device');if(!d){d=crypto.randomUUID();localStorage.setItem('fye_device',d);}return d;}
 const trusted=u=>(u.dispositivos||[]).includes(deviceId());
 const trustDevice=u=>{u.dispositivos=[...new Set([...(u.dispositivos||[]),deviceId()])];};
 function lockLeft(c){return Math.max(0,(+localStorage.getItem('fye_lock_'+c)||0)-Date.now());}
 function addFail(c){const k='fye_fails_'+c,n=(+localStorage.getItem(k)||0)+1;
-  if(n>=3){localStorage.setItem('fye_lock_'+c,Date.now()+15*60000);localStorage.removeItem(k);}else localStorage.setItem(k,n);}
+ if(n>=3){localStorage.setItem('fye_lock_'+c,Date.now()+15*60000);localStorage.removeItem(k);}else localStorage.setItem(k,n);}
 const clearFails=c=>localStorage.removeItem('fye_fails_'+c);
 function lockMsg(c){return 'Demasiados intentos. Intenta de nuevo en '+Math.ceil(lockLeft(c)/60000)+' min.';}
 let secUser=null;
@@ -641,90 +790,114 @@ const BTN='class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md"'
 const CANCEL='<button type="button" onclick="closeSec()" class="w-full mt-2 text-xs text-slate-500 py-2">Cancelar</button>';
 const qsHTML=u=>u.preguntas.map((p,i)=>`<div><label class="block text-sm font-semibold mb-1">${esc(p.q)}</label><input id="ca${i}" class="inp" required autocomplete="off" placeholder="Tu respuesta"></div>`).join('');
 async function checkAns(u){
-  const r=await Promise.all(u.preguntas.map(async(p,i)=>await hashPw(normAns($('ca'+i).value),u.id+':q'+i)===p.h));
-  return r.every(Boolean);
+ const r=await Promise.all(u.preguntas.map(async(p,i)=>await hashPw(normAns($('ca'+i).value),u.id+':q'+i)===p.h));
+ return r.every(Boolean);
 }
+// 1) Elegir 3 preguntas
 function setupSec(u){
-  secUser=u;
-  openSec(`<h2 class="text-xl font-bold">Preguntas de seguridad</h2><p class="text-sm text-slate-500 mt-1 mb-4">Elige 3 preguntas distintas. Te las pediremos al entrar desde un dispositivo nuevo o si olvidas tu contraseña.</p><form onsubmit="saveSec(event)" class="space-y-4">${[0,1,2].map(i=>`<div class="space-y-2"><select id="sq${i}" class="inp" required><option value="">Selecciona una pregunta</option>${PREGUNTAS.map(q=>`<option>${q}</option>`).join('')}</select><input id="sa${i}" class="inp" required autocomplete="off" placeholder="Tu respuesta"></div>`).join('')}<button ${BTN}>Guardar y continuar</button></form>`);
+ secUser=u;
+ openSec(`<h2 class="text-xl font-bold">Preguntas de seguridad</h2>
+ <p class="text-sm text-slate-500 mt-1 mb-4">Elige 3 preguntas distintas. Te las pediremos al entrar desde un dispositivo nuevo o si olvidas tu contraseña.</p>
+ <form onsubmit="saveSec(event)" class="space-y-4">${[0,1,2].map(i=>`<div class="space-y-2">
+ <select id="sq${i}" class="inp" required><option value="">Selecciona una pregunta</option>${PREGUNTAS.map(q=>`<option>${q}</option>`).join('')}</select>
+ <input id="sa${i}" class="inp" required autocomplete="off" placeholder="Tu respuesta"></div>`).join('')}
+ <button ${BTN}>Guardar y continuar</button></form>`);
 }
 async function saveSec(e){
-  e.preventDefault();const u=secUser;
-  const qs=[0,1,2].map(i=>$('sq'+i).value),as=[0,1,2].map(i=>normAns($('sa'+i).value));
-  if(new Set(qs).size<3)return notify('Elige 3 preguntas diferentes.','error');
-  if(as.some(a=>a.length<2))return notify('Cada respuesta debe tener al menos 2 caracteres.','error');
-  u.preguntas=await Promise.all(qs.map(async(q,i)=>({q,h:await hashPw(as[i],u.id+':q'+i)})));
-  trustDevice(u);await saveUser(u);closeSec();notify('Preguntas guardadas. ¡Bienvenido(a), '+u.nombre+'!','success');enterApp(u);
+ e.preventDefault();const u=secUser;
+ const qs=[0,1,2].map(i=>$('sq'+i).value),as=[0,1,2].map(i=>normAns($('sa'+i).value));
+ if(new Set(qs).size<3)return notify('Elige 3 preguntas diferentes.','error');
+ if(as.some(a=>a.length<2))return notify('Cada respuesta debe tener al menos 2 caracteres.','error');
+ u.preguntas=await Promise.all(qs.map(async(q,i)=>({q,h:await hashPw(as[i],u.id+':q'+i)})));
+ trustDevice(u);await saveUser(u);closeSec();
+ notify('Preguntas guardadas. ¡Bienvenido(a), '+u.nombre+'!','success');enterApp(u);
 }
+// 2) Dispositivo nuevo
 function challenge(u){
-  if(lockLeft(u.cedula))return notify(lockMsg(u.cedula),'error');
-  secUser=u;
-  openSec(`<h2 class="text-xl font-bold">Confirma que eres tú</h2><p class="text-sm text-slate-500 mt-1 mb-4">Estás entrando desde un dispositivo nuevo. Responde tus 3 preguntas de seguridad.</p><form onsubmit="doChallenge(event)" class="space-y-4">${qsHTML(u)}<button ${BTN}>Confirmar</button></form>${CANCEL}`);
+ if(lockLeft(u.cedula))return notify(lockMsg(u.cedula),'error');
+ secUser=u;
+ openSec(`<h2 class="text-xl font-bold">Confirma que eres tú</h2>
+ <p class="text-sm text-slate-500 mt-1 mb-4">Estás entrando desde un dispositivo nuevo. Responde tus 3 preguntas de seguridad.</p>
+ <form onsubmit="doChallenge(event)" class="space-y-4">${qsHTML(u)}<button ${BTN}>Confirmar</button></form>${CANCEL}`);
 }
 async function doChallenge(e){
-  e.preventDefault();const u=secUser;
-  if(await checkAns(u)){clearFails(u.cedula);trustDevice(u);await saveUser(u);closeSec();notify('Dispositivo confirmado. Bienvenido(a), '+u.nombre+'.','success');enterApp(u);}
-  else{addFail(u.cedula);if(lockLeft(u.cedula)){closeSec();notify('Cuenta bloqueada 15 minutos por intentos fallidos.','error');}
-   else notify('Alguna respuesta no es correcta.','error');}
+ e.preventDefault();const u=secUser;
+ if(await checkAns(u)){clearFails(u.cedula);trustDevice(u);await saveUser(u);closeSec();notify('Dispositivo confirmado. Bienvenido(a), '+u.nombre+'.','success');enterApp(u);}
+ else{addFail(u.cedula);if(lockLeft(u.cedula)){closeSec();notify('Cuenta bloqueada 15 minutos por intentos fallidos.','error');}
+  else notify('Alguna respuesta no es correcta.','error');}
 }
+// 3) Recuperar contraseña
 function recoverStart(){
-  openSec(`<h2 class="text-xl font-bold">Recuperar contraseña</h2><p class="text-sm text-slate-500 mt-1 mb-4">Escribe tu cédula y el correo o teléfono con que te registraste.</p><form onsubmit="recStep1(event)" class="space-y-3"><div><label class="block text-xs font-bold text-slate-700 mb-1">Cédula o pasaporte</label><input id="rc-ced" required maxlength="20" autocapitalize="characters" placeholder="001-0000000-0 / Pasaporte" class="inp"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Correo o teléfono</label><input id="rc-contact" required placeholder="correo@ejemplo.com o 809-000-0000" class="inp"></div><button ${BTN}>Continuar</button></form>${CANCEL}`);
+ openSec(`<h2 class="text-xl font-bold">Recuperar contraseña</h2>
+ <p class="text-sm text-slate-500 mt-1 mb-4">Escribe tu cédula y el correo o teléfono con que te registraste.</p>
+ <form onsubmit="recStep1(event)" class="space-y-3">
+ <div><label class="block text-xs font-bold text-slate-700 mb-1">Cédula o pasaporte</label><input id="rc-ced" required maxlength="20" autocapitalize="characters" placeholder="001-0000000-0 / Passport" class="inp"></div>
+ <div><label class="block text-xs font-bold text-slate-700 mb-1">Correo o teléfono</label><input id="rc-contact" required placeholder="correo@ejemplo.com o 809-000-0000" class="inp"></div>
+ <button ${BTN}>Continuar</button></form>${CANCEL}`);
 }
 async function recStep1(e){
-  e.preventDefault();
-  const raw=$('rc-ced').value.trim(),c=$('rc-contact').value.trim().toLowerCase(),d=c.replace(/\D/g,'');
-  const u=findDoc(await getUsers(),raw),ced=u?u.cedula:'P-'+docKey(raw);
-  if(lockLeft(ced))return notify(lockMsg(ced),'error');
-  const ok=u&&((u.email||'').trim().toLowerCase()===c||(d.length>=10&&String(u.telefono||'').replace(/\D/g,'')===d));
-  if(!ok){addFail(ced);return notify('Los datos no coinciden con ninguna cuenta.','error');}
-  if(!(u.preguntas||[]).length)return notify('Tu cuenta no tiene preguntas de seguridad. Contacta a INVERSIONES F Y E.','warning');
-  secUser=u;
-  openSec(`<h2 class="text-xl font-bold">Responde tus preguntas</h2><p class="text-sm text-slate-500 mt-1 mb-4">Debes acertar las 3 para cambiar tu contraseña.</p><form onsubmit="recStep2(event)" class="space-y-4">${qsHTML(u)}<button ${BTN}>Verificar</button></form>${CANCEL}`);
+ e.preventDefault();
+ const raw=$('rc-ced').value.trim(),c=$('rc-contact').value.trim().toLowerCase(),d=c.replace(/\D/g,'');
+ const u=findDoc(await getUsers(),raw),ced=u?u.cedula:'P-'+docKey(raw);
+ if(lockLeft(ced))return notify(lockMsg(ced),'error');
+ const ok=u&&((u.email||'').trim().toLowerCase()===c||(d.length>=10&&String(u.telefono||'').replace(/\D/g,'')===d));
+ if(!ok){addFail(ced);return notify('Los datos no coinciden con ninguna cuenta.','error');}
+ if(!(u.preguntas||[]).length)return notify('Tu cuenta no tiene preguntas de seguridad. Contacta a INVERSIONES F Y E.','warning');
+ secUser=u;
+ openSec(`<h2 class="text-xl font-bold">Responde tus preguntas</h2><p class="text-sm text-slate-500 mt-1 mb-4">Debes acertar las 3 para cambiar tu contraseña.</p>
+ <form onsubmit="recStep2(event)" class="space-y-4">${qsHTML(u)}<button ${BTN}>Verificar</button></form>${CANCEL}`);
 }
 async function recStep2(e){
-  e.preventDefault();const u=secUser;
-  if(!await checkAns(u)){addFail(u.cedula);if(lockLeft(u.cedula)){closeSec();return notify('Cuenta bloqueada 15 minutos por intentos fallidos.','error');}
-   return notify('Alguna respuesta no es correcta.','error');}
-  clearFails(u.cedula);
-  openSec(`<h2 class="text-xl font-bold">Nueva contraseña</h2><form onsubmit="recStep3(event)" class="space-y-3 mt-4"><input type="password" id="np1" required minlength="6" placeholder="Mínimo 6 caracteres" class="inp"><input type="password" id="np2" required placeholder="Repite la contraseña" class="inp"><button ${BTN}>Guardar contraseña</button></form>`);
+ e.preventDefault();const u=secUser;
+ if(!await checkAns(u)){addFail(u.cedula);if(lockLeft(u.cedula)){closeSec();return notify('Cuenta bloqueada 15 minutos por intentos fallidos.','error');}
+  return notify('Alguna respuesta no es correcta.','error');}
+ clearFails(u.cedula);
+ openSec(`<h2 class="text-xl font-bold">Nueva contraseña</h2>
+ <form onsubmit="recStep3(event)" class="space-y-3 mt-4">
+ <input type="password" id="np1" required minlength="6" placeholder="Mínimo 6 caracteres" class="inp">
+ <input type="password" id="np2" required placeholder="Repite la contraseña" class="inp">
+ <button ${BTN}>Guardar contraseña</button></form>`);
 }
 async function recStep3(e){
-  e.preventDefault();const u=secUser,p=$('np1').value;
-  if(p.length<6)return notify('La contraseña debe tener al menos 6 caracteres.','error');
-  if(p!==$('np2').value)return notify('Las contraseñas no coinciden.','error');
-  u.password_hash=await hashPw(p,u.id);delete u.password;trustDevice(u);
-  await saveUser(u);closeSec();switchTab('login');notify('Contraseña actualizada. Ya puedes iniciar sesión.','success');
+ e.preventDefault();const u=secUser,p=$('np1').value;
+ if(p.length<6)return notify('La contraseña debe tener al menos 6 caracteres.','error');
+ if(p!==$('np2').value)return notify('Las contraseñas no coinciden.','error');
+ u.password_hash=await hashPw(p,u.id);delete u.password;trustDevice(u);
+ await saveUser(u);closeSec();switchTab('login');
+ notify('Contraseña actualizada. Ya puedes iniciar sesión.','success');
 }
 
-/* ---------- Idioma ---------- */
-const LANGS=[['es','Español'],['en','English'],['fr','Français'],['pt','Português'],['it','Italiano'],['de','Deutsch'],['nl','Nederlands'],['ht','Kreyòl ayisyen'],['zh-CN','中文 (简体)'],['zh-TW','中文 (繁體)'],['ja','日本語'],['ko','한국어'],['ar','العربية'],['ru','Русский'],['uk','Українська'],['tr','Türkçe'],['pl','Polski'],['cs','Čeština'],['ro','Română'],['el','Ελληνικά'],['sv','Svenska'],['no','Norsk'],['da','Dansk'],['fi','Suomi'],['id','Bahasa Indonesia'],['hi','हिन्दी'],['bn','বাংলা'],['ur','اردو'],['he','עברית']];
-const COUNTRIES=[['do','República Dominicana','es'],['es','España','es'],['us','United States','en'],['gb','United Kingdom','en'],['fr','France','fr'],['pt','Portugal','pt'],['br','Brasil','pt'],['it','Italia','it'],['de','Alemania','de'],['nl','Países Bajos','nl'],['ht','Haití','ht'],['cn','China','zh-CN'],['tw','Taiwán','zh-TW'],['jp','Japón','ja'],['kr','Corea del Sur','ko'],['sa','Arabia Saudita','ar'],['ru','Rusia','ru'],['ua','Ucrania','uk'],['tr','Turquía','tr'],['pl','Polonia','pl'],['cz','República Checa','cs'],['ro','Rumania','ro'],['gr','Grecia','el'],['se','Suecia','sv'],['no','Noruega','no'],['dk','Dinamarca','da'],['fi','Finlandia','fi'],['id','Indonesia','id'],['in','India','hi'],['bd','Bangladés','bn'],['pk','Pakistán','ur'],['il','Israel','he']];
+/* ---------- Idioma (traducción automática de toda la web) ---------- */
+const LANGS=[['es','Español'],['en','English'],['fr','Français'],['pt','Português'],['it','Italiano'],['de','Deutsch'],['nl','Nederlands'],['ht','Kreyòl ayisyen'],['zh-CN','中文 (简体)'],['zh-TW','中文 (繁體)'],['ja','日本語'],['ko','한국어'],['ar','العربية'],['iw','עברית'],['ru','Русский'],['uk','Українська'],['pl','Polski'],['cs','Čeština'],['ro','Română'],['el','Ελληνικά'],['tr','Türkçe'],['hi','हिन्दी'],['bn','বাংলা'],['ur','اردو'],['fa','فارسی'],['vi','Tiếng Việt'],['th','ไทย'],['id','Bahasa Indonesia'],['sv','Svenska'],['da','Dansk'],['no','Norsk'],['fi','Suomi'],['hu','Magyar']];
+const COUNTRIES=[['do','República Dominicana','es'],['es','España','es'],['us','United States','en'],['gb','United Kingdom','en'],['fr','France','fr'],['pt','Portugal','pt'],['br','Brasil','pt'],['it','Italia','it'],['de','Deutschland','de'],['nl','Nederland','nl'],['ht','Ayiti','ht'],['cn','中国','zh-CN'],['tw','台灣','zh-TW'],['jp','日本','ja'],['kr','한국','ko'],['sa','السعودية','ar'],['il','ישראל','iw'],['ru','Россия','ru'],['ua','Україна','uk'],['pl','Polska','pl'],['cz','Česko','cs'],['ro','România','ro'],['gr','Ελλάδα','el'],['tr','Türkiye','tr'],['in','भारत','hi'],['bd','বাংলাদেশ','bn'],['pk','پاکستان','ur'],['ir','ایران','fa'],['vn','Việt Nam','vi'],['th','ไทย','th'],['id','Indonesia','id'],['se','Sverige','sv'],['dk','Danmark','da'],['no','Norge','no'],['fi','Suomi','fi'],['hu','Magyarország','hu']];
 const flagUrl=c=>'https://flagcdn.com/w40/'+c+'.png';
-$('lang-tray').innerHTML=COUNTRIES.map(([c,n])=>`<button type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-100 text-[10px] leading-tight text-center" onclick="pickCountry('${c}')"><img src="${flagUrl(c)}" alt="" width="22" height="16" class="rounded-sm"><span>${n}</span></button>`).join('');
+$('lang-tray').innerHTML=COUNTRIES.map(([c,n])=>`<button type="button" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-slate-100 text-[10px] leading-tight text-center" onclick="pickCountry('${c}')"><img src="${flagUrl(c)}" alt="" width="28" height="21" class="rounded-sm shadow" loading="lazy"><span>${n}</span></button>`).join('');
 function curCountry(){
-  const s=localStorage.getItem('fye_country');if(s)return s;
-  const m=document.cookie.match(/googtrans=\/es\/([\w-]+)/),f=m&&COUNTRIES.find(x=>x[2]===m[1]);
-  return f?f[0]:'do';
+ const s=localStorage.getItem('fye_country');if(s)return s;
+ const m=document.cookie.match(/googtrans=\/es\/([\w-]+)/),f=m&&COUNTRIES.find(x=>x[2]===m[1]);
+ return f?f[0]:'do';
 }
 function paintFlag(){
-  const c=curCountry(),n=COUNTRIES.find(x=>x[0]===c);
-  $('lang-btn').setAttribute('aria-label','País e idioma');
-  $('lang-btn').innerHTML=`<img src="${flagUrl(c)}" alt="" width="22" height="16" class="rounded-sm"><span>${n?n[1]:''}</span><i class="fa-solid fa-chevron-down text-[9px]"></i>`;
+ const c=curCountry(),n=COUNTRIES.find(x=>x[0]===c);
+ $('lang-btn').setAttribute('aria-label','País e idioma');
+ $('lang-btn').innerHTML=`<img src="${flagUrl(c)}" alt="" width="22" height="16" class="rounded-sm"><span>${n?n[1]:''}</span><i class="fa-solid fa-chevron-down text-[9px]"></i>`;
 }
 function pickCountry(c){
-  const n=COUNTRIES.find(x=>x[0]===c);if(!n)return;
-  localStorage.setItem('fye_country',c);$('lang-tray').classList.add('hidden');paintFlag();setLang(n[2]);
+ const n=COUNTRIES.find(x=>x[0]===c);if(!n)return;
+ localStorage.setItem('fye_country',c);$('lang-tray').classList.add('hidden');paintFlag();setLang(n[2]);
 }
 document.addEventListener('click',e=>{if(!e.target.closest('#lang-btn,#lang-tray'))$('lang-tray').classList.add('hidden');});
 paintFlag();
 function setLang(code){
-  const past='=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-  if(code==='es'){document.cookie='googtrans'+past;document.cookie='googtrans'+past+';domain='+location.hostname;location.reload();return;}
-  const combo=document.querySelector('.goog-te-combo');
-  if(combo){combo.value=code;combo.dispatchEvent(new Event('change'));return;}
-  document.cookie='googtrans=/es/'+code+';path=/';location.reload();
+ const past='=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+ if(code==='es'){document.cookie='googtrans'+past;document.cookie='googtrans'+past+';domain='+location.hostname;location.reload();return;}
+ const combo=document.querySelector('.goog-te-combo');
+ if(combo){combo.value=code;combo.dispatchEvent(new Event('change'));return;}
+ document.cookie='googtrans=/es/'+code+';path=/';location.reload();
 }
-window.googleTranslateElementInit=()=>{new google.translate.TranslateElement({pageLanguage:'es',includedLanguages:LANGS.map(l=>l[0]).filter(c=>c!=='es').join(','),autoDisplay:false},'google_translate_element');};
+window.googleTranslateElementInit=()=>{
+ new google.translate.TranslateElement({pageLanguage:'es',includedLanguages:LANGS.map(l=>l[0]).filter(c=>c!=='es').join(','),autoDisplay:false},'google_translate_element');
+};
 {const s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';s.async=true;document.head.appendChild(s);}
 
 /* ---------- Animación del logo ---------- */
@@ -734,54 +907,56 @@ let ball={x:120,y:100,dx:3.2,dy:2.6,r:45};
 function resizeCanvas(){const p=canvas.parentElement;if(p.clientWidth){canvas.width=p.clientWidth;canvas.height=p.clientHeight;}}
 window.addEventListener('resize',resizeCanvas);resizeCanvas();
 let audio=null;
-const SONIDO=false;
+const SONIDO=false; // sonido desactivado (mute)
 function playBill(){
-  if(!SONIDO)return;
-  try{
-   const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
-   audio=audio||new A();if(audio.state==='suspended')audio.resume();
-   const n=Math.floor(audio.sampleRate*.04),buf=audio.createBuffer(1,n,audio.sampleRate),d=buf.getChannelData(0);
-   for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(n*.25))*.12;
-   const s=audio.createBufferSource(),f=audio.createBiquadFilter();
-   s.buffer=buf;f.type='highpass';f.frequency.value=1200;s.connect(f);f.connect(audio.destination);s.start();
-  }catch(e){}
+ if(!SONIDO)return;
+ try{
+  const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
+  audio=audio||new A();if(audio.state==='suspended')audio.resume();
+  const n=Math.floor(audio.sampleRate*.04),buf=audio.createBuffer(1,n,audio.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(n*.25))*.12;
+  const s=audio.createBufferSource(),f=audio.createBiquadFilter();
+  s.buffer=buf;f.type='highpass';f.frequency.value=1200;s.connect(f);f.connect(audio.destination);s.start();
+ }catch(e){}
 }
 const bills=[];
 function spawnBill(x,y,a,sp){
-  bills.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:Math.random()*6.28,vr:(Math.random()-.5)*.15,life:1,coin:Math.random()<.3,s:.8+Math.random()*.4});
+ bills.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:Math.random()*6.28,vr:(Math.random()-.5)*.15,life:1,coin:Math.random()<.3,s:.8+Math.random()*.4});
 }
-function burst(){
-  const a0=Math.atan2(-ball.dy,-ball.dx);
-  for(let i=0;i<5;i++){const a=a0+(Math.random()-.5)*1.8;spawnBill(ball.x+Math.cos(a)*ball.r,ball.y+Math.sin(a)*ball.r,a,.8+Math.random()*.9);}
+function burst(){ // ráfaga al rebotar
+ const a0=Math.atan2(-ball.dy,-ball.dx);
+ for(let i=0;i<5;i++){const a=a0+(Math.random()-.5)*1.8;spawnBill(ball.x+Math.cos(a)*ball.r,ball.y+Math.sin(a)*ball.r,a,.8+Math.random()*.9);}
 }
 function drawBills(){
-  for(let i=bills.length-1;i>=0;i--){
-   const p=bills[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.01;p.rot+=p.vr;p.life-=.018;
-   if(p.life<=0){bills.splice(i,1);continue;}
-   ctx.save();ctx.globalAlpha=Math.min(.55,p.life*.6);ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.scale(p.s,p.s);
-   if(p.coin){ctx.fillStyle='#FFB823';ctx.beginPath();ctx.arc(0,0,4.5,0,6.283);ctx.fill();ctx.strokeStyle='#b57f0a';ctx.lineWidth=1;ctx.stroke();}
-   else{ctx.fillStyle='#3f9b5c';ctx.fillRect(-9,-5,18,10);ctx.strokeStyle='#1E5F2D';ctx.lineWidth=1;ctx.strokeRect(-9,-5,18,10);ctx.fillStyle='#cdeedb';ctx.beginPath();ctx.arc(0,0,2.6,0,6.283);ctx.fill();}
-   ctx.restore();
-  }
+ for(let i=bills.length-1;i>=0;i--){
+  const p=bills[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.01;p.rot+=p.vr;p.life-=.018;
+  if(p.life<=0){bills.splice(i,1);continue;}
+  ctx.save();ctx.globalAlpha=Math.min(.55,p.life*.6);ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.scale(p.s,p.s);
+  if(p.coin){ctx.fillStyle='#FFB823';ctx.beginPath();ctx.arc(0,0,4.5,0,6.283);ctx.fill();ctx.strokeStyle='#b57f0a';ctx.lineWidth=1;ctx.stroke();}
+  else{ctx.fillStyle='#3f9b5c';ctx.fillRect(-9,-5,18,10);ctx.strokeStyle='#1E5F2D';ctx.lineWidth=1;ctx.strokeRect(-9,-5,18,10);
+   ctx.fillStyle='#cdeedb';ctx.beginPath();ctx.arc(0,0,2.6,0,6.283);ctx.fill();}
+  ctx.restore();
+ }
 }
 function animate(){
-  requestAnimationFrame(animate);
-  if(canvas.width===0||canvas.offsetParent===null){resizeCanvas();return;}
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ball.x+=ball.dx;ball.y+=ball.dy;let b=false;
-  if(ball.x-ball.r<=0){ball.x=ball.r;ball.dx*=-1;b=true;}else if(ball.x+ball.r>=canvas.width){ball.x=canvas.width-ball.r;ball.dx*=-1;b=true;}
-  if(ball.y-ball.r<=0){ball.y=ball.r;ball.dy*=-1;b=true;}else if(ball.y+ball.r>=canvas.height){ball.y=canvas.height-ball.r;ball.dy*=-1;b=true;}
-  if(b){playBill();burst();ball.dx+=(Math.random()-.5)*.5;ball.dy+=(Math.random()-.5)*.5;const sp=Math.hypot(ball.dx,ball.dy);if(sp<2.8){ball.dx*=1.2;ball.dy*=1.2;}if(sp>6.5){ball.dx*=.8;ball.dy*=.8;}}
-  if(bills.length<40&&Math.random()<.3){
-   const a=Math.atan2(-ball.dy,-ball.dx)+(Math.random()-.5)*1.4;
-   spawnBill(ball.x+Math.cos(a)*ball.r,ball.y+Math.sin(a)*ball.r,a,.5+Math.random()*.7);
-  }
-  drawBills();
-  ctx.save();ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.clip();
-  ctx.fillStyle='#FFFFFF';
-  if(logoImg.complete&&logoImg.naturalWidth){const k=ball.r*1.45;ctx.drawImage(logoImg,ball.x-k/2,ball.y-k/2,k,k);}
-  ctx.restore();
-  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.lineWidth=3.5;ctx.strokeStyle='#1E5F2D';ctx.stroke();
+ requestAnimationFrame(animate);
+ if(canvas.width===0||canvas.offsetParent===null){resizeCanvas();return;} // no anima si está oculto
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ ball.x+=ball.dx;ball.y+=ball.dy;let b=false;
+ if(ball.x-ball.r<=0){ball.x=ball.r;ball.dx*=-1;b=true;}else if(ball.x+ball.r>=canvas.width){ball.x=canvas.width-ball.r;ball.dx*=-1;b=true;}
+ if(ball.y-ball.r<=0){ball.y=ball.r;ball.dy*=-1;b=true;}else if(ball.y+ball.r>=canvas.height){ball.y=canvas.height-ball.r;ball.dy*=-1;b=true;}
+ if(b){playBill();burst();ball.dx+=(Math.random()-.5)*.5;ball.dy+=(Math.random()-.5)*.5;
+  const sp=Math.hypot(ball.dx,ball.dy);if(sp<2.8){ball.dx*=1.2;ball.dy*=1.2;}if(sp>6.5){ball.dx*=.8;ball.dy*=.8;}}
+ if(bills.length<40&&Math.random()<.3){ // estela sutil desde la orilla
+  const a=Math.atan2(-ball.dy,-ball.dx)+(Math.random()-.5)*1.4;
+  spawnBill(ball.x+Math.cos(a)*ball.r,ball.y+Math.sin(a)*ball.r,a,.5+Math.random()*.7);
+ }
+ drawBills();
+ ctx.save();ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r-2,0,Math.PI*2);ctx.clip();
+ if(logoImg.complete&&logoImg.naturalWidth){const k=ball.r*1.7;ctx.drawImage(logoImg,ball.x-k/2,ball.y-k/2,k,k);} // logo centrado, sin color de fondo
+ ctx.restore();
+ ctx.save();ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+ ctx.lineWidth=4;ctx.strokeStyle='#22c55e';ctx.shadowColor='rgba(34,197,94,.9)';ctx.shadowBlur=16;ctx.stroke();ctx.restore();
 }
 requestAnimationFrame(animate);
 restoreSession();
