@@ -1,53 +1,17 @@
-// API para traer datos del cliente desde Google Sheets
-// PRIVADA - Solo datos del usuario autenticado
-
+// Endpoint deshabilitado de forma segura hasta implementar autenticación de servidor
+// y conectar una fuente privada de datos reales. Nunca confiar en tokens de query.
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'no-referrer');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { email, telefono, token } = req.query;
-
-  // Validar token de sesión
-  if (!token || typeof token !== 'string') {
-    return res.status(401).json({ error: 'No autorizado' });
-  }
-
-  if (!email && !telefono) {
-    return res.status(400).json({ error: 'Faltan parámetros' });
-  }
-
-  // TODO: Aquí consultar Google Sheets con API privada
-  // Usar: google-auth-library y google-sheets-api
-  // Solo devolver datos del usuario autenticado
-
-  const mockData = {
-    email: email || '',
-    telefono: telefono || '',
-    nombre: 'Cliente Ejemplo',
-    balance: 5000.50,
-    certificado: {
-      tipo: 'Certificado de Inversión',
-      monto: 10000,
-      rendimiento: 12.5,
-      vencimiento: '2026-12-31'
-    },
-    propuestas: [
-      {
-        id: 1,
-        tipo: 'Préstamo Personal',
-        monto: 25000,
-        tasa: 18.5,
-        plazo: '24 meses'
-      }
-    ]
-  };
-
-  return res.status(200).json(mockData);
+  // No exponer datos de ejemplo ni aceptar un token arbitrario como identidad.
+  return res.status(503).json({
+    error: 'Servicio deshabilitado hasta configurar autenticación y datos privados en el servidor.'
+  });
 };
