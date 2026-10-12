@@ -475,7 +475,8 @@ function logout(){
 function renderMenu(){
  $('p-rol').textContent=isRoot(me)?'Usuario principal':isSecretaria(me)?'Secretaría':me.rol==='admin'?'Administrador':(TIPOS[me.tipo_cliente]||'Cliente');
  const keys=Object.keys(MODULES).filter(k=>can(me,k));
- $('p-menu').innerHTML=keys.map(k=>`<button class="menu-btn ${k===currentModule?'on':''}" onclick="openModule('${k}')"><i class="fa-solid ${MODULES[k].i} w-5 text-center"></i>${MODULES[k].t}</button>`).join('');
+ const panel=isRoot(me)?'<button class="menu-btn" onclick="location.href=\'/pages/manage-users.html\'"><i class="fa-solid fa-user-shield w-5 text-center"></i>Administrar accesos</button>':'';
+ $('p-menu').innerHTML=keys.map(k=>`<button class="menu-btn ${k===currentModule?'on':''}" onclick="openModule('${k}')"><i class="fa-solid ${MODULES[k].i} w-5 text-center"></i>${MODULES[k].t}</button>`).join('')+panel;
 }
 function openModule(k){
  if(!can(me,k)){notify('No tienes permiso para este módulo.','error');k='resumen';}

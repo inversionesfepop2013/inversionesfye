@@ -1,221 +1,62 @@
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<!doctype html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>INVERSIONES F Y E | Gestionar Usuarios</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer"><title>Accesos | INVERSIONES F Y E POP S.R.L.</title>
   <style>
-    :root { --v: #1E5F2D; --vo: #154420; --a: #FFB823 }
-    * { box-sizing: border-box }
-    html, body { font-family: 'Poppins', sans-serif }
-    body { background: linear-gradient(135deg, #f4f7f5, #eef6ef 52%, #fef9f0); color: #0f172a }
-    .bg-fye-verde { background: var(--v) }
-    .text-fye-verde { color: var(--v) }
-    .btn-verde { background: var(--v); color: #fff; transition: .25s }
-    .btn-verde:hover { background: var(--vo); box-shadow: 0 8px 22px rgba(30,95,45,.25) }
-    .glass-card { background: rgba(255,255,255,.92); backdrop-filter: blur(8px) }
-    .inp { width: 100%; padding: .65rem 1rem; border-radius: .8rem; background: #f8fafc; border: 1px solid #cbd5e1; font-size: .875rem }
-    .inp:focus { outline: none; border-color: var(--v) }
+    :root{color-scheme:light;--green:#185a35;--ink:#17251d;--muted:#637168;--line:#dce5de;--soft:#f4f7f4;--white:#fff;--red:#9e2f28}
+    *{box-sizing:border-box}body{margin:0;background:#f3f6f3;color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+    header{background:var(--white);border-bottom:1px solid var(--line);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .brand{font-weight:800;letter-spacing:.02em}.sub{color:var(--muted);font-size:13px}.wrap{max-width:980px;margin:32px auto;padding:0 18px 48px}
+    .card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:22px;margin:16px 0;box-shadow:0 4px 16px rgba(20,50,30,.04)}
+    h1{font-size:26px;margin:0 0 5px}h2{font-size:18px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px}
+    label{display:block;font-size:13px;font-weight:650;margin:10px 0 5px}input[type=email],input[type=password]{width:100%;padding:11px 12px;border:1px solid #cbd7ce;border-radius:9px;font:inherit;background:white}input:focus{outline:2px solid #8fb69a;outline-offset:1px}
+    button{border:0;border-radius:9px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;background:var(--green);color:white}button.secondary{background:#e9efea;color:var(--ink)}button.danger{background:#fff0ef;color:var(--red)}button:disabled{opacity:.55;cursor:not-allowed}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row button{flex:0 0 auto}.hidden{display:none!important}.notice{padding:12px 14px;border-radius:10px;background:#fff8e4;color:#5d4a12;border:1px solid #efe1b1;font-size:13px;margin:14px 0}.status{min-height:22px;color:var(--muted);font-size:13px;margin-top:10px}.status.error{color:var(--red)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.perm{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:9px;font-weight:500;margin:0}.perm input{accent-color:var(--green);width:16px;height:16px}.section-title{margin:18px 0 8px;font-weight:750}
+    .user{padding:14px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:12px;align-items:center}.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.tag{background:var(--soft);border-radius:999px;padding:3px 9px;font-size:12px;color:#34453a}.inactive{color:var(--red);font-weight:700;font-size:12px}
+    @media(max-width:600px){header{padding:14px 16px}.wrap{margin:18px auto}.card{padding:17px}.user{grid-template-columns:1fr}.row>*{flex-basis:100%}}
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
-
-<header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
-    <div class="flex items-center space-x-3">
-      <div class="flex flex-col">
-        <span class="text-lg sm:text-xl font-black text-slate-900">INVERSIONES F Y E</span>
-        <span class="text-[10px] sm:text-xs font-semibold text-fye-verde">Panel de Gestión</span>
-      </div>
-    </div>
-    <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl" onclick="logout()">
-      <i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión
-    </button>
-  </div>
-</header>
-
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-  <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-    <h1 class="text-3xl font-bold text-slate-900 mb-2">Gestión de Usuarios Pendientes</h1>
-    <p class="text-sm text-slate-500 mb-6">Aprueba o rechaza nuevas solicitudes de registro</p>
-
-    <div id="users-list" class="space-y-4">
-      <p class="text-slate-500">Cargando usuarios...</p>
-    </div>
-  </div>
+<body>
+<header><div><div class="brand">INVERSIONES F Y E POP S.R.L.</div><div class="sub">Panel de permisos de acceso</div></div><button id="logout" class="secondary hidden" type="button">Cerrar sesión</button></header>
+<main class="wrap">
+  <section id="login-card" class="card">
+    <h1>Administración segura</h1><p class="muted">Solo el correo principal puede administrar permisos e invitar al equipo.</p>
+    <form id="login-form"><label for="login-email">Correo principal</label><input id="login-email" type="email" value="inversionesfepop@gmail.com" autocomplete="username" readonly><label for="login-password">Contraseña</label><input id="login-password" type="password" autocomplete="current-password" required maxlength="256"><div class="row" style="margin-top:14px"><button type="submit">Entrar al panel</button></div></form>
+    <div id="login-status" class="status" role="status"></div>
+  </section>
+  <section id="panel" class="hidden">
+    <div class="card"><h1>Accesos del equipo</h1><p class="muted">Añade una cuenta invitada o cambia sus permisos. La autorización del panel se verifica en el servidor con Supabase Auth.</p><div class="notice">La tabla de permisos se gestiona desde esta consola. El portal principal aún requiere la migración de sus accesos antiguos para que estos cambios gobiernen todas sus pantallas y datos.</div><div id="panel-status" class="status" role="status"></div></div>
+    <div class="card"><h2 id="form-title">Añadir persona</h2><form id="access-form"><label for="user-email">Correo de la cuenta</label><input id="user-email" type="email" required autocomplete="off" placeholder="persona@empresa.com"><div class="section-title">Módulos</div><div id="module-permissions" class="grid"></div><div class="section-title">Operaciones</div><div id="operation-permissions" class="grid"></div><label class="perm" style="margin-top:14px"><input id="user-active" type="checkbox" checked> Acceso activo</label><div class="row" style="margin-top:16px"><button type="submit">Guardar permisos</button><button id="invite" type="button" class="secondary">Invitar y guardar</button><button id="clear-form" type="button" class="secondary">Limpiar</button></div></form><p class="muted">Las invitaciones requieren que Vercel tenga configuradas las variables privadas de Supabase. Una cuenta ya invitada puede recibir permisos con “Guardar permisos”.</p></div>
+    <div class="card"><h2>Personas con permisos asignados</h2><div id="user-list" class="muted">Cargando…</div></div>
+  </section>
 </main>
-
-<footer class="bg-slate-900 text-slate-400 text-center py-6 px-4 text-xs sm:text-sm mt-8">
-  <p class="font-semibold text-slate-300">© 2026 INVERSIONES F Y E SRL. Todos los derechos reservados.</p>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
-  const SUPABASE_ANON_KEY = 'Sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
-  const ALLOWED_MANAGERS = ['inversionesfepop@gmail.com', 'flaquitabella875@gmail.com'];
-  const STORAGE_KEY = 'fye_users_v1';
-
-  const supabase = window.supabase && typeof window.supabase.createClient === 'function'
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    : null;
-
-  let currentUser = null;
-  let sessionToken = null;
-
-  function notify(msg, type = 'info') {
-    const colors = { error: '#DC2626', warning: '#D97706', success: '#15803d', info: '#1E5F2D' };
-    Toastify({
-      text: msg,
-      duration: 4000,
-      gravity: 'top',
-      position: 'right',
-      style: { background: colors[type] || '#1E5F2D', borderRadius: '12px', fontSize: '14px', fontWeight: '600' }
-    }).showToast();
-  }
-
-  function esc(s) {
-    return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  }
-
-  function normalizeEmail(v = '') {
-    return String(v).trim().toLowerCase();
-  }
-
-  async function loadPendingUsers() {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const users = stored ? JSON.parse(stored) : [];
-
-      const pending = users.filter(u => u.status !== 'aprobado');
-
-      if (pending.length === 0) {
-        document.getElementById('users-list').innerHTML = '<p class="text-slate-500">No hay usuarios pendientes.</p>';
-        return;
-      }
-
-      const html = pending.map(u => `
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-3">
-          <div class="flex flex-wrap justify-between gap-2">
-            <div>
-              <p class="font-semibold text-sm">${esc(u.nombre || '(sin nombre)')}</p>
-              <p class="text-xs text-slate-500">${esc(u.email || 'Sin email')}</p>
-              <p class="text-xs text-slate-500">${esc(u.telefono || 'Sin teléfono')}</p>
-              <p class="text-xs text-slate-500">${esc(u.cedula || 'Sin documento')}</p>
-              <p class="text-xs text-slate-600 mt-1"><strong>Tipo:</strong> ${u.tipo_cliente === 'ahorista' ? 'Cliente de Ahorro' : u.tipo_cliente === 'inversionista' ? 'Cliente Inversionista' : 'Cliente de Cambio'}</p>
-            </div>
-            <span class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700">Pendiente</span>
-          </div>
-
-          <div class="flex flex-wrap gap-2">
-            <button class="px-4 py-2 rounded-xl bg-fye-verde text-white text-xs font-semibold hover:bg-green-700" onclick="approveUser('${esc(u.cedula)}', '${esc(u.email)}')">Aprobar</button>
-            <button class="px-4 py-2 rounded-xl bg-red-500 text-white text-xs font-semibold hover:bg-red-600" onclick="rejectUser('${esc(u.cedula)}', '${esc(u.email)}')">Rechazar</button>
-          </div>
-        </div>
-      `).join('');
-
-      document.getElementById('users-list').innerHTML = html;
-    } catch (err) {
-      console.error(err);
-      notify('Error al cargar usuarios', 'error');
-    }
-  }
-
-  async function approveUser(cedula, email) {
-    if (!currentUser || !ALLOWED_MANAGERS.includes(normalizeEmail(currentUser.email))) {
-      return notify('No tienes permiso para aprobar usuarios', 'error');
-    }
-
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const users = stored ? JSON.parse(stored) : [];
-      const idx = users.findIndex(u => u.cedula === cedula);
-
-      if (idx < 0) return notify('Usuario no encontrado', 'error');
-
-      users[idx].status = 'aprobado';
-      users[idx].updated_at = new Date().toISOString();
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-
-      // Enviar email de confirmación
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          nombre: users[idx].nombre,
-          tipo_cliente: users[idx].tipo_cliente,
-          status: 'aprobado'
-        })
-      }).catch(e => console.warn('No se pudo enviar email:', e));
-
-      notify('Usuario aprobado correctamente', 'success');
-      loadPendingUsers();
-    } catch (err) {
-      console.error(err);
-      notify('Error al aprobar usuario', 'error');
-    }
-  }
-
-  async function rejectUser(cedula, email) {
-    if (!currentUser || !ALLOWED_MANAGERS.includes(normalizeEmail(currentUser.email))) {
-      return notify('No tienes permiso para rechazar usuarios', 'error');
-    }
-
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const users = stored ? JSON.parse(stored) : [];
-      const idx = users.findIndex(u => u.cedula === cedula);
-
-      if (idx < 0) return notify('Usuario no encontrado', 'error');
-
-      users[idx].status = 'rechazado';
-      users[idx].updated_at = new Date().toISOString();
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-
-      notify('Usuario rechazado', 'success');
-      loadPendingUsers();
-    } catch (err) {
-      console.error(err);
-      notify('Error al rechazar usuario', 'error');
-    }
-  }
-
-  function logout() {
-    sessionStorage.removeItem('fye_session');
-    window.location.href = '/';
-  }
-
-  // Validar acceso
-  window.addEventListener('load', async () => {
-    const session = sessionStorage.getItem('fye_session');
-    if (!session) {
-      window.location.href = '/';
-      return;
-    }
-
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const users = stored ? JSON.parse(stored) : [];
-    currentUser = users.find(u => u.cedula === session);
-
-    if (!currentUser || !ALLOWED_MANAGERS.includes(normalizeEmail(currentUser.email))) {
-      notify('No tienes acceso a esta página', 'error');
-      setTimeout(() => { window.location.href = '/'; }, 2000);
-      return;
-    }
-
-    loadPendingUsers();
-  });
+(function(){
+  const modules=[['resumen','Resumen'],['perfil','Perfil'],['credito','Crédito'],['ahorro','Ahorro'],['certificado','Certificado'],['divisas','Divisas']];
+  const ops=[['usuarios_view','Ver usuarios'],['usuarios_edit','Editar usuarios'],['documentos_view','Ver documentos'],['documentos_edit','Editar y validar documentos']];
+  const labels=Object.fromEntries(modules.concat(ops));let users=[];
+  const $=id=>document.getElementById(id);
+  function escapeHtml(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function status(id,text,error){const el=$(id);el.textContent=text||'';el.className='status'+(error?' error':'');}
+  function permissions(){const out={};modules.concat(ops).forEach(([key])=>out[key]=$('perm-'+key).checked);return out;}
+  function renderChecks(){[['module-permissions',modules],['operation-permissions',ops]].forEach(([id,list])=>{$(id).innerHTML=list.map(([key,label])=>'<label class="perm"><input type="checkbox" id="perm-'+key+'">'+label+'</label>').join('');});}
+  async function api(path,options){const response=await fetch(path,Object.assign({credentials:'same-origin',headers:{'Content-Type':'application/json'}},options||{}));let data={};try{data=await response.json();}catch{}if(!response.ok)throw new Error(data.error||'No se pudo completar la solicitud.');return data;}
+  function permissionTags(p){return Object.keys(labels).filter(key=>p&&p[key]===true).map(key=>'<span class="tag">'+escapeHtml(labels[key])+'</span>').join('')||'<span class="muted">Sin módulos asignados</span>';}
+  function drawUsers(){const box=$('user-list');if(!users.length){box.textContent='No hay asignaciones todavía.';return;}box.innerHTML=users.map(u=>'<div class="user"><div><strong>'+escapeHtml(u.email)+'</strong> '+(u.active?'':'<span class="inactive">Inactivo</span>')+'<div class="tags">'+permissionTags(u.permissions||{})+'</div></div><div class="row"><button class="secondary" type="button" data-edit="'+escapeHtml(u.email)+'">Editar</button><button class="danger" type="button" data-remove="'+escapeHtml(u.email)+'">Retirar</button></div></div>').join('');box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editUser(b.getAttribute('data-edit'))));box.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeUser(b.getAttribute('data-remove'))));}
+  async function loadUsers(){status('panel-status','Actualizando permisos…');try{const data=await api('/api/admin-access');users=data.users||[];drawUsers();status('panel-status','Permisos actualizados.');}catch(e){status('panel-status',e.message,true);}}
+  function editUser(email){const user=users.find(u=>u.email===email);if(!user)return;$('user-email').value=user.email;$('user-active').checked=user.active!==false;modules.concat(ops).forEach(([key])=>{$('perm-'+key).checked=!!(user.permissions&&user.permissions[key]);});$('form-title').textContent='Editar permisos';window.scrollTo({top:0,behavior:'smooth'});}
+  function clearForm(){$('access-form').reset();$('user-active').checked=true;$('form-title').textContent='Añadir persona';modules.concat(ops).forEach(([key])=>{$('perm-'+key).checked=false;});}
+  async function saveAccess(invite){const email=$('user-email').value.trim().toLowerCase();const payload={email,active:$('user-active').checked,permissions:permissions()};if(!email)return status('panel-status','Escribe el correo de la persona.',true);const button=invite?$('invite'):$('access-form').querySelector('button[type="submit"]');button.disabled=true;try{if(invite){await api('/api/admin-invite',{method:'POST',body:JSON.stringify(payload)});status('panel-status','Invitación enviada y permisos guardados.');}else{await api('/api/admin-access',{method:'POST',body:JSON.stringify(payload)});status('panel-status','Permisos guardados.');}clearForm();await loadUsers();}catch(e){status('panel-status',e.message,true);}finally{button.disabled=false;}}
+  async function removeUser(email){if(!window.confirm('¿Retirar los permisos de '+email+'?'))return;try{await api('/api/admin-access?email='+encodeURIComponent(email),{method:'DELETE'});status('panel-status','Permisos retirados.');await loadUsers();}catch(e){status('panel-status',e.message,true);}}
+  async function showPanel(){try{const s=await api('/api/admin-session');$('login-card').classList.add('hidden');$('panel').classList.remove('hidden');$('logout').classList.remove('hidden');await loadUsers();}catch(e){$('login-card').classList.remove('hidden');$('panel').classList.add('hidden');if(e.message!=='Inicia sesión de nuevo.')status('login-status',e.message,true);}}
+  renderChecks();
+  $('login-form').addEventListener('submit',async event=>{event.preventDefault();const input=$('login-password'),password=input.value;input.value='';status('login-status','Verificando…');try{await api('/api/admin-session',{method:'POST',body:JSON.stringify({email:$('login-email').value,password})});await showPanel();}catch(e){status('login-status',e.message,true);}});
+  $('access-form').addEventListener('submit',event=>{event.preventDefault();saveAccess(false);});
+  $('invite').addEventListener('click',()=>saveAccess(true));$('clear-form').addEventListener('click',clearForm);
+  $('logout').addEventListener('click',async()=>{try{await api('/api/admin-session',{method:'DELETE'});}catch{}$('panel').classList.add('hidden');$('logout').classList.add('hidden');$('login-card').classList.remove('hidden');status('login-status','Sesión cerrada.');});
+  showPanel();
+})();
 </script>
-</body>
-</html>
+</body></html>
