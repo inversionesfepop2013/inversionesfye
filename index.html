@@ -405,17 +405,24 @@ async function _setDocEstado(ced,estado){
 /* ---------- Almacenamiento ---------- */
 function getLocalUsers(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch{return[];}}
 function saveLocalUsers(u){localStorage.setItem(STORAGE_KEY,JSON.stringify(u));}
+let _sbErrAt=0;
+function sbError(where,error){
+ console.error('SUPABASE ('+where+'):',error);
+ const now=Date.now();
+ if(now-_sbErrAt>8000){_sbErrAt=now;notify('Supabase ('+where+'): '+(error&&error.message?error.message:String(error)),'error');}
+}
 async function getUsers(){
  const local=getLocalUsers();
  if(!sb)return local;
  try{
   const{data,error}=await sb.from('clientes').select('*');
-  if(error||!Array.isArray(data))return local;
+  if(error){sbError('leer clientes',error);return local;}
+  if(!Array.isArray(data))return local;
   const m=new Map(); // fusiona remoto y local; gana el más reciente
   [...data,...local].forEach(u=>{const o=m.get(u.cedula);
    if(!o||(u.updated_at||u.created_at||'')>=(o.updated_at||o.created_at||''))m.set(u.cedula,u);});
   const all=[...m.values()];saveLocalUsers(all);return all;
- }catch(e){console.warn('Supabase no disponible, uso local',e);return local;}
+ }catch(e){sbError('conexión',e);return local;}
 }
 async function saveUser(u){
  u.updated_at=new Date().toISOString();
@@ -423,7 +430,7 @@ async function saveUser(u){
  if(i>=0)all[i]=u;else all.push(u);saveLocalUsers(all);
  if(!sb)return;
  try{const{error}=await sb.from('clientes').upsert([u],{onConflict:'cedula'});
-  if(error)console.warn('Supabase:',error.message);}catch(e){console.warn(e);}
+  if(error)sbError('guardar cliente',error);}catch(e){sbError('guardar cliente',e);}
 }
 async function hashPw(pw,salt){
  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+pw));
