@@ -971,5 +971,14 @@ function animate(){
 requestAnimationFrame(animate);
 restoreSession();
 </script>
+<script>
+(function(){
+ const login=document.getElementById('tab-login');
+ if(login)login.innerHTML='<h2 class="text-xl font-bold mb-3">Acceso privado</h2><p class="text-sm text-slate-600 mb-4">El inicio de sesión anterior y el registro público están desactivados mientras se completa la migración segura.</p><p><a class="text-fye-verde font-bold underline" href="/pages/investor.html">Entrar al portal de inversionistas</a></p><p class="mt-3"><a class="text-fye-verde font-bold underline" href="/pages/manage-users.html">Panel del equipo</a></p>';
+ const registration=document.getElementById('tab-registro');
+ if(registration)registration.innerHTML='<h2 class="text-xl font-bold mb-3">Registro por invitación</h2><p class="text-sm text-slate-600">El registro público está desactivado. Solicita una invitación al equipo.</p>';
+ try{if(typeof logout==='function')logout();}catch(e){}
+})();
+</script>
 </body>
 </html>
