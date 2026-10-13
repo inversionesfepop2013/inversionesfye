@@ -1,20 +1,21 @@
-# Panel de permisos — INVERSIONES F Y E POP S.R.L.
+# Acceso seguro — INVERSIONES F Y E POP S.R.L.
 
-Esta rama añade un panel de permisos separado:
+Esta rama implementa una consola de equipo y un portal de inversionistas con sesión verificada en Supabase Auth y cookies Secure, HttpOnly y SameSite=Strict. El correo inversionesfepop@gmail.com es el único que puede abrir la consola y asignar roles y permisos. Las invitaciones se crean en Supabase Auth; las claves administrativas solo viven en variables sensibles de Vercel y nunca en el navegador.
 
-- Solo la cuenta autenticada inversionesfepop@gmail.com puede iniciar sesión y administrar asignaciones. El servidor confirma la identidad con Supabase Auth.
-- La sesión del panel utiliza cookies HttpOnly, Secure y SameSite=Strict. Las contraseñas no se guardan en el navegador ni en el repositorio.
-- La clave privada de Supabase se usa solo en Vercel para enviar invitaciones y nunca se incluye en la página.
-- Los permisos seleccionables son Resumen, Perfil, Crédito, Ahorro, Certificado, Divisas, ver/editar usuarios y ver/editar documentos. Solo el correo principal puede administrar permisos.
-- La migración activa RLS y no concede acceso a usuarios anónimos. Secretaría parte con los permisos de trabajo actuales; el administrador puede ajustarlos.
+## Datos y permisos
 
-## Activación tras revisar la rama
+- Supabase es la fuente de datos según la especificación proporcionada. La hoja Base_Datos_Inversiones_FYE se revisó y contiene solo encabezados; no se copiaron registros.
+- Ejecutar supabase/20261013_investment_ledger.sql una sola vez con el historial de migraciones habilitado. La migración crea profiles, financial_products, accounts, ledger_entries, client_documents y la vista del inversionista; activa RLS y crea productos vacíos DOP/USD. No crea inversores ni importes inventados.
+- ledger_entries rechaza UPDATE y DELETE; las correcciones se registran con asientos nuevos.
+- El panel permite invitar roles secretaria, inversionista y cliente, y asignar permisos por pantalla/operación. Nadie puede otorgar el rol admin desde el panel.
+- El portal de inversores solo lee cuentas vinculadas al perfil autenticado y muestra el historial del libro. No procesa pagos ni retiros reales.
+- El tope de 3% mensual, retención de 18% y día 5 son parámetros indicados por la empresa, no una verificación legal/fiscal. El periodo de rendimiento que cubre el día 5 sigue pendiente de confirmación; no se programó una contabilización automática.
 
-1. En Supabase Auth, invita primero a inversionesfepop@gmail.com como cuenta administrativa. El proyecto no tiene cuentas registradas y el registro público está desactivado.
-2. Aplica supabase/20261013_admin_permissions.sql en la base de datos.
-3. Configura en Vercel las variables SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY y SUPABASE_INVITE_REDIRECT_URL. La clave de servicio no debe añadirse a GitHub ni enviarse por chat. La dirección de regreso debe usar HTTPS y estar permitida en las redirecciones de Supabase.
-4. Prueba primero la rama en vista previa y confirma los flujos antes de fusionarla con main.
+## Estado pendiente antes de producción
 
-## Alcance pendiente — importante
-
-El portal principal todavía autentica usuarios y aplica varios permisos desde el navegador y localStorage. Esta rama crea la consola segura y la tabla de asignaciones, pero no convierte por sí sola todas las pantallas y datos existentes en controles protegidos por servidor. No uses la tabla nueva como única protección para balances, expedientes ni documentos hasta completar la migración del portal principal a sesiones verificadas y comprobaciones de permisos del lado del servidor. Las rutas de ejemplo api/customer-data, api/approve-users y api/send-email permanecen cerradas mientras no tengan autenticación real.
+1. Invitar inversionesfepop@gmail.com y comprobar la activación de la cuenta administradora.
+2. Confirmar el periodo al que corresponde el pago del día 5 y la hora/zona de ejecución antes de automatizar rendimientos.
+3. Migrar o desactivar de forma controlada el inicio de sesión antiguo del portal principal: todavía contiene autenticación propia y permisos calculados en navegador.
+4. Implementar y probar aprobaciones de retiros, documentos, KYC y los flujos de depósitos/préstamos antes de usar dinero real.
+5. Aplicar variables sensibles en producción solo después de revisar y aprobar esta rama.
+6. La compra del dominio requiere los datos reales del titular registrante; no se inventarán.
