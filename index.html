@@ -992,6 +992,21 @@ restoreSession();
         function guardarSesion(cedula, nombre) {
             localStorage.setItem("usuario_activo", JSON.stringify({ cedula, nombre }));
         }
+
+        // 3. Consultar la cédula de forma segura en Google Sheets
+        async function consultarCliente(cedula) {
+            const urlAPI = "https://script.google.com/macros/s/AKfycbw3__IeM1R3b80hnfj9PrJ3WvbARkMb8TtuV2nsX-b3m6p3sp_h0AOQoP3p5D4m7Pgo/exec?cedula=" + encodeURIComponent(cedula);
+            
+            try {
+                const response = await fetch(urlAPI);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error al conectar con la base de datos:", error);
+                return { encontrado: false };
+            }
+        }
     </script>
+
 </body>
 </html>
