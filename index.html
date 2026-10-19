@@ -988,19 +988,33 @@ restoreSession();
             localStorage.setItem("usuario_activo", JSON.stringify({ cedula, nombre }));
         }
 
-        // 3. Consultar la cédula de forma segura en Google Sheets
+        // 3. Consultar la cédula de forma segura en Google             const urlAPI = "https://script.google.com/macros/s/AKfycbwho43ZRVoB8QUVAIoKRW3NxfMfbGOEpPB66GzqPsVjPNDrUtpowEEuoFS5Gq9jo_9f/exec?cedula=" + encodeURIComponent(        // 3. Consultar la cédula de forma segura en Supabase
         async function consultarCliente(cedula) {
-                        const urlAPI = "https://script.google.com/macros/s/AKfycbwho43ZRVoB8QUVAIoKRW3NxfMfbGOEpPB66GzqPsVjPNDrUtpowEEuoFS5Gq9jo_9f/exec?cedula=" + encodeURIComponent(cedula);
-
-            
             try {
-                const response = await fetch(urlAPI);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error al conectar con la base de datos:", error);
+                const cedulaLimpia = cedula.replace(/\D/g, "");
+                
+                const { data, error } = await supabaseClient
+                    .from('clientes')
+                    .select('*')
+                    .or(`Cedula.eq.${cedula},Cedula.eq.${cedulaLimpia}`)
+                    .single();
+
+                if (error) {
+                    console.error("Error en Supabase:", error);
+                    return { encontrado: false };
+                }
+
+                return {
+                    encontrado: true,
+                    nombre: data.Nombre_Completo || data.nombre,
+                    cedula: data.Cedula || data.cedula
+                };
+            } catch (err) {
+                console.error("Error de conexión:", err);
                 return { encontrado: false };
             }
+        }
+
         }
     </script>
 </body>
