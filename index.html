@@ -990,7 +990,8 @@ restoreSession();
 
         // 3. Consultar la cédula de forma segura en Google Sheets
         async function consultarCliente(cedula) {
-            const urlAPI = "https://script.google.com/macros/s/AKfycbw3__IeM1R3b80hnfj9PrJ3WvbARkMb8TtuV2nsX-b3m6p3sp_h0AOQoP3p5D4m7Pgo/exec?cedula=" + encodeURIComponent(cedula);
+                        const urlAPI = "https://script.google.com/macros/s/AKfycbwho43ZRVoB8QUVAIoKRW3NxfMfbGOEpPB66GzqPsVjPNDrUtpowEEuoFS5Gq9jo_9f/exec?cedula=" + encodeURIComponent(cedula);
+
             
             try {
                 const response = await fetch(urlAPI);
