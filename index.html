@@ -571,7 +571,195 @@ async function setRol(ced,rol){
 const SHEET_ID='1YXNYtAVVV1b2-pDXX9UfPBQbXuTImHJW';
 const SHEET_TABS={ahorro:'ahorro',certificado:'certificado',credito:'credito'};
 const money=n=>'RD$ '+n.toLocaleString('es-DO',{minimumFractionDigits:2,maximumFractionDigits:2});
-function parseCSV(t){
+const TASA_CERTIFICADO_MENSUAL = 0.015;
+const CERTIFICADO_LIMITE = 999999;
+
+async function getSaldoPorCuenta(tab){
+  try{
+    const rows = await loadTab(SHEET_TABS[tab]);
+    return rows
+      .filter(r => r.doc === myDoc())
+      .reduce((sum, r) => sum + (Number(r.monto) || 0), 0);
+  }catch(e){
+    return 0;
+  }
+}
+
+async function solicitarCuenta(tab){
+  if(tab === 'ahorro'){
+    openSec(`
+      <h2 class="text-xl font-bold">Solicitar cuenta de ahorro</h2>
+      <p class="text-sm text-slate-500 mt-2 mb-4">
+        Para aperturar una cuenta de ahorro debe comunicarse con nosotros.
+      </p>
+      <div class="space-y-3 text-sm text-slate-700">
+        <p><strong>Teléfono:</strong> <a href="tel:8097394404" class="text-fye-verde font-semibold underline">809-739-4404</a></p>
+        <p><strong>WhatsApp:</strong> <a href="https://wa.me/18294778269?text=Hola%20quiero%20aperturar%20una%20cuenta%20de%20ahorro." target="_blank" rel="noopener" class="text-fye-verde font-semibold underline">849-477-8269</a></p>
+      </div>
+      <div class="mt-5">
+        <a href="https://wa.me/18294778269?text=Hola%20quiero%20aperturar%20una%20cuenta%20de%20ahorro." target="_blank" rel="noopener"
+           class="w-full inline-flex items-center justify-center py-3 btn-verde font-bold rounded-xl text-sm shadow-md">
+          <i class="fa-brands fa-whatsapp mr-2"></i>Solicitar por WhatsApp
+        </a>
+      </div>
+      <button type="button" onclick="closeSec()" class="w-full mt-3 text-xs text-slate-500 py-2">Cerrar</button>
+    `);
+    return;
+  }
+
+  if(tab === 'certificado'){
+    const saldoAhorro = await getSaldoPorCuenta('ahorro');
+    openSec(`
+      <h2 class="text-xl font-bold">Crear certificado</h2>
+      <p class="text-sm text-slate-500 mt-2 mb-4">
+        1. Crear certificado desde cuenta de ahorro.
+      </p>
+      <form onsubmit="confirmarCertificado(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Monto del certificado</label>
+          <input id="cert-monto" type="number" min="1" step="0.01" class="inp" required placeholder="Ej. 25000">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Tiempo en meses</label>
+          <input id="cert-meses" type="number" min="3" max="240" value="3" class="inp" required>
+          <p class="text-[11px] text-slate-500 mt-1">Mínimo: 3 meses · Máximo: 20 años</p>
+        </div>
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
+          <strong>Nota:</strong> El certificado paga 1.5% mensual. Si el monto supera RD$ 999,999.00, favor contactarse con nosotros.
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
+          <strong>Saldo actual en cuenta de ahorro:</strong> ${money(saldoAhorro)}
+        </div>
+        <label class="flex items-start gap-2 text-xs text-slate-700">
+          <input id="cert-acepta" type="checkbox" required>
+          <span>
+            Acepto que el certificado se creará con base en mi cuenta de ahorro y que se me debitarán los fondos indicados.
+          </span>
+        </label>
+        <button type="submit" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md">
+          Continuar
+        </button>
+      </form>
+      <button type="button" onclick="closeSec()" class="w-full mt-3 text-xs text-slate-500 py-2">Cancelar</button>
+    `);
+  }
+}
+
+async function confirmarCertificado(e){
+  e.preventDefault();
+
+  const monto = Number(document.getElementById('cert-monto').value || 0);
+  const meses = Number(document.getElementById('cert-meses').value || 0);
+  const acepta = document.getElementById('cert-acepta').checked;
+  const saldoAhorro = await getSaldoPorCuenta('ahorro');
+
+  if(!monto || monto <= 0){
+    notify('Ingresa un monto válido para el certificado.','error');
+    return;
+  }
+
+  if(meses < 3 || meses > 240){
+    notify('El tiempo del certificado debe estar entre 3 meses y 20 años.','error');
+    return;
+  }
+
+  if(!acepta){
+    notify('Debes aceptar la declaración para continuar.','warning');
+    return;
+  }
+
+  if(monto > saldoAhorro){
+    notify('El monto del certificado no debe ser mayor a su balance actual de ahorro.','error');
+    return;
+  }
+
+  if(monto > CERTIFICADO_LIMITE){
+    notify('Si su monto supera RD$ 999,999.00, favor contactarse con nosotros.','warning');
+    return;
+  }
+
+  const valorEstimado = monto * (1 + (TASA_CERTIFICADO_MENSUAL * meses));
+  closeSec();
+
+  openSec(`
+    <h2 class="text-xl font-bold">Resumen del certificado</h2>
+    <div class="space-y-3 mt-4 text-sm text-slate-700">
+      <p><strong>Monto solicitado:</strong> ${money(monto)}</p>
+      <p><strong>Tiempo:</strong> ${meses} meses</p>
+      <p><strong>Saldo disponible en ahorro:</strong> ${money(saldoAhorro)}</p>
+      <p><strong>Se le debitarán:</strong> ${money(monto)}</p>
+      <p><strong>Valor estimado final:</strong> ${money(valorEstimado)}</p>
+      <p class="text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px]">
+        El certificado paga 1.5% mensual. Al finalizar el plazo, el valor estimado será el total mostrado arriba.
+      </p>
+    </div>
+    <button type="button" onclick="closeSec();notify('Solicitud de certificado registrada correctamente.','success');" class="w-full py-3 btn-verde font-bold rounded-xl text-sm shadow-md mt-4">
+      Aceptar
+    </button>
+  `);
+ async function viewBalance(k){
+  const c=$('p-content'), staff=isStaff(me);
+  c.innerHTML=`<h2 class="text-xl font-bold">${MODULES[k].t}</h2><p class="text-sm text-slate-500 mt-3">Cargando…</p>`;
+
+  try{
+    let rows = await loadTab(SHEET_TABS[k]);
+    if(!staff) rows = rows.filter(r => r.doc === myDoc());
+
+    const total = rows.reduce((s,r)=>s+r.monto,0);
+
+    if((k === 'ahorro' || k === 'certificado') && !staff && (rows.length === 0 || total <= 0)){
+      c.innerHTML = `
+        <h2 class="text-xl font-bold">${MODULES[k].t}</h2>
+        <div class="mt-5 p-5 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-amber-800">
+          <p class="font-bold mb-2">No tiene una cuenta activa.</p>
+          <p class="mb-4">Para continuar, debe solicitar esta cuenta.</p>
+          <button type="button" onclick="solicitarCuenta('${k}')" class="py-2.5 px-4 btn-verde font-bold rounded-xl text-sm shadow-md">
+            Solicitar
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    if(currentModule !== k) return;
+
+    c.innerHTML = `
+      <h2 class="text-xl font-bold">${MODULES[k].t}</h2>
+      <div class="overflow-x-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-xs text-slate-500 border-b">
+              ${staff ? '<th class="py-2 pr-4">Documento</th>' : ''}
+              <th class="py-2 pr-4">Concepto</th>
+              <th class="py-2 text-right">Monto</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            ${rows.map(r => `
+              <tr>
+                ${staff ? `<td class="py-2 pr-4">${esc(r.doc)}</td>` : ''}
+                <td class="py-2 pr-4">${esc(r.concepto)}</td>
+                <td class="py-2 text-right">${money(r.monto)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 text-right font-bold text-fye-verde">
+        Balance total: ${money(total)}
+      </div>
+    `;
+  }catch(e){
+    if(currentModule === k){
+      c.innerHTML = `
+        <h2 class="text-xl font-bold mb-3">${MODULES[k].t}</h2>
+        ${BAL_ERR}
+      `;
+    }
+  }
+}
+}
+ function parseCSV(t){
  const rows=[];let r=[],c='',q=false;
  for(let i=0;i<t.length;i++){const ch=t[i];
   if(q){if(ch==='"'&&t[i+1]==='"'){c+='"';i++;}else if(ch==='"')q=false;else c+=ch;}
@@ -970,7 +1158,7 @@ restoreSession();
 </script>
 
     <script>
-        // 1. Formato automático de cédula (037-0122888-8)
+        // 1. Formato automático de cédula (000-0000000-0)
         function formatearCedula(input) {
             let v = input.value.replace(/\D/g, "");
             if (v.length > 11) v = v.slice(0, 11);
