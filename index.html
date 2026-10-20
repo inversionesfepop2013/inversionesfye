@@ -489,7 +489,8 @@ function openModule(k){
   <h2 class="text-xl font-bold">${MODULES[k].t}</h2>
   <p class="text-slate-500 text-sm mt-2">Este módulo estará disponible muy pronto.</p></div>`;
 }
-function viewResumen(){
+function viewResumen(){ 
+ const serviciosActivos = Object.keys(MODULES).filter(k => k !== 'resumen' && can(me, k));
  const cards=Object.keys(MODULES).filter(k=>k!=='resumen'&&can(me,k)).map(k=>
   `<button onclick="openModule('${k}')" class="text-left p-4 rounded-2xl border border-slate-200 bg-white hover:border-fye-verde transition">
    <i class="fa-solid ${MODULES[k].i} text-fye-verde text-xl mb-2"></i><p class="font-semibold text-sm">${MODULES[k].t}</p></button>`).join('');
