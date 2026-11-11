@@ -1,7 +1,7 @@
 {
   "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.12"
+    "api/index.py": {
+      "maxDuration": 30
     }
   },
   "routes": [
