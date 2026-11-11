@@ -14,120 +14,110 @@
     :root{--green:#1E5F2D;--green-dark:#154420;--ink:#17231a;--muted:#64736a;--line:#e1e9e2;--paper:#fff;--wash:#f4f8f4;--gold:#FFB823}
     *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f4f7f5,#eef6ef 52%,#fef9f0);color:var(--ink);font:15px/1.55 Poppins,system-ui,sans-serif}
     a{color:inherit}.top{background:var(--green-dark);color:#fff;padding:15px 20px}.top-inner{max-width:1120px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{font-size:17px;font-weight:800;letter-spacing:.03em}.brand small{display:block;color:#d9eedc;font-weight:500;font-size:11px;letter-spacing:.16em}.home{background:#fff;color:var(--green);border:1px solid rgba(255,255,255,.75);border-radius:10px;padding:9px 14px;text-decoration:none;font-weight:700}.home:hover{background:#f1f8f1}
-    main{max-width:1120px;margin:0 auto;padding:42px 20px 70px}.hero{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(24px,5vw,52px);box-shadow:0 12px 35px rgba(19,54,27,.07)}.eyebrow{color:var(--green);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:10px 0 14px}.hero p{color:var(--muted);max-width:700px;margin:0}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;text-decoration:none;font-weight:700}.button-primary{background:var(--green);color:white}.button-primary:hover{background:var(--green-dark)}.button-outline{background:#fff;color:var(--green);border:1px solid var(--green)}
-    .section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:38px 0 15px}.section-head h2{margin:0;font-size:24px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}.listings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 7px 22px rgba(19,54,27,.05)}.photo{height:190px;background:linear-gradient(135deg,#e9f2e9,#f7f5ec);display:grid;place-items:center;color:var(--green);font-size:40px}.photo img{width:100%;height:100%;object-fit:cover}.card-body{padding:18px}.card h3{margin:0 0 5px;font-size:18px;line-height:1.3}.location{color:var(--muted);font-size:13px}.price{color:var(--green-dark);font-weight:800;font-size:18px;margin-top:13px}.description{color:#536259;font-size:13px;white-space:pre-line;margin:12px 0 0}.status{border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px;color:var(--muted)}.error{color:#7a3418;background:#fff7ed;border-color:#fed7aa}footer{text-align:center;padding:22px 18px;background:#10251a;color:#cbd5ce;font-size:12px}footer p{margin:4px}.contact{margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}.contact h2{margin:0 0 6px;font-size:18px}.contact p{margin:0;color:var(--muted);font-size:13px}.contact a{color:var(--green);font-weight:700}
-    @media(max-width:600px){.top-inner{align-items:flex-start}.home{white-space:nowrap;font-size:13px;padding:8px 10px}main{padding-top:22px}.section-head{display:block}.photo{height:170px}}
+    main{max-width:1120px;margin:0 auto;padding:42px 20px 70px}.hero{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(24px,5vw,52px);box-shadow:0 12px 35px rgba(19,54,27,.07)}.eyebrow{color:var(--green);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:10px 0 14px}.hero p{color:var(--muted);max-width:760px;margin:0}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;text-decoration:none;font-weight:700;cursor:pointer}.button-primary{background:var(--green);color:white;border:1px solid var(--green)}.button-primary:hover{background:var(--green-dark)}.button-outline{background:#fff;color:var(--green);border:1px solid var(--green)}.button-outline:hover{background:#f4faf4}
+    .notice{margin-top:20px;padding:13px 15px;border:1px solid #f1dfaa;background:#fffaf0;border-radius:12px;color:#62512a;font-size:13px}.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:15px;margin-top:18px}.plan{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px}.plan h3{margin:0 0 7px;font-size:17px}.plan .cost{font-size:26px;font-weight:800;color:var(--green)}.plan p{margin:4px 0;color:var(--muted);font-size:13px}.trial{border-color:var(--green);background:#f7fbf7}.benefits{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:13px;margin-top:18px}.benefit{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px}.benefit strong{display:block;color:var(--green-dark);margin-bottom:5px}.benefit span{font-size:13px;color:var(--muted)}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:38px 0 15px}.section-head h2{margin:0;font-size:24px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}.listings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 7px 22px rgba(19,54,27,.05)}.photo{height:190px;background:linear-gradient(135deg,#e9f2e9,#f7f5ec);display:grid;place-items:center;color:var(--green);font-size:40px}.photo img{width:100%;height:100%;object-fit:cover}.card-body{padding:18px}.card h3{margin:0 0 5px;font-size:18px;line-height:1.3}.location{color:var(--muted);font-size:13px}.price{color:var(--green-dark);font-weight:800;font-size:18px;margin-top:13px}.description{color:#536259;font-size:13px;white-space:pre-line;margin:12px 0 0}.status{border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px;color:var(--muted)}.error{color:#7a3418;background:#fff7ed;border-color:#fed7aa}
+    .legal{margin-top:34px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,34px)}.legal h2{font-size:23px;margin:0 0 10px}.legal h3{font-size:16px;margin:23px 0 7px;color:var(--green-dark)}.legal p,.legal li{font-size:13px;color:#4f5f55;line-height:1.7}.legal .legal-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.contact{margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}.contact h2{margin:0 0 6px;font-size:18px}.contact p{margin:0;color:var(--muted);font-size:13px}.contact a{color:var(--green);font-weight:700}footer{text-align:center;padding:22px 18px;background:#10251a;color:#cbd5ce;font-size:12px}footer p{margin:4px}
+    @media(max-width:600px){.top-inner{align-items:flex-start}.home{white-space:nowrap;font-size:13px;padding:8px 10px}main{padding-top:22px}.section-head{display:block}.photo{height:170px}.hero-actions .button{width:100%}}
   </style>
 </head>
 <body>
   <header class="top"><div class="top-inner"><div class="brand">INVERSIONES F Y E<small>REAL ESTATE · PUERTO PLATA</small></div><a class="home" href="/" aria-label="Volver al inicio">← Inicio</a></div></header>
   <main>
     <section class="hero">
-      <div class="eyebrow">Bienes raíces</div>
-      <h1>Encuentra tu próximo espacio.</h1>
-      <p>Explora las propiedades publicadas por Inversiones F y E. Para información, disponibilidad o coordinar una visita, comunícate directamente con nuestro equipo.</p>
-      <div class="hero-actions"><a class="button button-primary" href="#propiedades">Ver propiedades <span aria-hidden="true">↓</span></a><a class="button button-outline" href="mailto:inversionesfepop@gmail.com">Contactar</a></div>
+      <div class="eyebrow">Bienes raíces · Plataforma de conexión</div>
+      <h1>¿Cansado del tercer depósito abusivo? Entonces regístrate con nosotros y protege tu inversión.</h1>
+      <p>Conectamos personas que buscan o publican propiedades. La plataforma ayuda a organizar anuncios y facilitar el contacto; antes de pagar o firmar, verifica la propiedad, la identidad de las partes y las condiciones con profesionales independientes.</p>
+      <div class="hero-actions"><a class="button button-primary" href="#propiedades">Ver propiedades <span aria-hidden="true">↓</span></a><a class="button button-outline" href="/portal.html">Iniciar sesión / registrarse</a><a class="button button-outline" href="#terminos">Leer términos</a></div>
+      <div id="access-notice" class="notice">Sin sesión activa, este portal muestra únicamente propiedades económicas de US$1,000 a US$7,500. La prueba gratuita de 3 días comienza al crear una cuenta y solo se concede una vez por usuario.</div>
     </section>
+
+    <section aria-labelledby="plans-title">
+      <div class="section-head"><div><h2 id="plans-title">Planes sencillos y transparentes</h2><p>Precios mensuales publicados en USD.</p></div></div>
+      <div class="plans">
+        <article class="plan trial"><h3>Prueba gratuita</h3><div class="cost">3 días</div><p>Acceso inicial para cuentas nuevas, una sola vez por usuario.</p></article>
+        <article class="plan"><h3>Plan buscador</h3><div class="cost">US$0.50 <small>/ mes</small></div><p>Para buscar y consultar propiedades de cualquier precio mientras la suscripción esté activa.</p></article>
+        <article class="plan"><h3>Plan publicador</h3><div class="cost">US$1.00 <small>/ mes</small></div><p>Para publicar propiedades. La activación y renovación requieren confirmación de pago.</p></article>
+      </div>
+      <div class="notice">La suscripción y el acceso se validan en el servidor. El sitio aún no procesa pagos en línea; no se activa ningún plan por hacer clic ni por enviar un comprobante. Contacta soporte para conocer el método autorizado de pago.</div>
+    </section>
+
+    <section aria-labelledby="benefits-title">
+      <div class="section-head"><div><h2 id="benefits-title">Publica con mayor visibilidad</h2><p>Beneficios sujetos a activación y validación del pago de publicación.</p></div></div>
+      <div class="benefits">
+        <div class="benefit"><strong>Primer año destacado</strong><span>Visibilidad premium durante 1 año desde la confirmación de pago.</span></div>
+        <div class="benefit"><strong>Hasta 5 años adicionales</strong><span>Después del primer año, la publicación pasa a visibilidad estándar, hasta el límite total de 6 años.</span></div>
+        <div class="benefit"><strong>Difusión multicanal</strong><span>La plataforma puede promover anuncios en sus canales y ante usuarios interesados, sujeto a disponibilidad y consentimiento.</span></div>
+        <div class="benefit"><strong>Comisión propuesta</strong><span>0% para inmuebles de menos de RD$100,000 y 0.50% para inmuebles de RD$100,000 o más, calculada sobre el precio final de venta conforme al acuerdo escrito aplicable.</span></div>
+        <div class="benefit"><strong>Sin “tercer depósito” exigido por esta plataforma</strong><span>No solicitamos un tercer depósito como requisito de publicación. Verifica cualquier pago solicitado por terceros antes de entregar dinero.</span></div>
+      </div>
+    </section>
+
     <section id="propiedades" aria-labelledby="list-title">
-      <div class="section-head"><div><h2 id="list-title">Propiedades disponibles</h2><p>Listado oficial de propiedades publicadas.</p></div></div>
+      <div class="section-head"><div><h2 id="list-title">Propiedades disponibles</h2><p>Los anuncios dependen de su vigencia, moneda declarada y permisos de consulta.</p></div></div>
       <div id="listings" class="listings" aria-live="polite"><div class="status">Cargando propiedades…</div></div>
     </section>
+
+    <section id="terminos" class="legal" aria-labelledby="legal-title">
+      <h2 id="legal-title">Términos de uso y descargo de responsabilidad de Real Estate</h2>
+      <p><strong>Versión informativa:</strong> estos términos deben revisarse y aprobarse por asesoría legal local antes de su uso como contrato vinculante. No pretenden eliminar derechos que no puedan renunciarse legalmente.</p>
+      <div class="legal-actions"><a class="button button-outline" href="/real-estate/terminos.html" download>Descargar términos</a><button class="button button-primary" type="button" onclick="window.print()">Imprimir / guardar PDF</button></div>
+      <h3>1. Función de la plataforma</h3>
+      <p>Inversiones F y E Real Estate proporciona herramientas tecnológicas para publicar anuncios y facilitar el contacto entre usuarios. Salvo acuerdo separado y expreso, no actúa como propietaria, vendedora, compradora, arrendadora, arrendataria, fiduciaria, depositaria, notaria, tasadora ni representante de ninguna de las partes.</p>
+      <h3>2. Verificación y límites</h3>
+      <p>La plataforma puede realizar validaciones documentales básicas o controles de consistencia. Estos controles no son una garantía de identidad, titularidad, estado registral, condición física, disponibilidad, precio, permisos, solvencia ni veracidad completa de un anuncio. Las partes deben realizar diligencia independiente y consultar profesionales habilitados.</p>
+      <h3>3. Negociación y cierre entre particulares</h3>
+      <p>Las conversaciones, visitas, ofertas, reservas, promesas, contratos, pagos, depósitos, entrega de llaves y cierre se acuerdan directamente entre las partes. Cada usuario debe verificar la identidad del interlocutor, titularidad y documentos originales, y no enviar fondos antes de confirmar por canales independientes el beneficiario y las condiciones.</p>
+      <h3>4. Depósitos, fraude y responsabilidad</h3>
+      <p>La plataforma no recibe, custodia, transfiere ni garantiza pagos entre usuarios. No exige ni cobra un “tercer depósito”. No obstante, la plataforma no puede garantizar que las interacciones privadas estén libres de fraude y no ofrece inmunidad absoluta frente a reclamaciones. En la medida permitida por la ley, cada parte es responsable de sus declaraciones, decisiones, pagos y acuerdos, sin limitar la responsabilidad que la legislación no permita excluir, incluyendo dolo, negligencia grave o deberes legales aplicables.</p>
+      <h3>5. Comisiones y suscripciones</h3>
+      <p>Los planes indicados en esta página son tarifas publicadas; la activación requiere un mecanismo de pago autorizado y confirmación verificable. La comisión anunciada requiere aceptación escrita separada que identifique la base de cálculo, vencimiento, impuestos y condiciones. La publicación no constituye garantía de venta ni de visibilidad ininterrumpida.</p>
+      <h3>6. Vigencia, archivo y retiro de anuncios</h3>
+      <p>Tras confirmarse el pago de publicación, se prevé 1 año de exposición destacada y hasta 5 años adicionales de exposición estándar. La publicación podrá retirarse antes por venta, solicitud del anunciante, incumplimiento, fraude o mandato legal. Al término máximo se retirará del listado público; el respaldo interno se conservará conforme a políticas de seguridad, privacidad y retención aplicables. La compresión o exportación a ZIP depende de que se configure y pruebe el sistema de respaldo correspondiente.</p>
+      <h3>7. Contacto y aceptación</h3>
+      <p>Para consultas, reportar anuncios o solicitar asistencia: <a href="mailto:inversionesfepop@gmail.com">inversionesfepop@gmail.com</a> · <a href="tel:+18097394404">809-739-4404</a>. Al usar el servicio, el usuario reconoce el carácter de intermediación tecnológica de la plataforma, sujeto a las leyes aplicables de la República Dominicana.</p>
+    </section>
+
     <section class="contact"><h2>¿Buscas algo específico?</h2><p>Escríbenos a <a href="mailto:inversionesfepop@gmail.com">inversionesfepop@gmail.com</a> o llámanos al <a href="tel:+18097394404">809-739-4404</a>.</p></section>
   </main>
   <footer><p>© 2026 INVERSIONES F Y E POP S.R.L.</p><p>Av. Isabel de Torres No. 56, Alto, Puerto Plata, República Dominicana</p></footer>
   <script>
-    // Supabase URL and anon/publishable key are public client configuration; never put service-role keys here.
+    // Public configuration only. Never put Supabase service-role credentials in browser code.
     const SUPABASE_URL = 'https://vsaldxqblzzlzrpriucv.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_tqfbQDrGawItFonb8NnWVQ_aGM50Xzt';
     const host = document.getElementById('listings');
-
-    function text(value, fallback = '') {
-      return typeof value === 'string' ? value.trim() : (value == null ? fallback : String(value));
-    }
-    function money(value, currency) {
-      const amount = Number(value);
-      if (!Number.isFinite(amount)) return '';
-      return `${text(currency, 'RD$')} ${amount.toLocaleString('es-DO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    }
+    const notice = document.getElementById('access-notice');
+    function text(value, fallback = '') { return typeof value === 'string' ? value.trim() : (value == null ? fallback : String(value)); }
+    function money(value, currency) { const amount = Number(value); return Number.isFinite(amount) ? `${text(currency, 'RD$')} ${amount.toLocaleString('es-DO', {minimumFractionDigits:2,maximumFractionDigits:2})}` : ''; }
     function propertyCard(property) {
-      const card = document.createElement('article');
-      card.className = 'card';
-      const visual = document.createElement('div');
-      visual.className = 'photo';
-      const imageUrl = text(property.imagen_url || property.image_url || property.foto_url);
-      if (imageUrl && /^https:\/\//i.test(imageUrl)) {
-        const image = document.createElement('img');
-        image.src = imageUrl;
-        image.alt = text(property.titulo || property.title, 'Fotografía de propiedad');
-        image.loading = 'lazy';
-        image.referrerPolicy = 'no-referrer';
-        image.onerror = () => { visual.textContent = '⌂'; };
-        visual.appendChild(image);
-      } else {
-        visual.textContent = '⌂';
-        visual.setAttribute('aria-label', 'Imagen no disponible');
-      }
-      const body = document.createElement('div');
-      body.className = 'card-body';
-      const title = document.createElement('h3');
-      title.textContent = text(property.titulo || property.title, 'Propiedad');
-      const location = document.createElement('div');
-      location.className = 'location';
-      location.textContent = text(property.ubicacion || property.location, 'República Dominicana');
-      body.append(title, location);
-      const priceValue = property.precio ?? property.price;
-      if (priceValue != null) {
-        const price = document.createElement('div');
-        price.className = 'price';
-        price.textContent = money(priceValue, property.moneda || property.currency);
-        body.appendChild(price);
-      }
-      const descriptionText = text(property.descripcion || property.description);
-      if (descriptionText) {
-        const description = document.createElement('p');
-        description.className = 'description';
-        description.textContent = descriptionText;
-        body.appendChild(description);
-      }
-      const contactName = text(property.nombre_contacto);
-      const contactPhone = text(property.telefono_contacto);
-      if (contactPhone) {
-        const link = document.createElement('a');
-        link.className = 'button button-outline';
-        link.style.marginTop = '14px';
-        link.href = `tel:${contactPhone.replace(/[^+\d]/g, '')}`;
-        link.textContent = contactName ? `Consultar · ${contactName}` : 'Consultar propiedad';
-        body.appendChild(link);
-      }
-      card.append(visual, body);
-      return card;
+      const card=document.createElement('article');card.className='card';
+      const visual=document.createElement('div');visual.className='photo';
+      const imageUrl=text(property.imagen_url||property.image_url||property.foto_url);
+      if(imageUrl&&/^https:\/\//i.test(imageUrl)){const image=document.createElement('img');image.src=imageUrl;image.alt=text(property.titulo||property.title,'Fotografía de propiedad');image.loading='lazy';image.referrerPolicy='no-referrer';image.onerror=()=>{visual.textContent='⌂'};visual.appendChild(image)}else{visual.textContent='⌂';visual.setAttribute('aria-label','Imagen no disponible')}
+      const body=document.createElement('div');body.className='card-body';const title=document.createElement('h3');title.textContent=text(property.titulo||property.title,'Propiedad');const location=document.createElement('div');location.className='location';location.textContent=text(property.ubicacion||property.location,'República Dominicana');body.append(title,location);
+      const priceValue=property.precio??property.price;if(priceValue!=null){const price=document.createElement('div');price.className='price';price.textContent=money(priceValue,property.moneda||property.currency);body.appendChild(price)}
+      const descriptionText=text(property.descripcion||property.description);if(descriptionText){const description=document.createElement('p');description.className='description';description.textContent=descriptionText;body.appendChild(description)}
+      const contactPhone=text(property.telefono_contacto);if(contactPhone){const link=document.createElement('a');link.className='button button-outline';link.style.marginTop='14px';link.href=`tel:${contactPhone.replace(/[^+\d]/g,'')}`;link.textContent=text(property.nombre_contacto)?`Consultar · ${text(property.nombre_contacto)}`:'Consultar propiedad';body.appendChild(link)}
+      card.append(visual,body);return card;
     }
-
-    async function loadProperties() {
-      if (!window.supabase?.createClient) {
-        host.innerHTML = '<div class="status">No se pudieron cargar las propiedades. Intenta más tarde o contacta con nuestra oficina.</div>';
-        return;
-      }
-      try {
-        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const { data, error } = await client.from('properties_public')
-          .select('id,titulo,ubicacion,descripcion,precio,moneda,publicada,imagen_url,image_url,foto_url,nombre_contacto,telefono_contacto')
-          .eq('publicada', true)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
+    async function loadProperties(){
+      if(!window.supabase?.createClient){host.innerHTML='<div class="status">No se pudieron cargar las propiedades. Intenta más tarde o contacta con nuestra oficina.</div>';return}
+      try{
+        const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+        const [{data:access,error:accessError},{data,error}]=await Promise.all([
+          client.rpc('fye_real_estate_entitlement'),
+          client.rpc('fye_real_estate_listings')
+        ]);
+        if(error)throw error;
+        if(accessError)console.warn('Entitlement status unavailable; server listing filter remains authoritative.',accessError);
+        const entitlement=access||{};
+        if(entitlement.trial_active){notice.textContent=`Prueba gratuita activa hasta ${new Date(entitlement.trial_ends_at).toLocaleString('es-DO')}. La prueba se concede una sola vez por usuario.`}
+        else if(entitlement.can_view_premium){notice.textContent='Tu prueba o suscripción permite consultar propiedades de cualquier precio. Publicar requiere plan publicador activo.'}
+        else{notice.textContent='Acceso sin suscripción: se muestran únicamente propiedades económicas anunciadas en USD entre US$1,000 y US$7,500. Para consultar propiedades de mayor valor, inicia sesión y activa el plan buscador.'}
         host.replaceChildren();
-        if (!Array.isArray(data) || data.length === 0) {
-          const empty = document.createElement('div');
-          empty.className = 'status';
-          empty.textContent = 'En este momento no hay propiedades publicadas. Consulta nuevamente pronto.';
-          host.appendChild(empty);
-          return;
-        }
-        data.forEach(property => host.appendChild(propertyCard(property)));
-      } catch (error) {
-        console.error('Error loading public listings', error);
-        host.innerHTML = '<div class="status error">No se pudieron cargar las propiedades en este momento. Comunícate con nuestra oficina para recibir asistencia.</div>';
-      }
+        if(!Array.isArray(data)||data.length===0){const empty=document.createElement('div');empty.className='status';empty.textContent='En este momento no hay propiedades disponibles con tu nivel de acceso. Consulta nuevamente pronto.';host.appendChild(empty);return}
+        data.forEach(item=>{const property=typeof item==='string'?JSON.parse(item):item;host.appendChild(propertyCard(property))});
+      }catch(error){console.error('Error loading public listings',error);host.innerHTML='<div class="status error">No se pudieron cargar las propiedades en este momento. Comunícate con nuestra oficina para recibir asistencia.</div>'}
     }
     loadProperties();
   </script>
