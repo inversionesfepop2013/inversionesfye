@@ -7,6 +7,10 @@ import os
 import re
 import time
 
+try:
+    from supabase import create_client
+except Exception:  # pragma: no cover
+    create_client = None
 
 APP_SECRET = os.getenv("SECRET_KEY", "change-me-in-production")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "admin-secret-change-me")
@@ -20,6 +24,8 @@ SUPPORT_PHONE = os.getenv("SUPPORT_PHONE", "809-739-4404")
 OTP_TTL_SECONDS = int(os.getenv("OTP_TTL_SECONDS", "300"))
 RATE_LIMIT_WINDOW_SECONDS = 60
 RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "20"))
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 app = FastAPI(title="Inversiones FYE API", version="1.0.0")
 app.add_middleware(
@@ -32,6 +38,12 @@ app.add_middleware(
 
 _rate_state = {}
 _otp_store = {}
+
+
+def _supabase_client():
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY or create_client is None:
+        return None
+    return create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 
 def _client_key(request: Request) -> str:
@@ -125,6 +137,7 @@ async def health() -> dict:
         "environment": os.getenv("APP_ENV", "development"),
         "contact_email": CONTACT_EMAIL,
         "support_phone": SUPPORT_PHONE,
+        "supabase_ready": _supabase_client() is not None,
     }
 
 
@@ -141,6 +154,18 @@ async def contact(request: Request, payload: ContactRequest):
 
     if not name or not email or not message:
         raise HTTPException(status_code=400, detail="Datos inválidos.")
+
+    client = _supabase_client()
+    if client:
+        try:
+            client.table("contact_messages").insert({
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "message": message,
+            }).execute()
+        except Exception:
+            pass
 
     return {
         "ok": True,
@@ -169,6 +194,20 @@ async def withdrawal_request(request: Request, payload: WithdrawalRequest):
             "email": str(payload.email).lower(),
             "amount": payload.amount,
         }
+
+        client = _supabase_client()
+        if client:
+            try:
+                client.table("withdrawal_requests").insert({
+                    "doc_number": document,
+                    "amount": payload.amount,
+                    "email": str(payload.email).lower(),
+                    "otp_hash": _hash_value(otp_code),
+                    "status": "pending",
+                }).execute()
+            except Exception:
+                pass
+
         return {
             "ok": True,
             "requires_otp": True,
@@ -188,6 +227,17 @@ async def withdrawal_request(request: Request, payload: WithdrawalRequest):
         raise HTTPException(status_code=400, detail="OTP incorrecto.")
 
     _otp_store.pop(document, None)
+
+    client = _supabase_client()
+    if client:
+        try:
+            client.table("withdrawal_requests").update({
+                "status": "approved",
+                "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            }).eq("doc_number", document).execute()
+        except Exception:
+            pass
+
     return {
         "ok": True,
         "processed": True,
@@ -211,8 +261,20 @@ async def recover_password(request: Request, payload: RecoverPasswordRequest):
     if not phone or len(phone) < 8:
         raise HTTPException(status_code=400, detail="Formato de teléfono inválido.")
 
-    # This endpoint must be tied to Supabase validation; in a production deployment
-    # the user identity is verified against the database before reset is granted.
+    client = _supabase_client()
+    if client:
+        try:
+            res = client.table("profiles").select("doc_number,email,phone").eq("doc_number", document).eq("email", email).maybe_single().execute()
+            if res and getattr(res, "data", None):
+                return {
+                    "ok": True,
+                    "message": "Identidad verificada. Contacte a soporte para restaurar su acceso.",
+                    "support_email": CONTACT_EMAIL,
+                    "support_phone": SUPPORT_PHONE,
+                }
+        except Exception:
+            pass
+
     return {
         "ok": False,
         "message": "No se encontró coincidencia válida. Debe contactarse con soporte para restablecer su acceso.",
@@ -233,6 +295,18 @@ async def admin_approvals(
     action = payload.action
     if action not in {"approve", "reject", "block", "delete"}:
         raise HTTPException(status_code=400, detail="Acción no válida.")
+
+    client = _supabase_client()
+    if client:
+        try:
+            client.table("admin_actions").insert({
+                "user_id": payload.user_id,
+                "action": action,
+                "reason": payload.reason or "",
+                "created_by": "admin",
+            }).execute()
+        except Exception:
+            pass
 
     return {
         "ok": True,
@@ -264,4 +338,144 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

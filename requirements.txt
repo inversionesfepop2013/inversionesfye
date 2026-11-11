@@ -2,4 +2,4 @@ fastapi==0.115.0
 uvicorn==0.30.6
 python-dotenv==1.0.1
 email-validator==2.2.0
-
+supabase==2.10.0
